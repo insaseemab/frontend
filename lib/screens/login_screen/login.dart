@@ -1,10 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:insaafconnect/register.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/core/services/auth_services.dart';
+import '../register_screen/register.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key}); 
 
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  final box = GetStorage();
+
+  Future<void> login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      Get.snackbar("Error", "Email and Password are required");
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    final result = await AuthService.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (result['success']) {
+  final userName = result['data']['user']['name'];
+  final token = result['token'];
+
+  box.write('isLoggedIn', true);
+  box.write('userName', userName);
+  box.write('token', token); // ✅ TOKEN SAVE
+
+  Get.offAllNamed('/dashboard');
+}
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +83,9 @@ class LoginPage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+
                 const SizedBox(height: 6),
+
                 const Text(
                   "Login to your account",
                   style: TextStyle(color: Colors.grey),
@@ -53,8 +94,8 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 TextField(
+                  controller: _emailController,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.email_outlined),
                     hintText: "your.email@example.com",
                     filled: true,
                     fillColor: Colors.white,
@@ -68,9 +109,9 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 TextField(
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_outline),
                     hintText: "Enter your password",
                     filled: true,
                     fillColor: Colors.white,
@@ -87,45 +128,42 @@ class LoginPage extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B4F3F),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Login",
+                            style: TextStyle(color: Colors.white),
+                          ),
                   ),
                 ),
 
                 const SizedBox(height: 16),
 
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-               const Text(
-                "Don't have an account? ",
-                 style: TextStyle(fontSize: 14, color: Colors.brown),
-                  ),
-            GestureDetector(
-             onTap: () {
-             Get.to(() => const RegisterPage());
-              },
-            child: const Text(
-               "Register",
-                style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF6B4F3F),
-                fontWeight: FontWeight.bold,
-                   ),
-                 ),
-               ),
-             ],
-            ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account? "),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(() => const RegisterPage());
+                      },
+                      child: const Text(
+                        "Register",
+                        style: TextStyle(
+                          color: Color(0xFF6B4F3F),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

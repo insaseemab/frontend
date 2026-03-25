@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:insaafconnect/login.dart';
+import 'package:get_storage/get_storage.dart';
+import '../../routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,6 +14,7 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  final box = GetStorage();
 
   @override
   void initState() {
@@ -24,7 +26,13 @@ class _SplashPageState extends State<SplashPage>
     )..repeat();
 
     Timer(const Duration(seconds: 3), () {
-      Get.off(() => const LoginPage());
+      bool isLoggedIn = box.read('isLoggedIn') ?? false;
+
+      if (isLoggedIn) {
+        Get.offAllNamed(AppRoutes.dashboard);
+      } else {
+        Get.offAllNamed(AppRoutes.login);
+      }
     });
   }
 
@@ -98,7 +106,7 @@ class _SplashPageState extends State<SplashPage>
             ),
 
             const SizedBox(height: 24),
-            
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
