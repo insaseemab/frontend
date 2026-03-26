@@ -4,7 +4,6 @@ import 'dart:convert';
 class AuthService {
   static const String baseUrl = "https://wholesaleapp.sandbox.pk/api";
 
-  // ✅ LOGIN
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
     try {
@@ -23,7 +22,7 @@ class AuthService {
         return {
           'success': true,
           'data': data,
-          'token': data['token'], // ✅ token
+          'token': data['token'], 
         };
       } else {
         return {
@@ -39,7 +38,7 @@ class AuthService {
     }
   }
 
-  // ✅ REGISTER
+  
   static Future<Map<String, dynamic>> register(
       Map<String, dynamic> body) async {
     try {

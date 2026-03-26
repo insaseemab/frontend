@@ -8,92 +8,244 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userName = box.read('userName') ?? "User";
+    final userName = box.read('userName') ?? "Ali";
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5EFE6),
 
-      appBar: AppBar(
-        title: const Text("Dashboard"),
-        backgroundColor: const Color(0xFF6B4F3F),
-        actions: [
-          IconButton(
-            onPressed: () {
-              box.erase(); // logout
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/login', (route) => false);
-            },
-            icon: const Icon(Icons.logout),
-          )
-        ],
-      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+                /// 🔹 TOP BAR
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Insaaf Connect",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Row(
+                      children: const [
+                        Icon(Icons.notifications_none),
+                        SizedBox(width: 12),
+                        Icon(Icons.person_outline),
+                      ],
+                    )
+                  ],
+                ),
 
-            /// 👋 Greeting
-            Text(
-              "Welcome, $userName 👋",
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
+                const SizedBox(height: 20),
+
+                /// 🔹 GREETING
+                Text(
+                  "Welcome Back, $userName!",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                const Text(
+                  "Here’s what’s happening with your legal matters",
+                  style: TextStyle(color: Colors.grey),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// 🔹 QUICK ACTIONS TITLE
+                const Text(
+                  "Quick Actions",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// 🔹 FIND LAWYER CARD (BIG)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6B4F3F), Color(0xFF4A342E)],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    children: const [
+                      Icon(Icons.search, color: Colors.white, size: 30),
+                      SizedBox(height: 8),
+                      Text(
+                        "Find a Lawyer",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        "Connect with expert legal professionals",
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// 🔹 SMALL CARDS
+                Row(
+                  children: [
+                    Expanded(
+                      child: smallCard(
+                        "My Calendar",
+                        Icons.calendar_today,
+                        const Color(0xFF8D7B68),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: smallCard(
+                        "Messages",
+                        Icons.chat,
+                        const Color(0xFFC48A6A),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                /// 🔹 RECENT CASES
+                const Text(
+                  "Recent Cases",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 10),
+
+                caseItem("Property Dispute", "Adv Ahmed Khan", "In Progress"),
+                caseItem("Contract Review", "Adv Sarah Ali", "Completed"),
+                caseItem("Legal Consultation", "Adv Bilal Ahmed", "Scheduled"),
+
+                const SizedBox(height: 20),
+
+                /// 🔹 UPCOMING APPOINTMENTS
+                const Text(
+                  "Upcoming Appointments",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: appointmentCard("Court Hearing", "10:00 AM"),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: appointmentCard("Consultation", "3:00 PM"),
+                    ),
+                  ],
+                ),
+              ],
             ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 Cards Grid
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                children: [
-
-                  dashboardCard("Find Lawyer", Icons.search),
-                  dashboardCard("My Cases", Icons.folder),
-                  dashboardCard("Chat", Icons.chat),
-                  dashboardCard("Appointments", Icons.calendar_today),
-
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
 
-      /// 🔻 Bottom Navigation
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: const Color(0xFF6B4F3F),
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+  /// 🔹 SMALL CARD
+  Widget smallCard(String title, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: Colors.white),
+          const SizedBox(height: 6),
+          Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
         ],
       ),
     );
   }
 
-  /// 🔹 Card Widget
-  Widget dashboardCard(String title, IconData icon) {
+  /// 🔹 CASE ITEM
+  Widget caseItem(String title, String lawyer, String status) {
+    Color statusColor;
+
+    if (status == "Completed") {
+      statusColor = Colors.green;
+    } else if (status == "In Progress") {
+      statusColor = Colors.orange;
+    } else {
+      statusColor = Colors.grey;
+    }
+
     return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(lawyer, style: const TextStyle(color: Colors.grey)),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: statusColor.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              status,
+              style: TextStyle(color: statusColor, fontSize: 12),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /// 🔹 APPOINTMENT CARD
+  Widget appointmentCard(String title, String time) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6DED3),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 40, color: Color(0xFF6B4F3F)),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
+          const Icon(Icons.calendar_today),
+          const SizedBox(height: 6),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(time, style: const TextStyle(color: Colors.grey)),
         ],
       ),
     );
