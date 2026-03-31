@@ -1,8 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:get_storage/get_storage.dart';
+
 
 class AuthService {
-  static const String baseUrl = "https://wholesaleapp.sandbox.pk/api";
+  static const String baseUrl = "http://localhost:3000";
+  static final box = GetStorage();
 
   static Future<Map<String, dynamic>> login(
       String email, String password) async {
@@ -43,7 +46,7 @@ class AuthService {
       Map<String, dynamic> body) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/signup'),
+        Uri.parse('$baseUrl/register'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(body),
       );
@@ -55,7 +58,7 @@ class AuthService {
       } else {
         return {
           'success': false,
-          'message': data['message'] ?? 'Signup failed',
+          'message': data['message'] ?? 'register failed',
         };
       }
     } catch (e) {
@@ -65,4 +68,5 @@ class AuthService {
       };
     }
   }
+  
 }
