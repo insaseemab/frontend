@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'approve_lawyer.dart';
+import 'admin_dashboard.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,20 +18,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final userName = box.read('userName') ?? "Ali";
 
-    final List<Widget> pages = [
-      homePage(userName),
-      const Center(child: Text("Approve Lawyer Screen")),
-      const Center(child: Text("View Cases Screen")),
-      const Center(child: Text("Admin Profile Screen")),
-    ];
-
+      final List<Widget> pages = [
+       const AdminProfileDashboard(), // ✅ Home pe ab ye show hoga
+       const ApproveLawyerScreen(),
+       const Center(child: Text("View Cases Screen")),
+       DashboardScreen(), // Profile tab
+   ];
     return Scaffold(
       backgroundColor: const Color(0xFFF5EFE6),
 
-      /// 🔹 BODY CHANGE ON TAB
       body: pages[currentIndex],
 
-      /// 🔹 BOTTOM NAVIGATION
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         selectedItemColor: const Color(0xFF6B4F3F),
@@ -47,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.verified_user),
-            label: "Approve lawyer",
+            label: "Add lawyer",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.folder),
@@ -71,14 +70,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-              /// TOP BAR
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: const [
                   Text(
                     "Insaaf Connect",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Row(
                     children: [
@@ -92,11 +90,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              /// GREETING
               Text(
                 "Welcome Back, $userName!",
-                style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 4),
@@ -108,7 +105,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              /// QUICK ACTIONS
               const Text("Quick Actions",
                   style: TextStyle(fontWeight: FontWeight.bold)),
 
@@ -153,7 +149,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              /// CASES
               const Text("Recent Cases",
                   style: TextStyle(fontWeight: FontWeight.bold)),
 
@@ -169,7 +164,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  /// SMALL CARD
   Widget smallCard(String title, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -187,7 +181,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  /// CASE ITEM
   Widget caseItem(String title, String lawyer, String status) {
     Color statusColor;
 
@@ -209,16 +202,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(lawyer, style: const TextStyle(color: Colors.grey)),
-          ]),
+          Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style:
+                        const TextStyle(fontWeight: FontWeight.bold)),
+                Text(lawyer,
+                    style: const TextStyle(color: Colors.grey)),
+              ]),
           Container(
             padding:
                 const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.2),
+              color: statusColor.withValues(alpha: 0.2), 
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(status,
