@@ -51,10 +51,7 @@ class _SplashPageState extends State<SplashPage>
       },
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 4),
-        child: CircleAvatar(
-          radius: 5,
-          backgroundColor: Color(0xFF6B4F3F),
-        ),
+        child: CircleAvatar(radius: 5, backgroundColor: Color(0xFF6B4F3F)),
       ),
     );
   }
@@ -67,7 +64,6 @@ class _SplashPageState extends State<SplashPage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             Container(
               height: 80,
               width: 80,
@@ -99,21 +95,14 @@ class _SplashPageState extends State<SplashPage>
 
             const Text(
               "Digital Platform for Lawyers and Clients",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.brown,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.brown),
             ),
 
             const SizedBox(height: 24),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildDot(0),
-                _buildDot(1),
-                _buildDot(2),
-              ],
+              children: [_buildDot(0), _buildDot(1), _buildDot(2)],
             ),
           ],
         ),

@@ -110,7 +110,7 @@ class ApproveLawyerScreen extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: const Color.fromARGB(255, 167, 112, 92),
                         ),
                         child: const Text("Approve"),
                       ),
@@ -124,7 +124,7 @@ class ApproveLawyerScreen extends StatelessWidget {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: const Color.fromARGB(255, 235, 229, 186),
                         ),
                         child: const Text("Reject"),
                       ),
