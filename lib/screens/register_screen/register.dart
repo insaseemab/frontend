@@ -179,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 12),
 
                   DropdownButtonFormField<String>(
-                    value: selectedSpecialization,
+                    initialValue: selectedSpecialization,
                     items: specializations
                         .map((e) => DropdownMenuItem(
                               value: e,

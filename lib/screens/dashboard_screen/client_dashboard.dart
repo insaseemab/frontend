@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
-import 'approve_lawyer.dart';
-import 'admin_dashboard.dart';
 
-import 'package:flutter/material.dart';
 
 void main() {
   runApp(const InsaafConnectApp());
