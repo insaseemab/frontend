@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-class LawyerDashboard extends StatelessWidget {
-  LawyerDashboard({super.key});
+class LawyerDashboard extends StatefulWidget {
+  const LawyerDashboard({super.key});
 
+  @override
+  State<LawyerDashboard> createState() => _LawyerDashboardState();
+}
+
+class _LawyerDashboardState extends State<LawyerDashboard> {
   final box = GetStorage();
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -13,242 +19,266 @@ class LawyerDashboard extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5EFE6),
 
+      /// 🔹 BOTTOM NAVIGATION BAR
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFF6B4226),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontSize: 11),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), activeIcon: Icon(Icons.folder), label: "Cases"),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today_outlined), activeIcon: Icon(Icons.calendar_today), label: "Calendar"),
+          BottomNavigationBarItem(icon: Icon(Icons.chat_outlined), activeIcon: Icon(Icons.chat), label: "Messages"),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: "Profile"),
+        ],
+      ),
+
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
 
-                /// 🔹 HEADER
-                const Text(
-                  "Insaaf Connect",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// 🔹 WELCOME
-                Text(
-                  "Welcome, Adv. $userName",
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const Text(
-                  "You have 3 appointments scheduled for today",
-                  style: TextStyle(color: Colors.grey),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// 🔹 STATS
-                Row(
+              /// 🔹 HEADER
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: statCard("Active Cases", "12")),
-                    const SizedBox(width: 10),
-                    Expanded(child: statCard("Appointments", "3")),
-                    const SizedBox(width: 10),
-                    Expanded(child: statCard("Messages", "8")),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                /// 🔹 QUICK ACTIONS
-                const Text(
-                  "Quick Actions",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: actionCard(
-                        "Appointment Requests",
-                        Icons.request_page,
-                        const Color(0xFFC48A6A),
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF6B4226),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.balance, color: Colors.white, size: 18),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "Insaaf Connect",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: actionCard(
-                        "View Calendar",
-                        Icons.calendar_today,
-                        const Color(0xFF6B4F3F),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: actionCard(
-                        "Messages",
-                        Icons.chat,
-                        const Color(0xFF8FA78A),
-                      ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.notifications_outlined),
+                          onPressed: () {},
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.person_outline),
+                          onPressed: () {},
+                        ),
+                      ],
                     ),
                   ],
                 ),
+              ),
 
-                const SizedBox(height: 20),
-
-                /// 🔹 ACTIVE CASES + SCHEDULE
-                Row(
+              /// 🔹 WELCOME
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    /// LEFT
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Active Cases",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-
-                          const SizedBox(height: 10),
-
-                          caseItem("Property Dispute", "High"),
-                          caseItem("Contract Review", "Medium"),
-                          caseItem("Legal Consultation", "Low"),
-                        ],
+                    Text(
+                      "Welcome, Adv.\n$userName",
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        height: 1.2,
                       ),
                     ),
-
-                    const SizedBox(width: 12),
-
-                    /// RIGHT
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text("Today's Schedule",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-
-                          const SizedBox(height: 10),
-
-                          scheduleItem("10:00 AM", "Court Hearing"),
-                          scheduleItem("2:00 PM", "Client Meeting"),
-                          scheduleItem("4:00 PM", "Document Review"),
-                        ],
-                      ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      "You have 3 appointments scheduled for today",
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// 🔹 ACTIVE CASES
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Active Cases",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    caseCard("Property Dispute", "High", "Ali Raza", "2026-01-10"),
+                    caseCard("Contract Review", "Medium", "Fatima Khan", "2026-01-15"),
+                    caseCard("Legal Consultation", "Low", "Hassan Ahmed", "2026-01-20"),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              /// 🔹 TODAY'S SCHEDULE
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Today's Schedule",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    scheduleCard("10:00 AM", "2 hours", "Court Hearing", "Ali Raza"),
+                    scheduleCard("2:00 PM", "1 hour", "Client Meeting", "Fatima Khan"),
+                    scheduleCard("4:00 PM", "1 hour", "Document Review", "Hassan Ahmed"),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
           ),
         ),
       ),
     );
   }
 
-  /// 🔹 STAT CARD
-  Widget statCard(String title, String count) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6DED3),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        children: [
-          Text(title, style: const TextStyle(fontSize: 12)),
-          const SizedBox(height: 6),
-          Text(
-            count,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 🔹 ACTION CARD
-  Widget actionCard(String title, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(height: 6),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// 🔹 CASE ITEM
-  Widget caseItem(String title, String priority) {
-    Color color;
+  /// 🔹 CASE CARD (matches Figma - name, priority badge, client, next hearing)
+  Widget caseCard(String title, String priority, String client, String hearingDate) {
+    Color priorityColor;
+    Color priorityBg;
 
     if (priority == "High") {
-      color = Colors.red;
+      priorityColor = const Color(0xFFB94A2C);
+      priorityBg = const Color(0xFFFFECE8);
     } else if (priority == "Medium") {
-      color = Colors.orange;
+      priorityColor = const Color(0xFF8F6A00);
+      priorityBg = const Color(0xFFFFF4CC);
     } else {
-      color = Colors.green;
+      priorityColor = const Color(0xFF2E7D32);
+      priorityBg = const Color(0xFFE8F5E9);
     }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              priority,
-              style: TextStyle(color: color, fontSize: 10),
-            ),
-          )
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: priorityBg,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  priority,
+                  style: TextStyle(
+                    color: priorityColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "Client: $client",
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            "Next Hearing: $hearingDate",
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+          ),
         ],
       ),
     );
   }
 
-  /// 🔹 SCHEDULE ITEM
-  Widget scheduleItem(String time, String title) {
+  /// 🔹 SCHEDULE CARD (matches Figma - icon, time, duration badge, event, client)
+  Widget scheduleCard(String time, String duration, String title, String client) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
         children: [
-          const Icon(Icons.access_time, size: 18),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(title, style: const TextStyle(color: Colors.grey)),
-            ],
-          )
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF6B4226),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Icon(Icons.access_time, color: Colors.white, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  time,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 2),
+                Text(title, style: const TextStyle(fontSize: 13)),
+                Text(client, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0EAE3),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              duration,
+              style: const TextStyle(fontSize: 11, color: Color(0xFF6B4226)),
+            ),
+          ),
         ],
       ),
     );

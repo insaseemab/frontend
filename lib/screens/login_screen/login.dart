@@ -97,58 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: "irhahshaid@gamil.abstract class Command {
-                      void execute();
-                      void undo();
-                    }
-                    
-                    class Light {
-                      bool _isOn = false;
-                    
-                      void turnOn() {
-                        _isOn = true;
-                        print('Light is ON');
-                      }
-                    
-                      void turnOff() {
-                        _isOn = false;
-                        print('Light is OFF');
-                      }
-                    
-                      bool get isOn => _isOn;
-                    }
-                    
-                    class LightOnCommand implements Command {
-                      final Light _light;
-                    
-                      LightOnCommand(this._light);
-                    
-                      @override
-                      void execute() {
-                        _light.turnOn();
-                      }
-                    
-                      @override
-                      void undo() {
-                        _light.turnOff();
-                      }
-                    }
-                    
-                    class RemoteControl {
-                      final List<Command> _history = [];
-                    
-                      void executeCommand(Command command) {
-                        command.execute();
-                        _history.add(command);
-                      }
-                    
-                      void undoLastCommand() {
-                        if (_history.isNotEmpty) {
-                          final lastCommand = _history.removeLast();
-                          lastCommand.undo();
-                        }
-                      }
-                    }@example.com",
+                    hintText: "irhahshaid@gamil.com@example.com",
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
