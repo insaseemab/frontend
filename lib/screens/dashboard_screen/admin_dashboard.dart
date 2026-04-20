@@ -28,7 +28,7 @@ class AdminProfileDashboard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Welcome back, Admin 👋",
+                        "Welcome back, Admin",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -57,26 +57,10 @@ class AdminProfileDashboard extends StatelessWidget {
                     statCard("Cases", "120", Icons.folder),
                     statCard("Clients", "80", Icons.people),
                     statCard("Lawyers", "45", Icons.gavel),
-                    statCard("Productivity", "92%", Icons.show_chart),
+                    statCard("Pending lawyers", "11", Icons.pending),
                   ],
                 ),
 
-                const SizedBox(height: 25),
-
-                /// 🔹 FEEDBACK TITLE
-                const Text(
-                  "Recent Feedback",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-
-                const SizedBox(height: 12),
-
-                /// 🔹 FEEDBACK LIST
-                feedbackItem("Ali Khan", "Great platform, very helpful!"),
-                feedbackItem("Sara Ahmed", "Lawyer response was quick 👍"),
-                feedbackItem("Usman Tariq", "Easy to use and clean UI"),
-                feedbackItem("Ayesha Malik", "Very useful for legal help"),
               ],
             ),
           );

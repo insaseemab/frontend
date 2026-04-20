@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:insaafconnect/screens/dashboard_screen/addlawyer.dart';
 
-class ApproveLawyerScreen extends StatelessWidget {
-  const ApproveLawyerScreen({super.key});
+class Managelawyers extends StatefulWidget {
+  const Managelawyers({super.key});
 
+  @override
+  State<Managelawyers> createState() => _ManagelawyersState();
+}
+
+class _ManagelawyersState extends State<Managelawyers> {
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> lawyers = [
@@ -12,7 +18,7 @@ class ApproveLawyerScreen extends StatelessWidget {
         "city": "Lahore",
         "experience": "15 years",
         "cases": "250",
-        "rating": "4.9"
+        "rating": "4.9",
       },
       {
         "name": "Sarah Ali",
@@ -20,7 +26,7 @@ class ApproveLawyerScreen extends StatelessWidget {
         "city": "Karachi",
         "experience": "10 years",
         "cases": "180",
-        "rating": "4.8"
+        "rating": "4.8",
       },
       {
         "name": "Bilal Ahmed",
@@ -28,14 +34,25 @@ class ApproveLawyerScreen extends StatelessWidget {
         "city": "Islamabad",
         "experience": "12 years",
         "cases": "200",
-        "rating": "4.7"
+        "rating": "4.7",
       },
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Insaaf Connect"),
+        title: const Text("List of Lawyers"),
         backgroundColor: Color(0xFFF5EFE6),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddLawyerPage()),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: lawyers.length,
@@ -71,7 +88,9 @@ class ApproveLawyerScreen extends StatelessWidget {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(20),
@@ -80,7 +99,7 @@ class ApproveLawyerScreen extends StatelessWidget {
                         "⭐ ${lawyer["rating"] ?? ""}",
                         style: const TextStyle(color: Colors.white),
                       ),
-                    )
+                    ),
                   ],
                 ),
 
@@ -89,7 +108,9 @@ class ApproveLawyerScreen extends StatelessWidget {
                 Text(
                   "Adv. ${lawyer["name"] ?? ""}",
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
 
                 Text(lawyer["specialization"] ?? ""),
@@ -105,32 +126,42 @@ class ApproveLawyerScreen extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Approved")),
-                          );
+                          setState(() {
+                            lawyer["status"] = "approved";
+                          });
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: lawyer["status"] == "approved"
+                              ? Color(0xFF6B4F3F)
+                              : Colors.grey,
                         ),
-                        child: const Text("Approve"),
+                        child: const Text(
+                          "Approve",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Rejected")),
-                          );
+                          setState(() {
+                            lawyer["status"] = "rejected";
+                          });
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: lawyer["status"] == "rejected"
+                              ? Color(0xFF6B4F3F)
+                              : Colors.grey,
                         ),
-                        child: const Text("Reject"),
+                        child: const Text(
+                          "Reject",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           );

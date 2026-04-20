@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'approve_lawyer.dart';
+import 'managelawyers.dart';
 import 'admin_dashboard.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -19,8 +19,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final userName = box.read('userName') ?? "Ali";
 
       final List<Widget> pages = [
-       const AdminProfileDashboard(), // ✅ Home pe ab ye show hoga
-       const ApproveLawyerScreen(),
+       const AdminProfileDashboard(), 
+       const Managelawyers(),
        const Center(child: Text("View Cases Screen")),
        DashboardScreen(), // Profile tab
    ];
@@ -46,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.verified_user),
-            label: "Add lawyer",
+            label: "Manage lawyers",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.folder),
