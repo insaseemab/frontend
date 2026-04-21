@@ -41,10 +41,11 @@ class _ManagelawyersState extends State<Managelawyers> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("List of Lawyers"),
-        backgroundColor: Color(0xFFF5EFE6),
+        backgroundColor: Color(0xFF6B4F3F),
+        titleTextStyle: TextStyle(color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.black),
+            icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -121,19 +122,24 @@ class _ManagelawyersState extends State<Managelawyers> {
                 const SizedBox(height: 10),
 
                 // Buttons Row
+                // managelawyers.dart
                 Row(
                   children: [
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            lawyer["status"] = "approved";
+                            if (lawyer["status"] == "approved") {
+                              lawyer["status"] = "";
+                            } else {
+                              lawyer["status"] = "approved";
+                            }
                           });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: lawyer["status"] == "approved"
-                              ? Color(0xFF6B4F3F)
-                              : Colors.grey,
+                              ? const Color(0xFF6B4F3F)
+                              : Colors.grey, 
                         ),
                         child: const Text(
                           "Approve",
@@ -146,13 +152,17 @@ class _ManagelawyersState extends State<Managelawyers> {
                       child: ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            lawyer["status"] = "rejected";
+                            if (lawyer["status"] == "rejected") {
+                              lawyer["status"] = "";
+                            } else {
+                              lawyer["status"] = "rejected";
+                            }
                           });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: lawyer["status"] == "rejected"
-                              ? Color(0xFF6B4F3F)
-                              : Colors.grey,
+                              ? const Color(0xFF6B4F3F) 
+                              : Colors.grey, 
                         ),
                         child: const Text(
                           "Reject",
