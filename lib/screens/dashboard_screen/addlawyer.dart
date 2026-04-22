@@ -21,7 +21,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add Lawyer"),
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: Color(0xFF6B4F3F),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
