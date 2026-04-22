@@ -34,15 +34,15 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (result['success']) {
-  final userName = result['data']['user']['name'];
-  final token = result['token'];
+      final userName = result['data']['user']['name'];
+      final token = result['token'];
 
-  box.write('isLoggedIn', true);
-  box.write('userName', userName);
-  box.write('token', token); 
+      box.write('isLoggedIn', true);
+      box.write('userName', userName);
+      box.write('token', token); 
 
-  Get.offAllNamed('/dashboard');
-}
+      Get.offAllNamed('/dashboard');
+    }
   }
   @override
   Widget build(BuildContext context) {
