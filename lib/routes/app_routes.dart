@@ -6,6 +6,7 @@ import 'package:insaafconnect/screens/splash_screen/splash.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client_dashboard.dart';
 
 class AppRoutes {
+  
   static const splash = "/";
   static const login = "/login";
   static const register = "/register";
