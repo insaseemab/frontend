@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'managelawyers.dart';
 import 'admin_dashboard.dart';
+import 'manage_cases.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -19,10 +20,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final userName = box.read('userName') ?? "Ali";
 
       final List<Widget> pages = [
-       const AdminProfileDashboard(), 
-       const Managelawyers(),
-       const Center(child: Text("View Cases Screen")),
-       DashboardScreen(), // Profile tab
+        const AdminProfileDashboard(), 
+        const Managelawyers(),
+        ManageCases(),
+        DashboardScreen(), // Profile tab
    ];
     return Scaffold(
       backgroundColor: const Color(0xFFF5EFE6),
