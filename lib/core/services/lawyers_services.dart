@@ -202,4 +202,47 @@ class LawyerService {
       throw Exception('Sort error: $e');
     }
   }
+  // ─────────────────────────────────────────
+// 9. APPROVE LAWYER
+// ─────────────────────────────────────────
+Future<Map<String, dynamic>> approveLawyer(int id) async {
+  try {
+    final response = await http.patch(
+      Uri.parse('$_baseUrl/lawyers/$id/1'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return Map<String, dynamic>.from(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw Exception('Lawyer not found');
+    } else {
+      throw Exception('Failed to approve lawyer: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Network error: $e');
+  }
+}
+
+// ─────────────────────────────────────────
+// 10. DISAPPROVE LAWYER
+// ─────────────────────────────────────────
+Future<Map<String, dynamic>> disapproveLawyer(int id) async {
+  try {
+    final response = await http.patch(
+      Uri.parse('$_baseUrl/lawyers/$id/0'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return Map<String, dynamic>.from(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw Exception('Lawyer not found');
+    } else {
+      throw Exception('Failed to disapprove lawyer: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Network error: $e');
+  }
+}
 }

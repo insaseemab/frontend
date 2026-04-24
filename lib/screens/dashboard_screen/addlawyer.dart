@@ -22,6 +22,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
       appBar: AppBar(
         title: const Text("Add Lawyer"),
         backgroundColor: Color(0xFF6B4F3F),
+        titleTextStyle: TextStyle(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

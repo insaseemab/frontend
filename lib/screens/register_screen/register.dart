@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/core/services/auth_services.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,21 +10,16 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  
   bool isClient = true;
+  bool _isLoading = false;
 
-  
   final fullNameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-
-
   final barCouncilController = TextEditingController();
-  final specializationController = TextEditingController();
   final experienceController = TextEditingController();
-
 
   final List<String> specializations = [
     'Civil Law',
@@ -43,9 +39,87 @@ class _RegisterPageState extends State<RegisterPage> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     barCouncilController.dispose();
-    specializationController.dispose();
     experienceController.dispose();
     super.dispose();
+  }
+
+  // ── Validation ────────────────────────────────────────
+  String? _validate() {
+    if (fullNameController.text.trim().isEmpty) return "Full name is required";
+    if (emailController.text.trim().isEmpty) return "Email is required";
+    if (!emailController.text.contains('@')) return "Enter a valid email";
+    if (phoneController.text.trim().isEmpty) return "Phone number is required";
+    if (passwordController.text.isEmpty) return "Password is required";
+    if (passwordController.text.length < 6) return "Password must be at least 6 characters";
+    if (passwordController.text != confirmPasswordController.text) {
+      return "Passwords do not match";
+    }
+
+    if (!isClient) {
+      if (barCouncilController.text.trim().isEmpty) return "Bar Council ID is required";
+      if (selectedSpecialization == null) return "Please select a specialization";
+      if (experienceController.text.trim().isEmpty) return "Experience is required";
+    }
+
+    return null; // no error
+  }
+
+  // ── Register Handler ──────────────────────────────────
+  Future<void> _handleRegister() async {
+    // 1. Validate
+    final error = _validate();
+    if (error != null) {
+      Get.snackbar(
+        "Validation Error",
+        error,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    // 2. Build body based on role
+    final Map<String, dynamic> body = {
+      'name': fullNameController.text.trim(),
+      'email': emailController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'password': passwordController.text,
+      'role': isClient ? 'client' : 'lawyer',
+    };
+
+    if (!isClient) {
+      body['bar_council_id'] = barCouncilController.text.trim();
+      body['specialization'] = selectedSpecialization;
+      body['experience'] = experienceController.text.trim();
+    }
+
+    // 3. Call API
+    final result = await AuthService.register(body);
+
+    setState(() => _isLoading = false);
+
+    // 4. Handle response
+    if (result['success'] == true) {
+      Get.snackbar(
+        "Success",
+        "Account created! Please login.",
+        backgroundColor: Colors.green.shade100,
+        colorText: Colors.green.shade900,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      Get.back(); // go to login
+    } else {
+      Get.snackbar(
+        "Registration Failed",
+        result['message'] ?? "Something went wrong",
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -64,7 +138,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-  
+                // ── Logo ─────────────────────────────────
                 Container(
                   height: 90,
                   width: 90,
@@ -89,16 +163,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 20),
 
+                // ── Client / Lawyer Toggle ────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isClient = true;
-                          });
-                        },
+                        onTap: () => setState(() => isClient = true),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
@@ -112,7 +183,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               "Register as Client",
                               style: TextStyle(
-                                color: isClient ? Colors.white : Colors.brown,
+                                color:
+                                    isClient ? Colors.white : Colors.brown,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -123,11 +195,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isClient = false;
-                          });
-                        },
+                        onTap: () => setState(() => isClient = false),
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
@@ -141,7 +209,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               "Register as Lawyer",
                               style: TextStyle(
-                                color: !isClient ? Colors.white : Colors.brown,
+                                color:
+                                    !isClient ? Colors.white : Colors.brown,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -153,31 +222,18 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 24),
 
-                if (isClient) ...[
-                  buildTextField("Full Name", fullNameController),
-                  const SizedBox(height: 12),
-                  buildTextField("Email", emailController),
-                  const SizedBox(height: 12),
-                  buildTextField("Phone Number", phoneController),
-                  const SizedBox(height: 12),
-                  buildTextField("Password", passwordController, obscure: true),
-                  const SizedBox(height: 12),
-                  buildTextField("Confirm Password", confirmPasswordController, obscure: true),
-                  const SizedBox(height: 20),
-                  createAccountButton(),
-                  const SizedBox(height: 12),
-                  loginText()
-                ] else ...[
+                // ── Common Fields ─────────────────────────
+                buildTextField("Full Name", fullNameController),
+                const SizedBox(height: 12),
+                buildTextField("Email", emailController),
+                const SizedBox(height: 12),
+                buildTextField("Phone Number", phoneController),
+                const SizedBox(height: 12),
 
-                  buildTextField("Full Name", fullNameController),
-                  const SizedBox(height: 12),
-                  buildTextField("Email", emailController),
-                  const SizedBox(height: 12),
-                  buildTextField("Phone Number", phoneController),
-                  const SizedBox(height: 12),
+                // ── Lawyer-only Fields ────────────────────
+                if (!isClient) ...[
                   buildTextField("Bar Council ID", barCouncilController),
                   const SizedBox(height: 12),
-
                   DropdownButtonFormField<String>(
                     value: selectedSpecialization,
                     items: specializations
@@ -195,24 +251,25 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderSide: BorderSide.none,
                       ),
                     ),
-                    onChanged: (val) {
-                      setState(() {
-                        selectedSpecialization = val;
-                      });
-                    },
+                    onChanged: (val) =>
+                        setState(() => selectedSpecialization = val),
                   ),
-
                   const SizedBox(height: 12),
                   buildTextField("Experience (years)", experienceController),
                   const SizedBox(height: 12),
-                  buildTextField("Password", passwordController, obscure: true),
-                  const SizedBox(height: 12),
-                  buildTextField("Confirm Password", confirmPasswordController, obscure: true),
-                  const SizedBox(height: 20),
-                  createAccountButton(),
-                  const SizedBox(height: 12),
-                  loginText()
                 ],
+
+                // ── Password Fields ───────────────────────
+                buildTextField("Password", passwordController, obscure: true),
+                const SizedBox(height: 12),
+                buildTextField("Confirm Password", confirmPasswordController,
+                    obscure: true),
+                const SizedBox(height: 20),
+
+                // ── Submit Button ─────────────────────────
+                createAccountButton(),
+                const SizedBox(height: 12),
+                loginText(),
               ],
             ),
           ),
@@ -221,7 +278,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget buildTextField(String hint, TextEditingController controller, {bool obscure = false}) {
+  Widget buildTextField(String hint, TextEditingController controller,
+      {bool obscure = false}) {
     return TextField(
       controller: controller,
       obscureText: obscure,
@@ -242,18 +300,26 @@ class _RegisterPageState extends State<RegisterPage> {
       width: double.infinity,
       height: 50,
       child: ElevatedButton(
-        onPressed: () {
-        },
+        onPressed: _isLoading ? null : _handleRegister, // ← wired up
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF6B4F3F),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        child: const Text(
-          "Create Account",
-          style: TextStyle(fontSize: 16, color: Colors.white),
-        ),
+        child: _isLoading
+            ? const SizedBox(
+                height: 22,
+                width: 22,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+            : const Text(
+                "Create Account",
+                style: TextStyle(fontSize: 16, color: Colors.white),
+              ),
       ),
     );
   }
@@ -264,9 +330,7 @@ class _RegisterPageState extends State<RegisterPage> {
       children: [
         const Text("Already have an account? "),
         GestureDetector(
-          onTap: () {
-            Get.back(); 
-          },
+          onTap: () => Get.back(),
           child: const Text(
             "Login",
             style: TextStyle(

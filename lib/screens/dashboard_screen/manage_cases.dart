@@ -36,7 +36,11 @@ class _ManageCasesState extends State<ManageCases> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Manage Cases")),
+      appBar: AppBar(
+        title: const Text("Manage Cases"),
+        backgroundColor: const Color(0xFF6B4F3F),
+        titleTextStyle: const TextStyle(color: Colors.white),
+        ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
