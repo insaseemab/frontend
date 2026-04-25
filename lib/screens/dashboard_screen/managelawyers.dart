@@ -22,13 +22,11 @@ class _ManagelawyersState extends State<Managelawyers> {
     _loadLawyers();
   }
 
-  // ── Fetch lawyers and store in state ──────────────────
   Future<void> _loadLawyers() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
     });
-
     try {
       final data = await _lawyerService.fetchLawyers();
       setState(() {
@@ -43,13 +41,19 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── Approve ───────────────────────────────────────────
+  // 1 = approved, 0 = rejected, -1 = pending/unknown
+  int _getStatus(dynamic status) {
+    if (status == null) return -1;
+    if (status is int) return status;
+    return int.tryParse(status.toString()) ?? -1;
+  }
+
   Future<void> _approveLawyer(int index) async {
     final id = _lawyers[index]["id"];
     try {
       await _lawyerService.approveLawyer(id);
       setState(() {
-        _lawyers[index]["status"] = "approved"; // index-based = reliable
+        _lawyers[index]["status"] = 1;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -67,13 +71,12 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── Disapprove ────────────────────────────────────────
   Future<void> _disapproveLawyer(int index) async {
     final id = _lawyers[index]["id"];
     try {
       await _lawyerService.disapproveLawyer(id);
       setState(() {
-        _lawyers[index]["status"] = "rejected"; // index-based = reliable
+        _lawyers[index]["status"] = 0;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -96,7 +99,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("List of Lawyers"),
-        backgroundColor: const Color(0xFF6B4F3F),
+        backgroundColor: Colors.brown,
         titleTextStyle: const TextStyle(color: Colors.white),
         actions: [
           IconButton(
@@ -105,7 +108,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AddLawyerPage()),
-              ).then((_) => _loadLawyers()); // refresh after add
+              ).then((_) => _loadLawyers());
             },
           ),
         ],
@@ -115,12 +118,10 @@ class _ManagelawyersState extends State<Managelawyers> {
   }
 
   Widget _buildBody() {
-    // ── Loading ───────────────────────────────────────
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // ── Error ─────────────────────────────────────────
     if (_errorMessage != null) {
       return Center(
         child: Column(
@@ -128,10 +129,7 @@ class _ManagelawyersState extends State<Managelawyers> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 12),
-            Text(
-              'Error: $_errorMessage',
-              textAlign: TextAlign.center,
-            ),
+            Text('Error: $_errorMessage', textAlign: TextAlign.center),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _loadLawyers,
@@ -142,17 +140,21 @@ class _ManagelawyersState extends State<Managelawyers> {
       );
     }
 
-    // ── Empty ─────────────────────────────────────────
     if (_lawyers.isEmpty) {
       return const Center(child: Text('No lawyers found.'));
     }
 
-    // ── List ──────────────────────────────────────────
     return ListView.builder(
       itemCount: _lawyers.length,
       itemBuilder: (context, index) {
         final lawyer = _lawyers[index];
-        final status = lawyer["status"]?.toString() ?? "";
+        final status = _getStatus(lawyer["status"]);
+
+        final isApproved = status == 1;
+        final isRejected = status == 0;
+
+        // ── Brown color — same as app theme ──────────
+        const brownColor = Colors.brown;
 
         return Container(
           margin: const EdgeInsets.all(12),
@@ -170,7 +172,7 @@ class _ManagelawyersState extends State<Managelawyers> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header row ─────────────────────────
+              // ── Header ─────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -183,9 +185,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                        horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(20),
@@ -199,13 +199,11 @@ class _ManagelawyersState extends State<Managelawyers> {
               ),
               const SizedBox(height: 10),
 
-              // ── Lawyer details ─────────────────────
+              // ── Details ────────────────────────────
               Text(
                 "Adv. ${lawyer["name"] ?? ""}",
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                    fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Text(lawyer["specialization"] ?? ""),
               Text("📍 ${lawyer["city"] ?? ""}"),
@@ -214,26 +212,24 @@ class _ManagelawyersState extends State<Managelawyers> {
               const SizedBox(height: 10),
 
               // ── Status Badge ───────────────────────
-              if (status.isNotEmpty)
+              if (status != -1)
                 Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: status == "approved"
+                    color: isApproved
                         ? Colors.green.shade100
                         : Colors.red.shade100,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: status == "approved" ? Colors.green : Colors.red,
+                      color: isApproved ? Colors.green : Colors.red,
                     ),
                   ),
                   child: Text(
-                    status == "approved" ? "✅ Approved" : "❌ Rejected",
+                    isApproved ? "✅ Approved" : "❌ Rejected",
                     style: TextStyle(
-                      color: status == "approved"
+                      color: isApproved
                           ? Colors.green.shade800
                           : Colors.red.shade800,
                       fontWeight: FontWeight.w600,
@@ -242,43 +238,55 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                 ),
 
-              // ── Approve / Reject Buttons ───────────
+              // ── Approve / Reject Toggle Buttons ────
               Row(
                 children: [
+                  // ── APPROVE BUTTON ────────────────
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: status == "approved"
-                          ? null
-                          : () => _approveLawyer(index),
+                      onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: status == "approved"
-                            ? Colors.green
-                            : const Color(0xFF6B4F3F),
+                        // brown jab approved, white jab nahi
+                        backgroundColor:
+                            isApproved ? brownColor : Colors.white,
+                        side: const BorderSide(color: brownColor),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                      child: const Text(
+                      child: Text(
                         "Approve",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          // white text jab selected, brown jab nahi
+                          color: isApproved ? Colors.white : brownColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
+
+                  // ── REJECT BUTTON ─────────────────
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: status == "rejected"
-                          ? null
-                          : () => _disapproveLawyer(index),
+                      onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: status == "rejected"
-                            ? Colors.red
-                            : Colors.white,
-                        side: const BorderSide(color: Color(0xFF6B4F3F)),
+                        // brown jab rejected, white jab nahi
+                        backgroundColor:
+                            isRejected ? brownColor : Colors.white,
+                        side: const BorderSide(color: brownColor),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                       child: Text(
                         "Reject",
                         style: TextStyle(
-                          color: status == "rejected"
-                              ? Colors.white
-                              : const Color(0xFF6B4F3F),
+                          // white text jab selected, brown jab nahi
+                          color: isRejected ? Colors.white : brownColor,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),

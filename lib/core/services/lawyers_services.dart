@@ -33,6 +33,7 @@ class LawyerService {
       final response = await http.get(
         Uri.parse('$_baseUrl/lawyers/$id'),
         headers: {'Content-Type': 'application/json'},
+      
       );
 
       if (response.statusCode == 200) {
