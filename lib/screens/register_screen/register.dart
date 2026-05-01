@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart'; // ← add this import
 import 'package:insaafconnect/core/services/auth_services.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -50,15 +52,19 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!emailController.text.contains('@')) return "Enter a valid email";
     if (phoneController.text.trim().isEmpty) return "Phone number is required";
     if (passwordController.text.isEmpty) return "Password is required";
-    if (passwordController.text.length < 6) return "Password must be at least 6 characters";
+    if (passwordController.text.length < 6)
+      return "Password must be at least 6 characters";
     if (passwordController.text != confirmPasswordController.text) {
       return "Passwords do not match";
     }
 
     if (!isClient) {
-      if (barCouncilController.text.trim().isEmpty) return "Bar Council ID is required";
-      if (selectedSpecialization == null) return "Please select a specialization";
-      if (experienceController.text.trim().isEmpty) return "Experience is required";
+      if (barCouncilController.text.trim().isEmpty)
+        return "Bar Council ID is required";
+      if (selectedSpecialization == null)
+        return "Please select a specialization";
+      if (experienceController.text.trim().isEmpty)
+        return "Experience is required";
     }
 
     return null; // no error
@@ -101,24 +107,23 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() => _isLoading = false);
 
-    // 4. Handle response
     if (result['success'] == true) {
       Get.snackbar(
         "Success",
-        "Account created! Please login.",
+        "Account created! Welcome aboard.",
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
         snackPosition: SnackPosition.BOTTOM,
       );
-      Get.back(); // go to login
-    } else {
-      Get.snackbar(
-        "Registration Failed",
-        result['message'] ?? "Something went wrong",
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+
+      // ── Navigate based on role ──────────────────────────
+      if (isClient) {
+        Get.offAllNamed(
+          AppRoutes.clientDashboard,
+        ); // ← now goes to real client dashboard
+      } else {
+        Get.offAllNamed(AppRoutes.lawyerDashboard);
+      }
     }
   }
 
@@ -156,10 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const Text(
                   "Create Account",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
 
@@ -183,8 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               "Register as Client",
                               style: TextStyle(
-                                color:
-                                    isClient ? Colors.white : Colors.brown,
+                                color: isClient ? Colors.white : Colors.brown,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -209,8 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               "Register as Lawyer",
                               style: TextStyle(
-                                color:
-                                    !isClient ? Colors.white : Colors.brown,
+                                color: !isClient ? Colors.white : Colors.brown,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -237,10 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   DropdownButtonFormField<String>(
                     value: selectedSpecialization,
                     items: specializations
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e),
-                            ))
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
                     decoration: InputDecoration(
                       hintText: "Specialization",
@@ -262,8 +259,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 // ── Password Fields ───────────────────────
                 buildTextField("Password", passwordController, obscure: true),
                 const SizedBox(height: 12),
-                buildTextField("Confirm Password", confirmPasswordController,
-                    obscure: true),
+                buildTextField(
+                  "Confirm Password",
+                  confirmPasswordController,
+                  obscure: true,
+                ),
                 const SizedBox(height: 20),
 
                 // ── Submit Button ─────────────────────────
@@ -278,8 +278,11 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget buildTextField(String hint, TextEditingController controller,
-      {bool obscure = false}) {
+  Widget buildTextField(
+    String hint,
+    TextEditingController controller, {
+    bool obscure = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: obscure,
@@ -333,10 +336,7 @@ class _RegisterPageState extends State<RegisterPage> {
           onTap: () => Get.back(),
           child: const Text(
             "Login",
-            style: TextStyle(
-              color: Colors.brown,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
           ),
         ),
       ],

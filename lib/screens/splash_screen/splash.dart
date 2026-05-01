@@ -29,7 +29,7 @@ class _SplashPageState extends State<SplashPage>
       bool isLoggedIn = box.read('isLoggedIn') ?? false;
 
       if (isLoggedIn) {
-        Get.offAllNamed(AppRoutes.dashboard);
+        Get.offAllNamed(AppRoutes.adminDashboard);
       } else {
         Get.offAllNamed(AppRoutes.login);
       }
