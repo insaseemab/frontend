@@ -22,6 +22,6 @@ class AppRoutes {
     GetPage(name: register,        page: () => RegisterPage()),
     GetPage(name: clientDashboard, page: () => const ClientDashboardScreen(), middlewares: [AuthMiddleware()]),
     GetPage(name: lawyerDashboard, page: () => LawyerDashboard(),             middlewares: [AuthMiddleware()]),
-    GetPage(name: adminDashboard,  page: () => AdminProfileDashboard(),       middlewares: [AuthMiddleware()]),
+    GetPage(name: adminDashboard,  page: () => AdminDashboardScreen(),       middlewares: [AuthMiddleware()]),
   ];
 }
