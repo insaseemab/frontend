@@ -53,7 +53,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final List<Widget> pages = [
       _homePage(),
       const Managelawyers(),
-      const ManageCases(),
+      const ManageCasesPage(),
       const AdminProfilePage(),
     ];
 

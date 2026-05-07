@@ -1,336 +1,331 @@
 import 'package:flutter/material.dart';
-import 'package:insaafconnect/core/services/cases_services.dart';
 
-class ManageCases extends StatefulWidget {
-  const ManageCases({super.key});
-
-  @override
-  State<ManageCases> createState() => _ManageCasesState();
+void main() {
+  runApp(const MyApp());
 }
 
-class _ManageCasesState extends State<ManageCases> {
-  List cases = [];
-  List filteredCases = [];
+// ─── Root App ───────────────────────────────────────────────────────────────
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  bool isLoading = true;
-  bool hasError = false;
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'INSAAF CONNECT',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5D4037)),
+        useMaterial3: true,
+      ),
+      home: const ManageCasesPage(),
+    );
+  }
+}
 
+// ─── Data Model ─────────────────────────────────────────────────────────────
+class CaseModel {
+  final String caseId;
+  final String title;
+  final String client;
+  final String lawyer;
+  final String status;
+  final int payment;
+  final String nextHearing;
+
+  CaseModel({
+    required this.caseId,
+    required this.title,
+    required this.client,
+    required this.lawyer,
+    required this.status,
+    required this.payment,
+    required this.nextHearing,
+  });
+}
+
+// ─── Manage Cases Page ───────────────────────────────────────────────────────
+class ManageCasesPage extends StatefulWidget {
+  const ManageCasesPage({super.key});
+
+  @override
+  State<ManageCasesPage> createState() => _ManageCasesPageState();
+}
+
+class _ManageCasesPageState extends State<ManageCasesPage> {
+  // Sample data
+  final List<CaseModel> allCases = [
+    CaseModel(
+      caseId: '250 cases',
+      title: 'Property Dispute',
+      client: 'Ali Raza',
+      lawyer: 'Adv. Ahmad Khan',
+      status: 'Active',
+      payment: 0,
+      nextHearing: '2026-05-15',
+    ),
+    CaseModel(
+      caseId: '180 cases',
+      title: 'Family Matter',
+      client: 'Fatima Noor',
+      lawyer: 'Adv. Sarah Khan',
+      status: 'Completed',
+      payment: 1,
+      nextHearing: 'N/A',
+    ),
+    CaseModel(
+      caseId: '200 cases',
+      title: 'Criminal Defense',
+      client: 'Usman Tariq',
+      lawyer: 'Adv. Bilal Ahmad',
+      status: 'Active',
+      payment: 0,
+      nextHearing: '2026-06-01',
+    ),
+  ];
+
+  String selectedFilter = 'All'; // 'All', 'Active', 'Completed'
   String searchQuery = '';
-  String selectedFilter = 'All';
 
-  final TextEditingController _searchController = TextEditingController();
-
-  static const Color primaryColor = Color(0xFF6B4F3F);
-  static const Color bgColor = Color(0xFFF5F0EC);
-
-  final List<String> filters = ['All', 'Active', 'Completed'];
-
-  @override
-  void initState() {
-    super.initState();
-    loadCases();
-    _searchController.addListener(_onSearchChanged);
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  // ================= SAFE HELPERS =================
-
-  String safeString(dynamic value) {
-    if (value == null) return "";
-    return value.toString();
-  }
-
-  String safeLower(dynamic value) {
-    return safeString(value).toLowerCase();
-  }
-
-  // ================= DATA =================
-
-  void _onSearchChanged() {
-    searchQuery = safeLower(_searchController.text);
-    _applyFilters();
-  }
-
-  Future<void> loadCases() async {
-    setState(() {
-      isLoading = true;
-      hasError = false;
-    });
-
-    try {
-      final data = await CasesService.fetchCases();
-
-      cases = data ?? [];
-      _applyFilters();
-
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        hasError = true;
-        isLoading = false;
-      });
-    }
-  }
-
-  void _applyFilters() {
-    filteredCases = cases.where((c) {
-      final name = safeLower(c["name"]);
-      final caseNo = safeLower(c["cases"]);
-      final status = safeLower(c["status"]);
-
+  // Filter cases based on search + filter button
+  List<CaseModel> get filteredCases {
+    return allCases.where((c) {
+      final matchesFilter =
+          selectedFilter == 'All' || c.status == selectedFilter;
       final matchesSearch =
-          name.contains(searchQuery) || caseNo.contains(searchQuery);
-
-      final matchesFilter = selectedFilter == 'All' ||
-          status == selectedFilter.toLowerCase();
-
-      return matchesSearch && matchesFilter;
+          searchQuery.isEmpty ||
+          c.caseId.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          c.client.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          c.lawyer.toLowerCase().contains(searchQuery.toLowerCase());
+      return matchesFilter && matchesSearch;
     }).toList();
-
-    setState(() {});
   }
-
-  // ================= STATUS =================
-
-  Color _statusColor(dynamic status) {
-    final s = safeLower(status);
-
-    switch (s) {
-      case 'active':
-        return Colors.green;
-      case 'pending':
-        return Colors.orange;
-      case 'completed':
-        return Colors.brown;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  // ================= UI =================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : hasError
-              ? const Center(child: Text("Failed to load cases"))
-              : Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Case Management",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "View and manage all cases with payment status",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(height: 20),
+      // ── AppBar ──────────────────────────────────────────────────────────
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF5D4037), // Brown color
+        title: const Text(
+          'List of Cases',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.white),
+            onPressed: () {}, // Notification button
+          ),
+        ],
+      ),
 
-                      // ===== STATS =====
-                      Row(
-                        children: [
-                          _statCard(
-                              cases.length.toString(), "Total Cases"),
-                          _statCard(
-                              _countByStatus("active"), "Active Cases"),
-                          _statCard(
-                              _countByStatus("completed"),
-                              "Completed Cases"),
-                          _statCard(
-                              _countByStatus("pending"),
-                              "Pending Payment"),
-                        ],
-                      ),
+      // ── Body ────────────────────────────────────────────────────────────
+      body: Container(
+        color: const Color(0xFFF5F0EB), // Light beige background
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Page Title ────────────────────────────────────────────────
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 20, 16, 4),
+              child: Text(
+                'Case Management',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'View and manage all cases with payment status',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+              ),
+            ),
 
-                      const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-                      // ===== TABLE =====
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _searchController,
-                                      decoration: InputDecoration(
-                                        hintText:
-                                            "Search by case ID, client, lawyer...",
-                                        prefixIcon:
-                                            const Icon(Icons.search),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  _filterButton("All"),
-                                  _filterButton("Active"),
-                                  _filterButton("Completed"),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
+            // ── Stats Row ─────────────────────────────────────────────────
+            _buildStatsRow(),
 
-                              _tableHeader(),
-                              const Divider(),
+            const SizedBox(height: 16),
 
-                              Expanded(
-                                child: filteredCases.isEmpty
-                                    ? const Center(
-                                        child: Text("No cases found"),
-                                      )
-                                    : ListView.builder(
-                                        itemCount: filteredCases.length,
-                                        itemBuilder: (context, index) {
-                                          return _tableRow(
-                                              filteredCases[index]);
-                                        },
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
+            // ── Search Bar ────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                onChanged: (value) => setState(() => searchQuery = value),
+                decoration: InputDecoration(
+                  hintText: 'Search by case ID, client, lawyer...',
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
                   ),
                 ),
-    );
-  }
+              ),
+            ),
 
-  // ================= COMPONENTS =================
+            const SizedBox(height: 12),
 
-  Widget _statCard(String count, String title) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.only(right: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF3ECE7),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(count,
-                style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 6),
-            Text(title, style: TextStyle(color: Colors.grey[600])),
+            // ── Filter Buttons ────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: ['All', 'Active', 'Completed'].map((filter) {
+                  final isSelected = selectedFilter == filter;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ElevatedButton(
+                      onPressed: () =>
+                          setState(() => selectedFilter = filter),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isSelected
+                            ? const Color(0xFF5D4037)
+                            : Colors.white,
+                        foregroundColor: isSelected
+                            ? Colors.white
+                            : Colors.black87,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(filter),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            // ── Table Header ──────────────────────────────────────────────
+            _buildTableHeader(),
+
+            // ── Cases List ────────────────────────────────────────────────
+            Expanded(
+              child: filteredCases.isEmpty
+                  ? const Center(child: Text('No cases found'))
+                  : ListView.builder(
+                      itemCount: filteredCases.length,
+                      itemBuilder: (context, index) {
+                        return _buildCaseRow(filteredCases[index]);
+                      },
+                    ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _filterButton(String label) {
-    final isSelected = selectedFilter == label;
+  // ── Stats Cards Row Widget ───────────────────────────────────────────────
+  Widget _buildStatsRow() {
+    final stats = [
+      {'label': 'Total Cases', 'value': '${allCases.length}'},
+      {'label': 'Active Cases', 'value': '2'},
+      {'label': 'Completed', 'value': '1'},
+      {'label': 'Pending Payment', 'value': '0'},
+    ];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: GestureDetector(
-        onTap: () {
-          selectedFilter = label;
-          _applyFilters();
-        },
-        child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color:
-                isSelected ? primaryColor : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
+    return Row(
+      children: stats.map((stat) {
+        return Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  stat['value']!,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  stat['label']!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+              ],
             ),
           ),
-        ),
-      ),
+        );
+      }).toList(),
     );
   }
 
-  Widget _tableHeader() {
-    return const Row(
-      children: [
-        Expanded(flex: 2, child: Text("Case ID")),
-        Expanded(flex: 3, child: Text("Title")),
-        Expanded(flex: 2, child: Text("Client")),
-        Expanded(flex: 2, child: Text("Lawyer")),
-        Expanded(flex: 2, child: Text("Status")),
-        Expanded(flex: 2, child: Text("Payment")),
-        Expanded(flex: 2, child: Text("Next Hearing")),
-      ],
-    );
-  }
-
-  Widget _tableRow(Map c) {
-    final status = c["status"];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Row(
+  // ── Table Header Widget ──────────────────────────────────────────────────
+  Widget _buildTableHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: const Row(
         children: [
-          Expanded(flex: 2, child: Text(safeString(c["cases"]))),
-          Expanded(flex: 3, child: Text(safeString(c["name"]))),
-          Expanded(flex: 2, child: Text(safeString(c["client"]))),
-          Expanded(flex: 2, child: Text(safeString(c["lawyer"]))),
-
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: _statusColor(status).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                safeString(status),
-                style: TextStyle(color: _statusColor(status)),
-              ),
-            ),
-          ),
-
-          Expanded(flex: 2, child: Text(safeString(c["payment"]))),
-          Expanded(flex: 2, child: Text(safeString(c["date"]))),
+          Expanded(flex: 2, child: Text('Case ID', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(flex: 2, child: Text('Title',   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(flex: 2, child: Text('Lawyer',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(flex: 2, child: Text('Status',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(flex: 1, child: Text('Pay',     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
         ],
       ),
     );
   }
 
-  // ================= HELPERS =================
-
-  String _countByStatus(String status) {
-    return cases
-        .where((c) => safeLower(c["status"]) == status)
-        .length
-        .toString();
+  // ── Single Case Row Widget ───────────────────────────────────────────────
+  Widget _buildCaseRow(CaseModel c) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Expanded(flex: 2, child: Text(c.caseId, style: const TextStyle(fontSize: 12))),
+          Expanded(flex: 2, child: Text(c.title,  style: const TextStyle(fontSize: 12))),
+          Expanded(flex: 2, child: Text(c.lawyer, style: const TextStyle(fontSize: 12))),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: c.status == 'Active'
+                    ? Colors.green.shade100
+                    : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                c.status,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: c.status == 'Active' ? Colors.green : Colors.grey,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              '${c.payment}',
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
