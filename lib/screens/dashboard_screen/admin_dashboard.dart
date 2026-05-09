@@ -4,32 +4,6 @@ import 'package:insaafconnect/screens/dashboard_screen/admin_profile.dart';
 import 'package:insaafconnect/screens/dashboard_screen/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/managelawyers.dart';
 
-// ── Transaction Data ──────────────────────────────────────────
-class _Txn {
-  final String id, client, service, method, amount, status, date;
-  const _Txn(this.id, this.client, this.service, this.method, this.amount,
-      this.status, this.date);
-}
-
-const _txns = [
-  _Txn('TXN 2026-001', 'Ali Raza', 'Property Dispute Consultation', 'Manual',
-      'PKR 5,000', 'Approved', '05/04'),
-  _Txn('TXN 2026-002', 'Fatima Khan', 'Contract Review', 'Card', 'PKR 3,500',
-      'Verified', '05/04'),
-  _Txn('TXN 2026-003', 'Bilal Ahmed', 'Business Registration', 'Manual',
-      'PKR 4,500', 'Approved', '05/04'),
-  _Txn('TXN 2026-004', 'Sara Ali', 'Family Law Matter', 'Card', 'PKR 6,000',
-      'Verified', '05/04'),
-  _Txn('TXN 2026-005', 'Hassan Ahmad', 'Employment Dispute', 'Card',
-      'PKR 7,500', 'Verified', '05/04'),
-  _Txn('TXN 2026-006', 'Ayasha Malik', 'Legal Consultation', 'Manual',
-      'PKR 5,000', 'Approved', '05/04'),
-  _Txn('TXN 2026-007', 'Ahmad Raza', 'Property Documentation', 'Card',
-      'PKR 4,500', 'Verified', '05/04'),
-  _Txn('TXN 2026-008', 'Zainab Hussain', 'Civil Litigation', 'Manual',
-      'PKR 8,000', 'Approved', '05/04'),
-];
-
 // ════════════════════════════════════════════════════════════════
 // AdminDashboardScreen
 // ════════════════════════════════════════════════════════════════
@@ -167,7 +141,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Row(children: [
               Expanded(
                   child: _earningsCard('PKR 43,000', 'Total Platform Earnings',
-                      Icons.attach_money, const Color(0xFF3A2A1E))),
+                      Icons.attach_money, const Color.fromARGB(255, 179, 128, 89))),
               const SizedBox(width: 14),
               Expanded(
                   child: _earningsCard('PKR 8,500', 'May 2026 Earnings',
@@ -189,8 +163,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ]),
             const SizedBox(height: 18),
 
-            // ── Payment History table ──────────────────────────
-            _buildTable(),
+            
           ],
         ),
       ),
@@ -205,7 +178,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withOpacity(0.15), blurRadius: 6),
+          BoxShadow(color: Colors.grey, blurRadius: 6),
         ],
       ),
       child: Column(
@@ -234,7 +207,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.14),
+                color: Colors.black,
                 blurRadius: 8,
                 offset: const Offset(0, 3))
           ],
@@ -292,7 +265,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF2C1F14),
                     letterSpacing: -0.5)),
             Text(lbl,
                 style: const TextStyle(
@@ -300,170 +272,5 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ]),
         ]),
       );
-
-  // ── Payment History table ───────────────────────────────────
-  Widget _buildTable() => Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.black.withOpacity(0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4))
-          ],
-        ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Header row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
-            child: Row(children: [
-              const Text('Payment History',
-                  style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF2C1F14))),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B4226),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 7),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8))),
-                icon: const Icon(Icons.file_download_outlined, size: 15),
-                label: const Text('Export',
-                    style: TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.w600)),
-              ),
-            ]),
-          ),
-
-          // Filter dropdowns
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 0, 18, 12),
-            child: Row(children: [
-              Expanded(
-                  child: _drop(
-                      _month,
-                      ['All Months', 'May 2026', 'April 2026', 'March 2026'],
-                      (v) => setState(() => _month = v))),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: _drop(
-                      _type,
-                      ['All Types', 'Manual', 'Card'],
-                      (v) => setState(() => _type = v))),
-            ]),
-          ),
-
-          // Data table
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              headingRowColor: WidgetStateProperty.all(const Color(0xFFF0E8DF)),
-              dividerThickness: 1,
-              headingTextStyle: const TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF8A7060)),
-              dataTextStyle:
-                  const TextStyle(fontSize: 12, color: Color(0xFF2C1F14)),
-              columnSpacing: 16,
-              horizontalMargin: 18,
-              columns: const [
-                DataColumn(label: Text('Transaction ID')),
-                DataColumn(label: Text('Client')),
-                DataColumn(label: Text('Case/Service')),
-                DataColumn(label: Text('Method')),
-                DataColumn(label: Text('Amount')),
-                DataColumn(label: Text('Status')),
-                DataColumn(label: Text('Date')),
-              ],
-              rows: _filteredTxns().asMap().entries.map((e) {
-                final i = e.key;
-                final p = e.value;
-                return DataRow(
-                  color: WidgetStateProperty.all(
-                      i.isOdd ? const Color(0xFFFAF4EE) : Colors.white),
-                  cells: [
-                    DataCell(Text(p.id,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF8B5E3C),
-                            fontSize: 11.5))),
-                    DataCell(Text(p.client)),
-                    DataCell(SizedBox(
-                        width: 145,
-                        child: Text(p.service,
-                            overflow: TextOverflow.ellipsis))),
-                    DataCell(Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(
-                          p.method == 'Card'
-                              ? Icons.credit_card
-                              : Icons.account_balance_wallet_outlined,
-                          size: 12,
-                          color: const Color(0xFF8A7060)),
-                      const SizedBox(width: 4),
-                      Text(p.method),
-                    ])),
-                    DataCell(Text(p.amount,
-                        style: const TextStyle(fontWeight: FontWeight.w600))),
-                    DataCell(_chip(p.status)),
-                    DataCell(Text(p.date,
-                        style:
-                            const TextStyle(color: Color(0xFF8A7060)))),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 10),
-        ]),
-      );
-
-  List<_Txn> _filteredTxns() => _txns
-      .where((t) => (_type == 'All Types' || t.method == _type))
-      .toList();
-
-  Widget _drop(String val, List<String> items, ValueChanged<String> cb) =>
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-        decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFE8DDD4)),
-            borderRadius: BorderRadius.circular(8),
-            color: const Color(0xFFF5EFE8)),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: val,
-            isExpanded: true,
-            icon: const Icon(Icons.keyboard_arrow_down,
-                size: 16, color: Color(0xFF8A7060)),
-            style: const TextStyle(fontSize: 12.5, color: Color(0xFF2C1F14)),
-            items: items
-                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                .toList(),
-            onChanged: (v) {
-              if (v != null) cb(v);
-            },
-          ),
-        ),
-      );
-
-  Widget _chip(String s) {
-    final ok = s == 'Approved';
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-      decoration: BoxDecoration(
-          color: ok ? const Color(0xFFE8F5E8) : const Color(0xFFE8F0F5),
-          borderRadius: BorderRadius.circular(20)),
-      child: Text(s,
-          style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: ok ? const Color(0xFF5A8A5A) : const Color(0xFF4A7A9B))),
-    );
-  }
 }
+ 
