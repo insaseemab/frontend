@@ -98,9 +98,14 @@ class _ManagelawyersState extends State<Managelawyers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("List of Lawyers"),
         backgroundColor: Colors.brown,
-        titleTextStyle: const TextStyle(color: Colors.white),
+        title: const Text("List of Lawyers",
+        style:TextStyle(
+          fontSize: 18,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),

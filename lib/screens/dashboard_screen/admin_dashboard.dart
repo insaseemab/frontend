@@ -18,9 +18,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final box = GetStorage();
   int currentIndex = 0;
 
-  // Filter state for Payment History
-  String _month = 'All Months';
-  String _type = 'All Types';
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +79,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               style: TextStyle(
                   color: Colors.brown,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                  fontSize: 20),
             ),
           ],
         ),
