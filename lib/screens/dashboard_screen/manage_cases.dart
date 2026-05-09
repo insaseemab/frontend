@@ -105,13 +105,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     return Scaffold(
       // ── AppBar ──────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: const Color(0xFF5D4037), // Brown color
+        backgroundColor: Colors.brown, // Brown color
         title: const Text(
           'List of Cases',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+            fontSize: 18,
           ),
         ),
         actions: [
