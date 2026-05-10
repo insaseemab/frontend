@@ -1,12 +1,5 @@
-// ============================================================
-// admin_profile_page.dart
-// Drop into your lib/ folder.
-// In your bottom nav "Profile" tab, use: AdminProfilePage()
-// ============================================================
-
 import 'package:flutter/material.dart';
 
-// ── Colors ────────────────────────────────────────────────────
 class _C {
   static const brown   = Color(0xFF6B4226);
   static const brownMd = Color(0xFF8B5E3C);
@@ -17,9 +10,7 @@ class _C {
   static const div     = Color(0xFFE8DDD4);
 }
 
-// ════════════════════════════════════════════════════════════════
-// AdminProfilePage  ← plug into your bottom nav Profile tab
-// ════════════════════════════════════════════════════════════════
+
 class AdminProfilePage extends StatelessWidget {
   const AdminProfilePage({super.key});
 
