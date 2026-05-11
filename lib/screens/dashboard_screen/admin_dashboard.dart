@@ -138,7 +138,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Row(children: [
               Expanded(
                   child: _earningsCard('PKR 43,000', 'Total Platform Earnings',
-                      Icons.attach_money, const Color.fromARGB(255, 179, 128, 89))),
+                      Icons.attach_money, const Color(0xFFC48A6A))),
               const SizedBox(width: 14),
               Expanded(
                   child: _earningsCard('PKR 8,500', 'May 2026 Earnings',
@@ -254,7 +254,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             decoration: BoxDecoration(
                 color: const Color(0xFFF5EFE8),
                 borderRadius: BorderRadius.circular(10)),
-            child: Icon(ic, size: 18, color: const Color(0xFF8B5E3C)),
+            child: Icon(ic, size: 18, color: Colors.brown),
           ),
           const SizedBox(width: 14),
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -265,7 +265,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     letterSpacing: -0.5)),
             Text(lbl,
                 style: const TextStyle(
-                    fontSize: 11.5, color: Color(0xFF8A7060))),
+                    fontSize: 11.5, color: Colors.brown)),
           ]),
         ]),
       );
