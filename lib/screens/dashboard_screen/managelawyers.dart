@@ -63,10 +63,7 @@ class _ManagelawyersState extends State<Managelawyers> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: $e"),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
       );
     }
   }
@@ -86,10 +83,7 @@ class _ManagelawyersState extends State<Managelawyers> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: $e"),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
       );
     }
   }
@@ -99,12 +93,19 @@ class _ManagelawyersState extends State<Managelawyers> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.brown,
-        title: const Text("List of Lawyers",
-        style:TextStyle(
-          fontSize: 18,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
+        title: const Text(
+          "List of Lawyers",
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           IconButton(
@@ -136,10 +137,7 @@ class _ManagelawyersState extends State<Managelawyers> {
             const SizedBox(height: 12),
             Text('Error: $_errorMessage', textAlign: TextAlign.center),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _loadLawyers,
-              child: const Text('Retry'),
-            ),
+            ElevatedButton(onPressed: _loadLawyers, child: const Text('Retry')),
           ],
         ),
       );
@@ -190,7 +188,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(20),
@@ -208,7 +208,9 @@ class _ManagelawyersState extends State<Managelawyers> {
               Text(
                 "Adv. ${lawyer["name"] ?? ""}",
                 style: const TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(lawyer["specialization"] ?? ""),
               Text("📍 ${lawyer["city"] ?? ""}"),
@@ -221,7 +223,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                 Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isApproved
                         ? Colors.green.shade100
@@ -252,8 +256,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
                         // brown jab approved, white jab nahi
-                        backgroundColor:
-                            isApproved ? brownColor : Colors.white,
+                        backgroundColor: isApproved ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -278,8 +281,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
                         // brown jab rejected, white jab nahi
-                        backgroundColor:
-                            isRejected ? brownColor : Colors.white,
+                        backgroundColor: isRejected ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(

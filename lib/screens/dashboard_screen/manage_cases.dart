@@ -105,7 +105,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     return Scaffold(
       // ── AppBar ──────────────────────────────────────────────────────────
       appBar: AppBar(
-        backgroundColor: Colors.brown, // Brown color
+        backgroundColor: Colors.brown,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ), // Brown color
         title: const Text(
           'List of Cases',
           style: TextStyle(
@@ -133,10 +139,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               padding: EdgeInsets.fromLTRB(16, 20, 16, 4),
               child: Text(
                 'Case Management',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
             const Padding(
@@ -183,8 +186,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ElevatedButton(
-                      onPressed: () =>
-                          setState(() => selectedFilter = filter),
+                      onPressed: () => setState(() => selectedFilter = filter),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isSelected
                             ? const Color(0xFF5D4037)
@@ -274,11 +276,41 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: const Row(
         children: [
-          Expanded(flex: 2, child: Text('Case ID', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Title',   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Lawyer',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Status',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 1, child: Text('Pay',     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Case ID',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Title',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Lawyer',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Status',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              'Pay',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
         ],
       ),
     );
@@ -295,9 +327,18 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       ),
       child: Row(
         children: [
-          Expanded(flex: 2, child: Text(c.caseId, style: const TextStyle(fontSize: 12))),
-          Expanded(flex: 2, child: Text(c.title,  style: const TextStyle(fontSize: 12))),
-          Expanded(flex: 2, child: Text(c.lawyer, style: const TextStyle(fontSize: 12))),
+          Expanded(
+            flex: 2,
+            child: Text(c.caseId, style: const TextStyle(fontSize: 12)),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(c.title, style: const TextStyle(fontSize: 12)),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(c.lawyer, style: const TextStyle(fontSize: 12)),
+          ),
           Expanded(
             flex: 2,
             child: Container(
@@ -319,10 +360,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           ),
           Expanded(
             flex: 1,
-            child: Text(
-              '${c.payment}',
-              style: const TextStyle(fontSize: 12),
-            ),
+            child: Text('${c.payment}', style: const TextStyle(fontSize: 12)),
           ),
         ],
       ),
