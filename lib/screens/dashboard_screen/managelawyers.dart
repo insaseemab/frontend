@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/screens/dashboard_screen/addlawyer.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+
 
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
@@ -96,9 +98,13 @@ class _ManagelawyersState extends State<Managelawyers> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
+            );
           },
         ),
+
         title: const Text(
           "List of Lawyers",
           style: TextStyle(

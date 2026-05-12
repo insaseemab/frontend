@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+import 'package:insaafconnect/screens/dashboard_screen/managelawyers.dart';
 
 void main() {
   runApp(const MyApp());
@@ -109,9 +111,12 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+            );
           },
-        ), // Brown color
+        ),
         title: const Text(
           'List of Cases',
           style: TextStyle(
