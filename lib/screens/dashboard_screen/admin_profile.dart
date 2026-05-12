@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
 
 class AdminProfilePage extends StatelessWidget {
   const AdminProfilePage({super.key});
@@ -18,7 +18,10 @@ class AdminProfilePage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
+            );
           },
         ),
 
@@ -39,14 +42,10 @@ class AdminProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // SUBTITLE
             const Text(
               "Manage your profile",
-              style: TextStyle(
-                fontSize: 14,
-                color:Colors.white,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.black),
             ),
 
             const SizedBox(height: 20),
@@ -57,7 +56,7 @@ class AdminProfilePage extends StatelessWidget {
               padding: const EdgeInsets.all(20),
 
               decoration: BoxDecoration(
-                color: _C.card,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
 
                 boxShadow: [
@@ -71,11 +70,10 @@ class AdminProfilePage extends StatelessWidget {
 
               child: Column(
                 children: [
-
                   // PROFILE IMAGE
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: _C.brownMd,
+                    backgroundColor: Colors.brown,
 
                     child: const Icon(
                       Icons.person,
@@ -92,7 +90,7 @@ class AdminProfilePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: _C.txt1,
+                      color: Colors.black,
                     ),
                   ),
 
@@ -101,19 +99,13 @@ class AdminProfilePage extends StatelessWidget {
                   // ROLE
                   const Text(
                     "System Administrator",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: _C.txt2,
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.brown),
                   ),
 
                   const SizedBox(height: 20),
 
                   // DIVIDER
-                  const Divider(
-                    color: _C.div,
-                    thickness: 1,
-                  ),
+                  const Divider(color: Colors.brown, thickness: 1),
 
                   const SizedBox(height: 20),
 
@@ -126,10 +118,7 @@ class AdminProfilePage extends StatelessWidget {
                   const SizedBox(height: 15),
 
                   // PHONE
-                  _buildInfoRow(
-                    Icons.phone_outlined,
-                    "+92 300 1234567",
-                  ),
+                  _buildInfoRow(Icons.phone_outlined, "+92 300 1234567"),
 
                   const SizedBox(height: 15),
 
@@ -151,12 +140,9 @@ class AdminProfilePage extends StatelessWidget {
                       },
 
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _C.brown,
+                        backgroundColor: Colors.brown,
                         foregroundColor: Colors.white,
-
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
 
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -187,22 +173,14 @@ class AdminProfilePage extends StatelessWidget {
   static Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
-
-        Icon(
-          icon,
-          color:Colors.brown,
-          size: 20,
-        ),
+        Icon(icon, color: Colors.brown, size: 20),
 
         const SizedBox(width: 12),
 
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
-              fontSize: 14,
-              color:Colors.white,
-            ),
+            style: const TextStyle(fontSize: 14, color: Colors.white),
           ),
         ),
       ],
