@@ -5,7 +5,7 @@ import 'package:insaafconnect/core/services/auth_services.dart';
 import '../register_screen/register.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key}); 
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -33,17 +33,54 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = false);
 
-    if (result['success']) {
+    if (result['success'] &&
+        result['data']['user']['role'].toString().toLowerCase() == 'admin') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
 
       box.write('isLoggedIn', true);
       box.write('userName', userName);
-      box.write('token', token); 
+      box.write('token', token);
 
       Get.offAllNamed('/dashboard');
+    } 
+    else if (result['success'] &&
+        result['data']['user']['role'].toString().toLowerCase() == 'lawyer') {
+      final userName = result['data']['user']['name'];
+      final token = result['token'];
+
+      box.write('isLoggedIn', true);
+      box.write('userName', userName);
+      box.write('token', token);
+
+      Get.offAllNamed(
+        '/lawyer_dashboard',
+      ); // ✅ Make sure this route is registered
+    } 
+     else if (result['success'] &&
+        result['data']['user']['role'].toString().toLowerCase() == 'client') {
+      final userName = result['data']['user']['name'];
+      final token = result['token'];
+
+      box.write('isLoggedIn', true);
+      box.write('userName', userName);
+      box.write('token', token);
+
+      Get.offAllNamed(
+        '/client_dashboard',
+      ); // ✅ Make sure this route is registered
+    } 
+    else if (result['success']) {
+      // Logged in but unknown role
+      Get.snackbar('Access Denied', 'Your role is not recognized.');
+    } else {
+      // Login failed
+      final errorMessage =
+          result['message'] ?? 'Login failed. Please try again.';
+      Get.snackbar('Error', errorMessage, snackPosition: SnackPosition.BOTTOM);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Column(
               children: [
-
                 Container(
                   height: 60,
                   width: 60,
@@ -78,10 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const Text(
                   "Welcome Back",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 6),
