@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Get.offAllNamed(
         '/lawyer_dashboard',
-      ); // ✅ Make sure this route is registered
+      );
     } 
      else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'client') {
