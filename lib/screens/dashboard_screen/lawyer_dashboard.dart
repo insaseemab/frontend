@@ -96,8 +96,8 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: const Color(0xFF6B4F3F),
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Colors.brown,
+        unselectedItemColor: Colors.brown,
         backgroundColor: const Color(0xFFF5EFE6),
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -255,7 +255,7 @@ class _HomePage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -318,7 +318,7 @@ class _HomePage extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
