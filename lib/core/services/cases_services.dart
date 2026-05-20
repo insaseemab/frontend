@@ -23,4 +23,46 @@ class CasesService {
       throw Exception("Error: $e");
     }
   }
+  // CREATE new case
+static Future<void> createCase({
+  required String descriptionCase,
+  required String clientId,
+  required String lawyerId,
+  required String phone,
+  required String address,
+  required String caseType,
+  required String name,
+  required String caseStartDate,
+  required String caseStatus,
+  required String departConcern,
+  required String hearingDate,
+  required String paymentStatus,
+  required String token,
+}) async {
+  final response = await http.post(
+    Uri.parse('$baseUrl/cases'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      "description_case": descriptionCase,
+      "client_id": clientId,
+      "lawyer_id": lawyerId,
+      "phone": phone,
+      "address": address,
+      "case_type": caseType,
+      "name": name,
+      "case_start_date": caseStartDate,
+      "case_status": caseStatus,
+      "depart_concern": departConcern,
+      "hearing_date": hearingDate,
+      "payment_status": paymentStatus,
+    }),
+  );
+
+  if (response.statusCode != 201) {
+    throw Exception('Failed to create case: ${response.body}');
+  }
+}
 }

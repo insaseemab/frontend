@@ -70,6 +70,50 @@ class CaseModel {
 
 // ─── API Service ─────────────────────────────────────────────────────────────
 class CaseApiService {
+  static Future<void> createCase({
+  required String descriptionCase,
+  required String clientId,
+  required String lawyerId,
+  required String phone,
+  required String address,
+  required String caseType,
+  required String name,
+  required String caseStartDate,
+  required String caseStatus,
+  required String departConcern,
+  required String hearingDate,
+  required String paymentStatus,
+  required String token,
+}) async {
+
+  final response = await http.post(
+    Uri.parse('$baseUrl/cases'),
+
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+
+    body: jsonEncode({
+      "description_case": descriptionCase,
+      "client_id": clientId,
+      "lawyer_id": lawyerId,
+      "phone": phone,
+      "address": address,
+      "case_type": caseType,
+      "name": name,
+      "case_start_date": caseStartDate,
+      "case_status": caseStatus,
+      "depart_concern": departConcern,
+      "hearing_date": hearingDate,
+      "payment_status": paymentStatus,
+    }),
+  );
+
+  if (response.statusCode != 201) {
+    throw Exception(response.body);
+  }
+}
   // GET all cases
   static Future<List<CaseModel>> fetchAllCases() async {
     final response = await http.get(
@@ -123,6 +167,223 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
   String selectedFilter = 'All';
   String searchQuery = '';
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController caseTypeController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController clientIdController = TextEditingController();
+  final TextEditingController lawyerIdController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController departController = TextEditingController();
+  final TextEditingController hearingDateController = TextEditingController();
+
+  Future<void> _showAddCaseDialog() async {
+    String selectedStatus = 'pending';
+    String paymentStatus = 'unpaid';
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Add New Case'),
+
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Client Name',
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: caseTypeController,
+                      decoration: const InputDecoration(labelText: 'Case Type'),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
+                      maxLines: 3,
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: clientIdController,
+                      decoration: const InputDecoration(labelText: 'Client ID'),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: lawyerIdController,
+                      decoration: const InputDecoration(labelText: 'Lawyer ID'),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: phoneController,
+                      decoration: const InputDecoration(labelText: 'Phone'),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: addressController,
+                      decoration: const InputDecoration(labelText: 'Address'),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: departController,
+                      decoration: const InputDecoration(
+                        labelText: 'Department Concern',
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextField(
+                      controller: hearingDateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hearing Date (YYYY-MM-DD)',
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    DropdownButtonFormField<String>(
+                      value: selectedStatus,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'pending',
+                          child: Text('Pending'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'approved',
+                          child: Text('Approved'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'hearing',
+                          child: Text('Hearing'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'closed',
+                          child: Text('Closed'),
+                        ),
+                      ],
+                      onChanged: (v) {
+                        setStateDialog(() {
+                          selectedStatus = v!;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Case Status',
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    DropdownButtonFormField<String>(
+                      value: paymentStatus,
+                      items: const [
+                        DropdownMenuItem(value: 'paid', child: Text('Paid')),
+                        DropdownMenuItem(
+                          value: 'unpaid',
+                          child: Text('Unpaid'),
+                        ),
+                      ],
+                      onChanged: (v) {
+                        setStateDialog(() {
+                          paymentStatus = v!;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Payment Status',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel'),
+                ),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      // IMPORTANT:
+                      // replace with your real token
+                      String token = "YOUR_TOKEN_HERE";
+
+                      await CaseApiService.createCase(
+                        descriptionCase: descriptionController.text,
+                        clientId: clientIdController.text,
+                        lawyerId: lawyerIdController.text,
+                        phone: phoneController.text,
+                        address: addressController.text,
+                        caseType: caseTypeController.text,
+                        name: nameController.text,
+                        caseStartDate: DateTime.now().toString().split(' ')[0],
+                        caseStatus: selectedStatus,
+                        departConcern: departController.text,
+                        hearingDate: hearingDateController.text,
+                        paymentStatus: paymentStatus,
+                        token: token,
+                      );
+
+                      Navigator.pop(context);
+
+                      _loadCases();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Case created successfully'),
+                        ),
+                      );
+
+                      nameController.clear();
+                      caseTypeController.clear();
+                      descriptionController.clear();
+                      clientIdController.clear();
+                      lawyerIdController.clear();
+                      phoneController.clear();
+                      addressController.clear();
+                      departController.clear();
+                      hearingDateController.clear();
+                    } catch (e) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -217,12 +478,11 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   }
 
   // ── Computed stats ────────────────────────────────────────────────────────
-  int get activeCases =>
-      allCases.where((c) => c.caseStatus.toLowerCase() == 'active').length;
-  int get completedCases =>
-      allCases.where((c) => c.caseStatus.toLowerCase() == 'completed').length;
-  int get pendingPayment =>
-      allCases.where((c) => c.paymentStatus.toLowerCase() == 'unpaid').length;
+  int get approvedCases =>
+    allCases.where((c) => c.caseStatus.toLowerCase() == 'approved').length;
+
+int get closedCases =>
+    allCases.where((c) => c.caseStatus.toLowerCase() == 'closed').length;
 
   @override
   Widget build(BuildContext context) {
@@ -246,12 +506,12 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: _loadCases,
+            icon: const Icon(Icons.add, color: Colors.white),
+            onPressed: _showAddCaseDialog,
           ),
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: _loadCases,
           ),
         ],
       ),
@@ -297,30 +557,38 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                children: ['All', 'Active', 'Approved', 'Pending', 'Closed', 'Rejected', 'Hearing'].map((
-                  filter,
-                ) {
-                  final isSelected = selectedFilter == filter;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ElevatedButton(
-                      onPressed: () => setState(() => selectedFilter = filter),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isSelected
-                            ? const Color(0xFF5D4037)
-                            : Colors.white,
-                        foregroundColor: isSelected
-                            ? Colors.white
-                            : Colors.black87,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                children:
+                    [
+                      'All',
+                      'Active',
+                      'Approved',
+                      'Pending',
+                      'Closed',
+                      'Rejected',
+                      'Hearing',
+                    ].map((filter) {
+                      final isSelected = selectedFilter == filter;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ElevatedButton(
+                          onPressed: () =>
+                              setState(() => selectedFilter = filter),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isSelected
+                                ? const Color(0xFF5D4037)
+                                : Colors.white,
+                            foregroundColor: isSelected
+                                ? Colors.white
+                                : Colors.black87,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(filter),
                         ),
-                        elevation: 0,
-                      ),
-                      child: Text(filter),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ),
             ),
             const SizedBox(height: 8),
@@ -366,9 +634,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   Widget _buildStatsRow() {
     final stats = [
       {'label': 'Total Cases', 'value': '${allCases.length}'},
-      {'label': 'Active Cases', 'value': '$activeCases'},
-      {'label': 'Completed', 'value': '$completedCases'},
-      {'label': 'Pending Pay', 'value': '$pendingPayment'},
+      {'label': 'Approved Cases', 'value': '$approvedCases'},
+      {'label': 'Closed', 'value': '$closedCases'},
     ];
     return Row(
       children: stats.map((stat) {
@@ -544,10 +811,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   value: 'hearing',
                   child: Text('Set Hearing'),
                 ),
-                const PopupMenuItem(
-                  value: 'closed',
-                  child: Text('Set Closed'),
-                ),
+                const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
 
                 const PopupMenuDivider(),
                 const PopupMenuItem(
