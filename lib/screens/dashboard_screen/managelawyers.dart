@@ -3,7 +3,6 @@ import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/screens/dashboard_screen/addlawyer.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
 
-
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
 
@@ -188,7 +187,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                   CircleAvatar(
                     backgroundColor: Colors.brown,
                     child: Text(
-                      (lawyer["name"] ?? "?")[0],
+                      (lawyer["name"] ?? "").isNotEmpty
+                          ? lawyer["name"][0]
+                          : "?",
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -212,15 +213,12 @@ class _ManagelawyersState extends State<Managelawyers> {
 
               // ── Details ────────────────────────────
               Text(
-                "Adv. ${lawyer["name"] ?? ""}",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                (lawyer["name"] ?? "").isNotEmpty ? lawyer["name"][0] : "?",
+                style: const TextStyle(color: Colors.white),
               ),
               Text(lawyer["specialization"] ?? ""),
-              Text("📍 ${lawyer["city"] ?? ""}"),
-              Text("${lawyer["experience"] ?? ""} experience"),
+              Text("📍 ${lawyer["location"] ?? ""}"),
+              Text("${lawyer["experience"] ?? ""} years experience"),
               Text("${lawyer["cases"] ?? ""} cases"),
               const SizedBox(height: 10),
 

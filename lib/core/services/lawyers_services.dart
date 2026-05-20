@@ -1,8 +1,17 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:get_storage/get_storage.dart';
 
 class LawyerService {
   static const String _baseUrl = 'http://localhost:3000';
+
+  // ─────────────────────────────────────────
+  // GET TOKEN
+  // ─────────────────────────────────────────
+  String? _getToken() {
+    final box = GetStorage();
+    return box.read('token');
+  }
 
   // ─────────────────────────────────────────
   // 1. GET ALL LAWYERS
@@ -11,7 +20,10 @@ class LawyerService {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/lawyers'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -32,8 +44,10 @@ class LawyerService {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/lawyers/$id'),
-        headers: {'Content-Type': 'application/json'},
-      
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -53,6 +67,8 @@ class LawyerService {
   // ─────────────────────────────────────────
   Future<Map<String, dynamic>> createLawyer({
     required String name,
+    required String email,
+    required String password,
     required String specialization,
     required String location,
     required String experience,
@@ -63,9 +79,14 @@ class LawyerService {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/lawyers'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
         body: jsonEncode({
           'name': name,
+          'email': email,
+          'password': password,
           'specialization': specialization,
           'location': location,
           'experience': experience,
@@ -104,7 +125,10 @@ class LawyerService {
     try {
       final response = await http.put(
         Uri.parse('$_baseUrl/lawyers/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
         body: jsonEncode({
           'name': name,
           'specialization': specialization,
@@ -135,7 +159,10 @@ class LawyerService {
     try {
       final response = await http.delete(
         Uri.parse('$_baseUrl/lawyers/$id'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -151,18 +178,20 @@ class LawyerService {
   }
 
   // ─────────────────────────────────────────
-  // 6. SEARCH LAWYERS BY SPECIALIZATION
+  // 6. SEARCH BY SPECIALIZATION
   // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> searchLawyersBySpecialization(
-      String specialization) async {
+    String specialization,
+  ) async {
     try {
       final allLawyers = await fetchLawyers();
       return allLawyers
-          .where((lawyer) =>
-              lawyer['specialization']
-                  .toString()
-                  .toLowerCase()
-                  .contains(specialization.toLowerCase()))
+          .where(
+            (lawyer) => lawyer['specialization']
+                .toString()
+                .toLowerCase()
+                .contains(specialization.toLowerCase()),
+          )
           .toList();
     } catch (e) {
       throw Exception('Search error: $e');
@@ -170,17 +199,19 @@ class LawyerService {
   }
 
   // ─────────────────────────────────────────
-  // 7. SEARCH LAWYERS BY LOCATION
+  // 7. SEARCH BY LOCATION
   // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> searchLawyersByLocation(
-      String location) async {
+    String location,
+  ) async {
     try {
       final allLawyers = await fetchLawyers();
       return allLawyers
-          .where((lawyer) => lawyer['location']
-              .toString()
-              .toLowerCase()
-              .contains(location.toLowerCase()))
+          .where(
+            (lawyer) => lawyer['location'].toString().toLowerCase().contains(
+              location.toLowerCase(),
+            ),
+          )
           .toList();
     } catch (e) {
       throw Exception('Search error: $e');
@@ -196,54 +227,61 @@ class LawyerService {
       allLawyers.sort((a, b) {
         final ratingA = double.tryParse(a['rating'].toString()) ?? 0.0;
         final ratingB = double.tryParse(b['rating'].toString()) ?? 0.0;
-        return ratingB.compareTo(ratingA); // descending
+        return ratingB.compareTo(ratingA);
       });
       return allLawyers;
     } catch (e) {
       throw Exception('Sort error: $e');
     }
   }
+
   // ─────────────────────────────────────────
-// 9. APPROVE LAWYER
-// ─────────────────────────────────────────
-Future<Map<String, dynamic>> approveLawyer(int id) async {
-  try {
-    final response = await http.patch(
-      Uri.parse('$_baseUrl/lawyers/$id/1'),
-      headers: {'Content-Type': 'application/json'},
-    );
+  // 9. APPROVE LAWYER
+  // ─────────────────────────────────────────
+  Future<Map<String, dynamic>> approveLawyer(int id) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/lawyers/$id/1'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      return Map<String, dynamic>.from(jsonDecode(response.body));
-    } else if (response.statusCode == 404) {
-      throw Exception('Lawyer not found');
-    } else {
-      throw Exception('Failed to approve lawyer: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(jsonDecode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception('Lawyer not found');
+      } else {
+        throw Exception('Failed to approve lawyer: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
     }
-  } catch (e) {
-    throw Exception('Network error: $e');
   }
-}
 
-// ─────────────────────────────────────────
-// 10. DISAPPROVE LAWYER
-// ─────────────────────────────────────────
-Future<Map<String, dynamic>> disapproveLawyer(int id) async {
-  try {
-    final response = await http.patch(
-      Uri.parse('$_baseUrl/lawyers/$id/0'),
-      headers: {'Content-Type': 'application/json'},
-    );
+  // ─────────────────────────────────────────
+  // 10. DISAPPROVE LAWYER
+  // ─────────────────────────────────────────
+  Future<Map<String, dynamic>> disapproveLawyer(int id) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/lawyers/$id/0'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      return Map<String, dynamic>.from(jsonDecode(response.body));
-    } else if (response.statusCode == 404) {
-      throw Exception('Lawyer not found');
-    } else {
-      throw Exception('Failed to disapprove lawyer: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(jsonDecode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception('Lawyer not found');
+      } else {
+        throw Exception('Failed to disapprove lawyer: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
     }
-  } catch (e) {
-    throw Exception('Network error: $e');
   }
-}
 }

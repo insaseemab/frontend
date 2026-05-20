@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insaafconnect/core/services/lawyers_services.dart';
 
 class AddLawyerPage extends StatefulWidget {
   const AddLawyerPage({super.key});
@@ -11,6 +12,8 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
   final _formKey = GlobalKey<FormState>();
 
   final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   final specializationController = TextEditingController();
   final cityController = TextEditingController();
   final experienceController = TextEditingController();
@@ -33,9 +36,24 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
               // Name
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: "Full Name"),
+                decoration: const InputDecoration(labelText: "Name"),
                 validator: (value) => value!.isEmpty ? "Enter name" : null,
               ),
+
+               TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(labelText: "email"),
+                validator: (value) => value!.isEmpty ? "Enter email" : null,
+              ),
+
+               TextFormField(
+                controller: passwordController,
+                decoration: const InputDecoration(labelText: "password"),
+                keyboardType: TextInputType.visiblePassword,
+                validator: (value) => value!.isEmpty ? "Enter password" : null,
+              ),
+
+
 
               // Specialization
               TextFormField(
@@ -49,7 +67,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
               TextFormField(
                 controller: cityController,
                 decoration: const InputDecoration(labelText: "Location"),
-                validator: (value) => value!.isEmpty ? "Location" : null,
+                validator: (value) => value!.isEmpty ? " Enter Location" : null,
               ),
 
               // Experience
@@ -66,28 +84,38 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
               // Cases
               TextFormField(
                 controller: casesController,
-                decoration: const InputDecoration(labelText: "Total Cases"),
+                decoration: const InputDecoration(labelText: "Cases"),
                 keyboardType: TextInputType.number,
                 validator: (value) => value!.isEmpty ? "Enter cases" : null,
               ),
+               
+
 
               const SizedBox(height: 20),
 
               // Save Button
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final newLawyer = {
-                      "name": nameController.text,
-                      "specialization": specializationController.text,
-                      "Location": cityController.text,
-                      "experience": "${experienceController.text} years",
-                      "cases": casesController.text,
-                      "rating": "0.0",
-                      "status": "",
-                    };
-
-                    Navigator.pop(context, newLawyer);
+                    try {
+                      await LawyerService().createLawyer(
+                        name: nameController.text,
+                        email: nameController.text,
+                        password: nameController.text,
+                        specialization: specializationController.text,
+                        location: cityController.text,
+                        experience: experienceController.text,
+                        cases: casesController.text,
+                      );
+                      Navigator.pop(context);
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Error: $e"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(

@@ -49,13 +49,21 @@ class CaseModel {
 
   factory CaseModel.fromJson(Map<String, dynamic> json) {
     return CaseModel(
-      id: json['id'] ?? 0,
-      caseType: json['case_type'] ?? 'Unknown',
-      clientName: json['client_name'] ?? 'N/A',
-      lawyerName: json['lawyer_name'] ?? 'N/A',
-      caseStatus: json['case_status'] ?? 'Unknown',
-      paymentStatus: json['payment_status'] ?? 'unpaid',
-      hearingDate: json['hearing_date'] ?? 'N/A',
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id'].toString()) ?? 0,
+      caseType: json['case_type']?.toString() ?? 'Unknown',
+      clientName:
+          json['name']?.toString() ??
+          'N/A', // API uses 'name', not 'client_name'
+      lawyerName:
+          json['lawyer_id']?.toString() ??
+          'N/A', // API returns lawyer_id, not name
+      caseStatus: json['case_status']?.toString() ?? 'Unknown',
+      paymentStatus:
+          json['payment_status']?.toString() ??
+          'unpaid', // ← THIS was the crash
+      hearingDate: json['hearing_date']?.toString() ?? 'N/A',
     );
   }
 }
@@ -65,7 +73,7 @@ class CaseApiService {
   // GET all cases
   static Future<List<CaseModel>> fetchAllCases() async {
     final response = await http.get(
-      Uri.parse('$baseUrl/api/cases'),
+      Uri.parse('$baseUrl/cases'),
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 200) {
@@ -79,7 +87,7 @@ class CaseApiService {
   // DELETE a case
   static Future<void> deleteCase(int caseId) async {
     final response = await http.delete(
-      Uri.parse('$baseUrl/api/cases/$caseId'),
+      Uri.parse('$baseUrl/cases/$caseId'),
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode != 200) {
@@ -90,7 +98,7 @@ class CaseApiService {
   // UPDATE case status
   static Future<void> updateCaseStatus(int caseId, String newStatus) async {
     final response = await http.patch(
-      Uri.parse('$baseUrl/api/cases/$caseId/status'),
+      Uri.parse('$baseUrl/cases/$caseId/status/$newStatus'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'case_status': newStatus}),
     );
@@ -150,7 +158,10 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         title: const Text('Delete Case'),
         content: Text('Are you sure you want to delete case #${c.id}?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
@@ -166,9 +177,9 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           const SnackBar(content: Text('Case deleted successfully')),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -178,13 +189,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     try {
       await CaseApiService.updateCaseStatus(c.id, newStatus);
       _loadCases();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Status updated to $newStatus')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -227,7 +238,11 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         ),
         title: const Text(
           'List of Cases',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         actions: [
           IconButton(
@@ -247,13 +262,17 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           children: [
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 20, 16, 4),
-              child: Text('Case Management',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              child: Text(
+                'Case Management',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text('View and manage all cases with payment status',
-                  style: TextStyle(color: Colors.grey, fontSize: 13)),
+              child: Text(
+                'View and manage all cases with payment status',
+                style: TextStyle(color: Colors.grey, fontSize: 13),
+              ),
             ),
             const SizedBox(height: 16),
             _buildStatsRow(),
@@ -278,19 +297,24 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                children: ['All', 'Active', 'Completed', 'Pending'].map((filter) {
+                children: ['All', 'Active', 'Approved', 'Pending', 'Closed', 'Rejected', 'Hearing'].map((
+                  filter,
+                ) {
                   final isSelected = selectedFilter == filter;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ElevatedButton(
                       onPressed: () => setState(() => selectedFilter = filter),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isSelected ? const Color(0xFF5D4037) : Colors.white,
-                        foregroundColor:
-                            isSelected ? Colors.white : Colors.black87,
+                        backgroundColor: isSelected
+                            ? const Color(0xFF5D4037)
+                            : Colors.white,
+                        foregroundColor: isSelected
+                            ? Colors.white
+                            : Colors.black87,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         elevation: 0,
                       ),
                       child: Text(filter),
@@ -311,7 +335,9 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   // ── Body: loading / error / list ──────────────────────────────────────────
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.brown));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.brown),
+      );
     }
     if (errorMessage != null) {
       return Center(
@@ -356,14 +382,19 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             child: Column(
               children: [
-                Text(stat['value']!,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
+                Text(
+                  stat['value']!,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(stat['label']!,
-                    textAlign: TextAlign.center,
-                    style:
-                        const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  stat['label']!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -378,11 +409,41 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: const Row(
         children: [
-          Expanded(flex: 1, child: Text('ID', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Type', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Lawyer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 2, child: Text('Status', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
-          Expanded(flex: 1, child: Text('Actions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12))),
+          Expanded(
+            flex: 1,
+            child: Text(
+              'ID',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Type',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Lawyer',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Status',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              'Actions',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
         ],
       ),
     );
@@ -411,17 +472,23 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(c.caseType,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                Text(c.clientName,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                Text(
+                  c.caseType,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  c.clientName,
+                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                ),
               ],
             ),
           ),
           Expanded(
             flex: 2,
-            child: Text(c.lawyerName,
-                style: const TextStyle(fontSize: 11)),
+            child: Text(c.lawyerName, style: const TextStyle(fontSize: 11)),
           ),
           Expanded(
             flex: 2,
@@ -431,8 +498,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                 color: isActive
                     ? Colors.green.shade100
                     : isCompleted
-                        ? Colors.blue.shade100
-                        : Colors.orange.shade100,
+                    ? Colors.blue.shade100
+                    : Colors.orange.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -442,8 +509,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   color: isActive
                       ? Colors.green.shade800
                       : isCompleted
-                          ? Colors.blue.shade800
-                          : Colors.orange.shade800,
+                      ? Colors.blue.shade800
+                      : Colors.orange.shade800,
                 ),
               ),
             ),
@@ -461,8 +528,27 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               },
               itemBuilder: (_) => [
                 const PopupMenuItem(value: 'active', child: Text('Set Active')),
-                const PopupMenuItem(value: 'completed', child: Text('Set Completed')),
-                const PopupMenuItem(value: 'pending', child: Text('Set Pending')),
+                const PopupMenuItem(
+                  value: 'approved',
+                  child: Text('Set Approved'),
+                ),
+                const PopupMenuItem(
+                  value: 'pending',
+                  child: Text('Set Pending'),
+                ),
+                const PopupMenuItem(
+                  value: 'rejected',
+                  child: Text('Set Rejected'),
+                ),
+                const PopupMenuItem(
+                  value: 'hearing',
+                  child: Text('Set Hearing'),
+                ),
+                const PopupMenuItem(
+                  value: 'closed',
+                  child: Text('Set Closed'),
+                ),
+
                 const PopupMenuDivider(),
                 const PopupMenuItem(
                   value: 'delete',
