@@ -100,8 +100,8 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
                     try {
                       await LawyerService().createLawyer(
                         name: nameController.text,
-                        email: nameController.text,
-                        password: nameController.text,
+                        email: emailController.text,
+                        password: passwordController.text,
                         specialization: specializationController.text,
                         location: cityController.text,
                         experience: experienceController.text,

@@ -73,7 +73,6 @@ class LawyerService {
     required String location,
     required String experience,
     required String cases,
-    String rating = '0.0',
     String status = 'active',
   }) async {
     try {
@@ -91,8 +90,7 @@ class LawyerService {
           'location': location,
           'experience': experience,
           'cases': cases,
-          'rating': rating,
-          'status': status,
+          'status': 1,
         }),
       );
 
