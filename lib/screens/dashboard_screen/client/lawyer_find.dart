@@ -455,9 +455,8 @@ class _LawyerCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════
+
 //  LAWYER PROFILE SCREEN
-// ════════════════════════════════════════════════
 
 class LawyerProfileScreen extends StatelessWidget {
   final Map<String, dynamic> lawyer;
