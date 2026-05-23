@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin_profile.dart';
-import 'package:insaafconnect/screens/dashboard_screen/manage_cases.dart';
-import 'package:insaafconnect/screens/dashboard_screen/managelawyers.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_profile.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
 
 // ════════════════════════════════════════════════════════════════
 // AdminDashboardScreen

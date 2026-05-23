@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:insaafconnect/routes/auth_middleware.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/screens/register_screen/register.dart';
 import 'package:insaafconnect/screens/splash_screen/splash.dart';
-import 'package:insaafconnect/screens/dashboard_screen/client_dashboard.dart';      
-import 'package:insaafconnect/screens/dashboard_screen/lawyer_dashboard.dart';       
+import 'package:insaafconnect/screens/dashboard_screen/client/client_dashboard.dart';      
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_dashboard.dart';       
 
 class AppRoutes {
   static const splash          = "/";

@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:insaafconnect/screens/dashboard_screen/createcase.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/createcase.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 const String baseUrl = 'http://localhost:3000';
 

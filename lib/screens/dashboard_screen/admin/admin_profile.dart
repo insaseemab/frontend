@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 class AdminProfilePage extends StatelessWidget {
   const AdminProfilePage({super.key});

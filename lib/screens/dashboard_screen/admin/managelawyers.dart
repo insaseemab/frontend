@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/addlawyer.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin_dashboard.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/addlawyer.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
