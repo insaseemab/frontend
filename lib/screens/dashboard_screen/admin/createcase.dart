@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:get_storage/get_storage.dart';
 
 class CreateCasePage extends StatefulWidget {
   const CreateCasePage({super.key});
@@ -9,7 +10,6 @@ class CreateCasePage extends StatefulWidget {
 }
 
 class _CreateCasePageState extends State<CreateCasePage> {
-
   final nameController = TextEditingController();
   final caseTypeController = TextEditingController();
   final descriptionController = TextEditingController();
@@ -26,15 +26,14 @@ class _CreateCasePageState extends State<CreateCasePage> {
   bool isLoading = false;
 
   Future<void> createCase() async {
-
     try {
-
       setState(() {
         isLoading = true;
       });
 
-      // replace with real token
-      String token = "YOUR_REAL_TOKEN";
+      final box = GetStorage();
+
+      String token = box.read('token');
 
       await CasesService.createCase(
         descriptionCase: descriptionController.text,
@@ -55,42 +54,29 @@ class _CreateCasePageState extends State<CreateCasePage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Case Created Successfully'),
-        ),
+        const SnackBar(content: Text('Case Created Successfully')),
       );
 
       Navigator.pop(context, true);
-
     } catch (e) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-        ),
-      );
-
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
-
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  Widget buildField(
-    String label,
-    TextEditingController controller,
-  ) {
+  Widget buildField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
@@ -98,9 +84,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text('Create Case'),
         backgroundColor: Colors.brown,
@@ -112,7 +96,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
         child: Column(
           children: [
-
             buildField('Client Name', nameController),
 
             buildField('Case Type', caseTypeController),
@@ -129,35 +112,19 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
             buildField('Department Concern', departController),
 
-            buildField(
-              'Hearing Date (YYYY-MM-DD)',
-              hearingDateController,
-            ),
+            buildField('Hearing Date (YYYY-MM-DD)', hearingDateController),
 
             DropdownButtonFormField<String>(
               initialValue: selectedStatus,
 
               items: const [
+                DropdownMenuItem(value: 'pending', child: Text('Pending')),
 
-                DropdownMenuItem(
-                  value: 'pending',
-                  child: Text('Pending'),
-                ),
+                DropdownMenuItem(value: 'approved', child: Text('Approved')),
 
-                DropdownMenuItem(
-                  value: 'approved',
-                  child: Text('Approved'),
-                ),
+                DropdownMenuItem(value: 'hearing', child: Text('Hearing')),
 
-                DropdownMenuItem(
-                  value: 'hearing',
-                  child: Text('Hearing'),
-                ),
-
-                DropdownMenuItem(
-                  value: 'closed',
-                  child: Text('Closed'),
-                ),
+                DropdownMenuItem(value: 'closed', child: Text('Closed')),
               ],
 
               onChanged: (v) {
@@ -166,9 +133,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                 });
               },
 
-              decoration: const InputDecoration(
-                labelText: 'Case Status',
-              ),
+              decoration: const InputDecoration(labelText: 'Case Status'),
             ),
 
             const SizedBox(height: 16),
@@ -177,16 +142,9 @@ class _CreateCasePageState extends State<CreateCasePage> {
               initialValue: paymentStatus,
 
               items: const [
+                DropdownMenuItem(value: 'paid', child: Text('Paid')),
 
-                DropdownMenuItem(
-                  value: 'paid',
-                  child: Text('Paid'),
-                ),
-
-                DropdownMenuItem(
-                  value: 'unpaid',
-                  child: Text('Unpaid'),
-                ),
+                DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
               ],
 
               onChanged: (v) {
@@ -195,9 +153,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                 });
               },
 
-              decoration: const InputDecoration(
-                labelText: 'Payment Status',
-              ),
+              decoration: const InputDecoration(labelText: 'Payment Status'),
             ),
 
             const SizedBox(height: 30),
@@ -208,10 +164,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
               height: 50,
 
               child: ElevatedButton(
-
-                onPressed: isLoading
-                    ? null
-                    : createCase,
+                onPressed: isLoading ? null : createCase,
 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
@@ -219,9 +172,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                 ),
 
                 child: isLoading
-                    ? const CircularProgressIndicator(
-                        color: Colors.white,
-                      )
+                    ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Create Case'),
               ),
             ),
