@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/lawyer/addlawyer.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/addlawyer.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 class Managelawyers extends StatefulWidget {
@@ -15,6 +15,11 @@ class _ManagelawyersState extends State<Managelawyers> {
   bool _isLoading = true;
   String? _errorMessage;
   List<Map<String, dynamic>> _lawyers = [];
+  int _getStatus(dynamic status) {
+  if (status == null) return -1;
+  if (status is int) return status;
+  return int.tryParse(status.toString()) ?? -1;
+}
 
   @override
   void initState() {
@@ -41,50 +46,62 @@ class _ManagelawyersState extends State<Managelawyers> {
       });
     }
   }
+
   Future<void> _deleteLawyer(int id) async {
-  try {
-    await _lawyerService.deleteLawyer(id);
+    try {
+      await _lawyerService.deleteLawyer(id);
 
-    _loadLawyers();
+      _loadLawyers();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Lawyer deleted successfully')),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString())),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lawyer deleted successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
+
+  Future<void> _editLawyer(int id) async {
+  final lawyer = _lawyers.firstWhere((l) => l['id'] == id);
+  final nameController = TextEditingController(text: lawyer['name']);
+  final specController = TextEditingController(text: lawyer['specialization']);
+
+  await showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Edit Lawyer'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+          TextField(controller: specController, decoration: const InputDecoration(labelText: 'Specialization')),
+        ],
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.pop(ctx);
+            await _lawyerService.updateLawyer(
+              id: id,
+              name: nameController.text,
+              specialization: specController.text,
+              location: lawyer['location'] ?? '',
+              experience: lawyer['experience'].toString(),
+              cases: lawyer['cases'].toString(),
+              rating: lawyer['rating'].toString(),
+              status: lawyer['status'].toString(),
+            );
+            _loadLawyers();
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
 }
-Future<void> _editLawyer(int id) async {
-  try {
-    await _lawyerService.updateLawyer(
-      id: id,
-      name: 'Updated Name',
-      specialization: 'Criminal Law',
-      location: 'Lahore',
-      experience: '5',
-      cases: '50',
-      rating: '4.5',
-      status: '1',
-    );
-
-    _loadLawyers();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Lawyer updated successfully')),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(e.toString())),
-    );
-  }
-}
-  int _getStatus(dynamic status) {
-    if (status == null) return -1;
-    if (status is int) return status;
-    return int.tryParse(status.toString()) ?? -1;
-  }
 
   Future<void> _approveLawyer(int index) async {
     final id = _lawyers[index]["id"];
@@ -342,10 +359,9 @@ Future<void> _editLawyer(int id) async {
                   ),
                 ],
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(height: 20),
               Row(
                 children: [
-                  // ── APPROVE BUTTON ────────────────
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => _editLawyer(lawyer['id']),
@@ -358,11 +374,10 @@ Future<void> _editLawyer(int id) async {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Edit",
                         style: TextStyle(
-                          // white text jab selected, brown jab nahi
-                          color: isApproved ? Colors.white : brownColor,
+                          color: Colors.brown,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -370,24 +385,21 @@ Future<void> _editLawyer(int id) async {
                   ),
                   const SizedBox(width: 10),
 
-                  // ── REJECT BUTTON ─────────────────
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => _deleteLawyer(index),
+                      onPressed: () => _deleteLawyer(lawyer['id']),
                       style: ElevatedButton.styleFrom(
-                        // brown jab rejected, white jab nahi
-                        backgroundColor: isRejected ? brownColor : Colors.white,
-                        side: const BorderSide(color: brownColor),
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.brown),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Delete",
                         style: TextStyle(
-                          // white text jab selected, brown jab nahi
-                          color: isRejected ? Colors.white : brownColor,
+                          color: Colors.brown,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
