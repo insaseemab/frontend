@@ -28,77 +28,36 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1ECE5),
+      backgroundColor: Colors.white,
 
       // ───────── APP BAR ─────────
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF1ECE5),
+     appBar: AppBar(
+        backgroundColor: const Color(0xFFF5EFE6),
         elevation: 0,
         title: Row(
           children: [
             Container(
-              height: 36,
-              width: 36,
+              height: 40,
+              width: 40,
               decoration: BoxDecoration(
-                color: Colors.brown.shade100,
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(10)),
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
+                child:
+                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
               ),
-              child: const Icon(Icons.gavel, color: Colors.brown, size: 20),
             ),
             const SizedBox(width: 10),
             const Text(
-              'Insaaf Connect',
+              "Insaaf Connect",
               style: TextStyle(
-                color: Color(0xFF3E2C23),
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+                  color: Colors.brown,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20),
             ),
           ],
         ),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_none,
-                    color: Colors.brown, size: 26),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFB5651D),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          GestureDetector(
-            onTap: () {},
-            child: const Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Row(
-                children: [
-                  Icon(Icons.person_outline, color: Colors.brown, size: 22),
-                  SizedBox(width: 4),
-                  Text(
-                    'Profile',
-                    style: TextStyle(
-                      color: Colors.brown,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
 
       // ───────── BODY ─────────
@@ -126,8 +85,8 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           currentIndex: currentIndex,
           onTap: (index) => setState(() => currentIndex = index),
           selectedItemColor: Colors.brown,
-          unselectedItemColor: const Color(0xFFBBAA99),
-          backgroundColor: Colors.white,
+          unselectedItemColor: Colors.brown,
+          backgroundColor: const Color(0xFFF5EFE6),
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           selectedLabelStyle: const TextStyle(
