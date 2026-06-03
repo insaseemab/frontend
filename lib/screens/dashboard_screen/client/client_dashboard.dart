@@ -196,7 +196,7 @@ class HomeScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF3E2C23),
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 14),
@@ -252,7 +252,7 @@ class _CaseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFEADDD0)),
         boxShadow: [
@@ -334,7 +334,7 @@ class _AppointmentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EDE4),
+        color:const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFEADDD0)),
       ),

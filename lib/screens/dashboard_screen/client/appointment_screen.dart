@@ -18,27 +18,36 @@ class BookAppointmentScreen extends StatefulWidget {
 class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _descriptionCtrl   = TextEditingController();
+  final _descriptionCtrl = TextEditingController();
   final _paymentAmountCtrl = TextEditingController();
   final _paymentReceiptCtrl = TextEditingController();
 
   String? _selectedLawType;
   String? _selectedCaseType;
   String _appointmentMode = 'online';
-  String _paymentMode     = 'manual';
+  String _paymentMode = 'manual';
 
   DateTime? _slotStart;
   DateTime? _slotEnd;
   bool _isLoading = false;
 
   final List<String> _lawTypes = [
-    'Civil Law', 'Criminal Law', 'Corporate Law',
-    'Family Law', 'Property Law', 'Labour Law', 'Tax Law',
+    'Civil Law',
+    'Criminal Law',
+    'Corporate Law',
+    'Family Law',
+    'Property Law',
+    'Labour Law',
+    'Tax Law',
   ];
 
   final List<String> _caseTypes = [
-    'Consultation', 'Representation', 'Document Review',
-    'Contract Drafting', 'Litigation', 'Arbitration',
+    'Consultation',
+    'Representation',
+    'Document Review',
+    'Contract Drafting',
+    'Litigation',
+    'Arbitration',
   ];
 
   String _fmtDateTime(DateTime dt) =>
@@ -75,8 +84,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
     if (time == null) return;
 
-    final combined =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    final combined = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
     setState(() {
       if (isStart) {
         _slotStart = combined;
@@ -185,16 +199,20 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         backgroundColor: const Color(0xFFF1ECE5),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Color(0xFF3E2C23), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF3E2C23),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Book Appointment',
           style: TextStyle(
-              color: Color(0xFF3E2C23),
-              fontWeight: FontWeight.bold,
-              fontSize: 18),
+            color: Color(0xFF3E2C23),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
       ),
       body: Form(
@@ -236,12 +254,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               TextFormField(
                 controller: _descriptionCtrl,
                 maxLines: 3,
-                decoration:
-                    _inputDecor('Briefly describe your legal matter...'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? 'Description is required'
-                        : null,
+                decoration: _inputDecor(
+                  'Briefly describe your legal matter...',
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Description is required'
+                    : null,
               ),
               const SizedBox(height: 20),
 
@@ -265,61 +283,58 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               _ModeSelector(
                 options: const ['online', 'physical'],
                 selected: _appointmentMode,
-                icons: const [
-                  Icons.videocam_outlined,
-                  Icons.person_outline
-                ],
+                icons: const [Icons.videocam_outlined, Icons.person_outline],
                 onSelected: (v) => setState(() => _appointmentMode = v),
               ),
               const SizedBox(height: 20),
 
               _sectionLabel('Payment'),
               const SizedBox(height: 10),
+
               _ModeSelector(
                 options: const ['manual', 'stripe'],
                 selected: _paymentMode,
                 icons: const [
                   Icons.account_balance_outlined,
-                  Icons.credit_card_outlined
+                  Icons.credit_card_outlined,
                 ],
                 onSelected: (v) => setState(() {
                   _paymentMode = v;
-                  if (v == 'manual') {
-                    _paymentAmountCtrl.clear();
-                    _paymentReceiptCtrl.clear();
-                  }
                 }),
               ),
 
+              // Show amount field for BOTH manual and stripe
+              const SizedBox(height: 12),
+              _fieldLabel('Payment Amount (PKR)'),
+              const SizedBox(height: 6),
+              TextFormField(
+                controller: _paymentAmountCtrl,
+                keyboardType: TextInputType.number,
+                decoration: _inputDecor('e.g. 5000'),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Payment amount is required';
+                  }
+                  return null;
+                },
+              ),
+
+              // Show receipt field only when Stripe is selected
               if (_paymentMode == 'stripe') ...[
-                const SizedBox(height: 12),
-                _fieldLabel('Payment Amount (PKR)'),
-                const SizedBox(height: 6),
-                TextFormField(
-                  controller: _paymentAmountCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: _inputDecor('e.g. 5000'),
-                  validator: (v) =>
-                      (_paymentMode == 'stripe' &&
-                              (v == null || v.isEmpty))
-                          ? 'Amount required for Stripe'
-                          : null,
-                ),
                 const SizedBox(height: 12),
                 _fieldLabel('Payment Receipt / Transaction ID'),
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: _paymentReceiptCtrl,
-                  decoration:
-                      _inputDecor('Enter transaction ID or reference'),
-                  validator: (v) =>
-                      (_paymentMode == 'stripe' &&
-                              (v == null || v.isEmpty))
-                          ? 'Receipt required for Stripe'
-                          : null,
+                  decoration: _inputDecor('Enter transaction ID or reference'),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Receipt required for Stripe';
+                    }
+                    return null;
+                  },
                 ),
               ],
-
               const SizedBox(height: 32),
 
               SizedBox(
@@ -331,23 +346,29 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     backgroundColor: const Color(0xFF5C3D2E),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                     elevation: 0,
                     // withValues replaces deprecated withOpacity
-                    disabledBackgroundColor:
-                        const Color(0xFF5C3D2E).withValues(alpha: 0.5),
+                    disabledBackgroundColor: const Color(
+                      0xFF5C3D2E,
+                    ).withValues(alpha: 0.5),
                   ),
                   child: _isLoading
                       ? const SizedBox(
                           height: 22,
                           width: 22,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2.5),
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
                         )
                       : const Text(
                           'Confirm Booking',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),
@@ -360,50 +381,50 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   }
 
   Widget _sectionLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF3E2C23)),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.bold,
+      color: Color(0xFF3E2C23),
+    ),
+  );
 
   Widget _fieldLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF5C3D2E)),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF5C3D2E),
+    ),
+  );
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFEADDD0)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFEADDD0)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide:
-              const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 1.5),
-        ),
-      );
+    hintText: hint,
+    hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.red),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.red, width: 1.5),
+    ),
+  );
 }
 
 // ════════════════════════════════════════════════
@@ -439,13 +460,14 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       await ApiService.deleteAppointment(id);
       if (!mounted) return;
       _load();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Appointment cancelled')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Appointment cancelled')));
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
 
@@ -457,16 +479,20 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         backgroundColor: const Color(0xFFF1ECE5),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Color(0xFF3E2C23), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF3E2C23),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'My Appointments',
           style: TextStyle(
-              color: Color(0xFF3E2C23),
-              fontWeight: FontWeight.bold,
-              fontSize: 18),
+            color: Color(0xFF3E2C23),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
       ),
       body: FutureBuilder<List<dynamic>>(
@@ -474,8 +500,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(
-                child:
-                    CircularProgressIndicator(color: Color(0xFF5C3D2E)));
+              child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+            );
           }
           if (snap.hasError) {
             final msg = snap.error is ApiException
@@ -485,17 +511,20 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline,
-                      color: Color(0xFF8C7B6B), size: 48),
+                  const Icon(
+                    Icons.error_outline,
+                    color: Color(0xFF8C7B6B),
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
-                  Text(msg,
-                      style:
-                          const TextStyle(color: Color(0xFF8C7B6B))),
+                  Text(msg, style: const TextStyle(color: Color(0xFF8C7B6B))),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry',
-                        style: TextStyle(color: Color(0xFF5C3D2E))),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Color(0xFF5C3D2E)),
+                    ),
                   ),
                 ],
               ),
@@ -505,8 +534,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           final appointments = snap.data ?? [];
           if (appointments.isEmpty) {
             return const Center(
-              child: Text('No appointments yet.',
-                  style: TextStyle(color: Color(0xFF8C7B6B))),
+              child: Text(
+                'No appointments yet.',
+                style: TextStyle(color: Color(0xFF8C7B6B)),
+              ),
             );
           }
 
@@ -540,24 +571,27 @@ class _AppointmentTile extends StatelessWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback onDelete;
 
-  const _AppointmentTile({
-    required this.appointment,
-    required this.onDelete,
-  });
+  const _AppointmentTile({required this.appointment, required this.onDelete});
 
   Color get _statusColor {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFF2E7D32);
-      case 'rejected': return const Color(0xFFB71C1C);
-      default:         return const Color(0xFFB5651D);
+      case 'accepted':
+        return const Color(0xFF2E7D32);
+      case 'rejected':
+        return const Color(0xFFB71C1C);
+      default:
+        return const Color(0xFFB5651D);
     }
   }
 
   Color get _statusBg {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFFE8F5E9);
-      case 'rejected': return const Color(0xFFFFEBEE);
-      default:         return const Color(0xFFF5E6D3);
+      case 'accepted':
+        return const Color(0xFFE8F5E9);
+      case 'rejected':
+        return const Color(0xFFFFEBEE);
+      default:
+        return const Color(0xFFF5E6D3);
     }
   }
 
@@ -587,13 +621,16 @@ class _AppointmentTile extends StatelessWidget {
               Text(
                 appointment['case_type'] ?? '',
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Color(0xFF3E2C23)),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF3E2C23),
+                ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: _statusBg,
                   borderRadius: BorderRadius.circular(20),
@@ -601,9 +638,10 @@ class _AppointmentTile extends StatelessWidget {
                 child: Text(
                   (appointment['status'] ?? 'pending').toUpperCase(),
                   style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: _statusColor),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: _statusColor,
+                  ),
                 ),
               ),
             ],
@@ -630,7 +668,10 @@ class _AppointmentTile extends StatelessWidget {
             Text(
               appointment['short_description'],
               style: const TextStyle(
-                  fontSize: 12, color: Color(0xFF8C7B6B), height: 1.4),
+                fontSize: 12,
+                color: Color(0xFF8C7B6B),
+                height: 1.4,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -641,14 +682,18 @@ class _AppointmentTile extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 onPressed: () => _confirmDelete(context),
-                icon: const Icon(Icons.delete_outline,
-                    size: 16, color: Color(0xFFB71C1C)),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  size: 16,
+                  color: Color(0xFFB71C1C),
+                ),
                 label: const Text(
                   'Cancel',
                   style: TextStyle(
-                      color: Color(0xFFB71C1C),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600),
+                    color: Color(0xFFB71C1C),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: TextButton.styleFrom(padding: EdgeInsets.zero),
               ),
@@ -663,11 +708,11 @@ class _AppointmentTile extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         title: const Text('Cancel Appointment'),
         content: const Text(
-            'Are you sure you want to cancel this appointment?'),
+          'Are you sure you want to cancel this appointment?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -675,8 +720,10 @@ class _AppointmentTile extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes, Cancel',
-                style: TextStyle(color: Color(0xFFB71C1C))),
+            child: const Text(
+              'Yes, Cancel',
+              style: TextStyle(color: Color(0xFFB71C1C)),
+            ),
           ),
         ],
       ),
@@ -697,10 +744,11 @@ class _InfoRow extends StatelessWidget {
         Icon(icon, size: 13, color: const Color(0xFF8C7B6B)),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(text,
-              style: const TextStyle(
-                  fontSize: 12, color: Color(0xFF8C7B6B)),
-              overflow: TextOverflow.ellipsis),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
@@ -732,33 +780,45 @@ class _LawyerSummaryCard extends StatelessWidget {
             child: Text(
               lawyer['initials'] ?? '',
               style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(lawyer['name'] ?? '',
-                  style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF3E2C23))),
+              Text(
+                lawyer['name'] ?? '',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF3E2C23),
+                ),
+              ),
               const SizedBox(height: 3),
-              Text(lawyer['specialty'] ?? '',
-                  style: const TextStyle(
-                      fontSize: 13, color: Color(0xFF8C7B6B))),
+              Text(
+                lawyer['specialty'] ?? '',
+                style: const TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+              ),
               const SizedBox(height: 3),
               Row(
                 children: [
-                  const Icon(Icons.location_on_outlined,
-                      size: 13, color: Color(0xFF8C7B6B)),
+                  const Icon(
+                    Icons.location_on_outlined,
+                    size: 13,
+                    color: Color(0xFF8C7B6B),
+                  ),
                   const SizedBox(width: 3),
-                  Text(lawyer['location'] ?? '',
-                      style: const TextStyle(
-                          fontSize: 12, color: Color(0xFF8C7B6B))),
+                  Text(
+                    lawyer['location'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8C7B6B),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -791,23 +851,29 @@ class _AppDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF5C3D2E))),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF5C3D2E),
+          ),
+        ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           // initialValue replaces deprecated value property
           value: value,
-          hint: Text(hint,
-              style: const TextStyle(
-                  fontSize: 13, color: Color(0xFFAA9988))),
+          hint: Text(
+            hint,
+            style: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
+          ),
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFFEADDD0)),
@@ -818,8 +884,10 @@ class _AppDropdown extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF5C3D2E),
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -867,17 +935,23 @@ class _SlotPicker extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_outlined,
-                size: 18, color: Color(0xFF5C3D2E)),
+            const Icon(
+              Icons.calendar_today_outlined,
+              size: 18,
+              color: Color(0xFF5C3D2E),
+            ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF8C7B6B),
-                        fontWeight: FontWeight.w500)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF8C7B6B),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 2),
                 Text(
                   display,
@@ -920,12 +994,10 @@ class _ModeSelector extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onSelected(options[i]),
             child: Container(
-              margin:
-                  EdgeInsets.only(right: i < options.length - 1 ? 10 : 0),
+              margin: EdgeInsets.only(right: i < options.length - 1 ? 10 : 0),
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color:
-                    isActive ? const Color(0xFF5C3D2E) : Colors.white,
+                color: isActive ? const Color(0xFF5C3D2E) : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isActive
@@ -936,20 +1008,19 @@ class _ModeSelector extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icons[i],
-                      size: 16,
-                      color: isActive
-                          ? Colors.white
-                          : const Color(0xFF8C7B6B)),
+                  Icon(
+                    icons[i],
+                    size: 16,
+                    color: isActive ? Colors.white : const Color(0xFF8C7B6B),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     options[i][0].toUpperCase() + options[i].substring(1),
                     style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: isActive
-                            ? Colors.white
-                            : const Color(0xFF8C7B6B)),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isActive ? Colors.white : const Color(0xFF8C7B6B),
+                    ),
                   ),
                 ],
               ),

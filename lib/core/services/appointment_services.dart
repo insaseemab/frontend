@@ -8,20 +8,20 @@ import 'package:get_storage/get_storage.dart';
 
 class ApiService {
   // ── Change this to your actual server URL ──
-  static const String baseUrl ="http://localhost:3000"; // Android emulator
+  static const String baseUrl = "http://localhost:3000"; // Android emulator
   // static const String baseUrl = 'http://localhost:3000'; // iOS simulator
 
   static final _box = GetStorage();
 
   // ── Token helpers ──
-  static String? getToken() => _box.read<String>('auth_token');
+  static String? getToken() => _box.read<String>('token');
 
-  static void saveToken(String token) => _box.write('auth_token', token);
+  static void saveToken(String token) => _box.write('token', token);
 
-  static void removeToken() => _box.remove('auth_token');
-
+  static void removeToken() => _box.remove('token');
   static Map<String, String> _authHeaders() {
     final token = getToken();
+    print(token);
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
@@ -100,7 +100,9 @@ class ApiService {
       'appointment_mode': appointmentMode,
       'payment_mode': paymentMode,
       if (paymentAmount != null) 'payment_amount': paymentAmount,
-      if (paymentReceipt != null) 'payment_receipt': paymentReceipt,
+      'payment_receipt': paymentMode == 'manual'
+          ? 'MANUAL_PAYMENT'
+          : paymentReceipt,
     });
 
     final res = await http.post(
