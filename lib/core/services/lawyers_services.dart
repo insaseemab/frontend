@@ -113,6 +113,8 @@ class LawyerService {
   Future<Map<String, dynamic>> updateLawyer({
     required int id,
     required String name,
+    required String email,
+    required String password,
     required String specialization,
     required String location,
     required String experience,
@@ -129,6 +131,8 @@ class LawyerService {
         },
         body: jsonEncode({
           'name': name,
+          'email': email,
+          'password': password,
           'specialization': specialization,
           'location': location,
           'experience': experience,

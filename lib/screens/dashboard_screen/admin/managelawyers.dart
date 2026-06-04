@@ -87,6 +87,8 @@ class _ManagelawyersState extends State<Managelawyers> {
             await _lawyerService.updateLawyer(
               id: id,
               name: nameController.text,
+              email: lawyer['email'] ?? '',
+              password: lawyer['password'] ?? '',
               specialization: specController.text,
               location: lawyer['location'] ?? '',
               experience: lawyer['experience'].toString(),
