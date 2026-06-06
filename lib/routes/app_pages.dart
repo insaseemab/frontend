@@ -8,7 +8,7 @@ import '../screens/login_screen/login.dart';
 import '../screens/register_screen/register.dart';
 
 import '../screens/dashboard_screen/admin/admin_dashboard.dart';
-import '../screens/dashboard_screen/admin/admin_profile.dart';
+import '../screens/dashboard_screen/admin/appoint.dart';
 import '../screens/dashboard_screen/admin/managelawyers.dart';
 import '../screens/dashboard_screen/admin/manage_cases.dart';
 import '../screens/dashboard_screen/admin/addlawyer.dart';
@@ -52,12 +52,7 @@ class AppPages {
       middlewares: [AuthMiddleware()],
     ),
 
-    GetPage(
-      name: AppRoutes.adminProfile,
-      page: () => const AdminProfilePage(),
-      middlewares: [AuthMiddleware()],
-    ),
-
+    
     GetPage(
       name: AppRoutes.addLawyer,
       page: () => const AddLawyerPage(),

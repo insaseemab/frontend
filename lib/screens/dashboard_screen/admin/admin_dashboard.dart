@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/admin_profile.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
 
@@ -25,7 +25,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       _homePage(),
       const Managelawyers(),
       const ManageCasesPage(),
-      const AdminProfilePage(),
     ];
 
     return Scaffold(
@@ -57,33 +56,110 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(10)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child:
-                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
+      backgroundColor: const Color(0xFFF5EFE6),
+      elevation: 0,
+      title: Row(
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
             ),
-            const SizedBox(width: 10),
-            const Text(
-              "Insaaf Connect",
-              style: TextStyle(
-                  color: Colors.brown,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            "Insaaf Connect",
+            style: TextStyle(
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20),
+          ),
+        ],
       ),
+    ),
+    drawer: Drawer(
+      backgroundColor: const Color(0xFFF5EFE6),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(color: Colors.brown),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  height: 55,
+                  width: 55,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset('assets/images/logo.png',
+                        fit: BoxFit.cover),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text("Insaaf Connect",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                const Text("Admin Panel",
+                    style: TextStyle(color: Colors.white70, fontSize: 13)),
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home, color: Colors.brown),
+            title: const Text("Home"),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() => currentIndex = 0);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.verified_user, color: Colors.brown),
+            title: const Text("Manage Lawyers"),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() => currentIndex = 1);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.folder, color: Colors.brown),
+            title: const Text("Manage Cases"),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() => currentIndex = 2);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.brown),
+            title: const Text("Profile"),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() => currentIndex = 3);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.brown),
+            title: const Text("Logout"),
+            onTap: () {
+              Navigator.pop(context);
+              // Add your logout logic here
+            },
+          ),
+        ],
+      ),
+    ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
