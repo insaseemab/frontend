@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/addlawyer.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
+import 'package:get/get.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
@@ -63,8 +63,7 @@ class _ManagelawyersState extends State<Managelawyers> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child:
-                const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -95,16 +94,21 @@ class _ManagelawyersState extends State<Managelawyers> {
 
   // ── EDIT ──────────────────────────────────────────────────────────────────
   Future<void> _editLawyer(Map<String, dynamic> lawyer) async {
-    final nameController =
-        TextEditingController(text: lawyer['name']?.toString() ?? '');
+    final nameController = TextEditingController(
+      text: lawyer['name']?.toString() ?? '',
+    );
     final specController = TextEditingController(
-        text: lawyer['specialization']?.toString() ?? '');
-    final locationController =
-        TextEditingController(text: lawyer['location']?.toString() ?? '');
-    final experienceController =
-        TextEditingController(text: lawyer['experience']?.toString() ?? '');
-    final casesController =
-        TextEditingController(text: lawyer['cases']?.toString() ?? '');
+      text: lawyer['specialization']?.toString() ?? '',
+    );
+    final locationController = TextEditingController(
+      text: lawyer['location']?.toString() ?? '',
+    );
+    final experienceController = TextEditingController(
+      text: lawyer['experience']?.toString() ?? '',
+    );
+    final casesController = TextEditingController(
+      text: lawyer['cases']?.toString() ?? '',
+    );
 
     await showDialog(
       context: context,
@@ -124,8 +128,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               const SizedBox(height: 8),
               TextField(
                 controller: specController,
-                decoration:
-                    const InputDecoration(labelText: 'Specialization'),
+                decoration: const InputDecoration(labelText: 'Specialization'),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -215,10 +218,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     }
   }
@@ -241,10 +241,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     }
   }
@@ -257,11 +254,7 @@ class _ManagelawyersState extends State<Managelawyers> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AdminDashboardScreen()),
-            );
+            Get.offNamed(AppRoutes.adminDashboard);
           },
         ),
         title: const Text(
@@ -275,11 +268,9 @@ class _ManagelawyersState extends State<Managelawyers> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddLawyerPage()),
-              ).then((_) => _loadLawyers());
+            onPressed: () async {
+              await Get.toNamed(AppRoutes.addLawyer);
+              _loadLawyers();
             },
           ),
         ],
@@ -302,8 +293,7 @@ class _ManagelawyersState extends State<Managelawyers> {
             const SizedBox(height: 12),
             Text('Error: $_errorMessage', textAlign: TextAlign.center),
             const SizedBox(height: 12),
-            ElevatedButton(
-                onPressed: _loadLawyers, child: const Text('Retry')),
+            ElevatedButton(onPressed: _loadLawyers, child: const Text('Retry')),
           ],
         ),
       );
@@ -354,7 +344,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(20),
@@ -372,12 +364,13 @@ class _ManagelawyersState extends State<Managelawyers> {
               Text(
                 lawyer['name']?.toString() ?? 'Unknown',
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
               Text(
                 'ID: ${lawyer["id"]}',
-                style:
-                    const TextStyle(fontSize: 12, color: Colors.grey),
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
               Text(lawyer['specialization']?.toString() ?? ''),
               Text('📍 ${lawyer["location"] ?? ""}'),
@@ -390,15 +383,16 @@ class _ManagelawyersState extends State<Managelawyers> {
                 Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: isApproved
                         ? Colors.green.shade100
                         : Colors.red.shade100,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color:
-                          isApproved ? Colors.green : Colors.red,
+                      color: isApproved ? Colors.green : Colors.red,
                     ),
                   ),
                   child: Text(
@@ -420,8 +414,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: ElevatedButton(
                       onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isApproved ? brownColor : Colors.white,
+                        backgroundColor: isApproved ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -431,8 +424,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       child: Text(
                         'Approve',
                         style: TextStyle(
-                          color:
-                              isApproved ? Colors.white : brownColor,
+                          color: isApproved ? Colors.white : brownColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -443,8 +435,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: ElevatedButton(
                       onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            isRejected ? brownColor : Colors.white,
+                        backgroundColor: isRejected ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -454,8 +445,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       child: Text(
                         'Reject',
                         style: TextStyle(
-                          color:
-                              isRejected ? Colors.white : brownColor,
+                          color: isRejected ? Colors.white : brownColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -479,7 +469,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white, // always white
-                        foregroundColor: brownColor,   // always brown text/icon
+                        foregroundColor: brownColor, // always brown text/icon
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -499,7 +489,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white, // always white
-                        foregroundColor: Colors.red,   // always red text/icon
+                        foregroundColor: Colors.red, // always red text/icon
                         side: const BorderSide(color: Colors.red),
                         elevation: 0,
                         shape: RoundedRectangleBorder(

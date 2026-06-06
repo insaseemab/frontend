@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
+import 'package:get/get.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class AdminProfilePage extends StatelessWidget {
   const AdminProfilePage({super.key});
@@ -18,10 +19,7 @@ class AdminProfilePage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const AdminDashboardScreen()),
-            );
+            Get.offNamed(AppRoutes.adminDashboard);
           },
         ),
 
