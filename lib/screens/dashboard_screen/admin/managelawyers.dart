@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
@@ -250,24 +251,44 @@ class _ManagelawyersState extends State<Managelawyers> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.brown,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Get.offNamed(AppRoutes.adminDashboard);
-          },
-        ),
-        title: const Text(
-          'List of Lawyers',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: const Color(0xFFF5EFE6),
+        elevation: 0,
+        leading: Builder(
+    builder: (context) => IconButton(
+  icon: const Icon(Icons.arrow_back, color: Colors.brown),
+  onPressed: () {
+    Get.offAll(() => AdminDashboardScreen());
+  },
+),
+  ),
+        title: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              "List of Lawyers",
+              style: TextStyle(
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.brown),
             onPressed: () async {
               await Get.toNamed(AppRoutes.addLawyer);
               _loadLawyers();
@@ -275,6 +296,7 @@ class _ManagelawyersState extends State<Managelawyers> {
           ),
         ],
       ),
+      // <-- ADD THIS
       body: _buildBody(),
     );
   }

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 
 const String baseUrl = 'http://localhost:3000';
@@ -258,40 +259,46 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.brown,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Get.offNamed(AppRoutes.adminDashboard);
-          },
+  backgroundColor: const Color(0xFFF5EFE6),   // beige instead of brown
+  elevation: 0,
+  leading: Builder(
+    builder: (context) => IconButton(
+  icon: const Icon(Icons.arrow_back, color: Colors.brown),
+  onPressed: () {
+    Get.offAll(() => AdminDashboardScreen());
+  },
+),
+  ),
+  title: Row(
+    children: [
+      Container(
+        height: 40, width: 40,
+        decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
         ),
-        title: const Text(
-          'List of Cases',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Container();
-                  },
-                ),
-              );
-              if (result == true) {
-                _loadCases();
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: _loadCases,
-          ),
-        ],
       ),
+      const SizedBox(width: 10),
+      const Text("List of Cases",
+          style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 20)),
+    ],
+  ),
+  actions: [
+    IconButton(icon: const Icon(Icons.refresh, color: Colors.brown), onPressed: _loadCases),
+    IconButton(
+  icon: const Icon(Icons.add, color: Colors.brown),
+  onPressed: () async {
+    final result = await Get.toNamed(AppRoutes.createCase);
+    if (result == true) {
+      _loadCases();
+    }
+  },
+),
+  ],
+),
+ 
+  // <-- ADD THIS
       body: Container(
         color: const Color(0xFFF5F0EB),
         child: Column(
