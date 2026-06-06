@@ -66,4 +66,43 @@ static Future<void> createCase({
     throw Exception('Failed to create case: ${response.body}');
   }
 }
+static Future updateCase({
+  required int id,
+  required String descriptionCase,
+  required String phone,
+  required String address,
+  required String caseType,
+  required String name,
+  required String caseStartDate,
+  required String caseStatus,
+  required String departConcern,
+  required String hearingDate,
+  required String paymentStatus,
+  required String token,
+})
+ async {
+  final response = await http.put(
+    Uri.parse('$baseUrl/cases/$id'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      "description_case": descriptionCase,
+      "phone": phone,
+      "address": address,
+      "case_type": caseType,
+      "name": name,
+      "case_start_date": caseStartDate,
+      "case_status": caseStatus,
+      "depart_concern": departConcern,
+      "hearing_date": hearingDate,
+      "payment_status": paymentStatus,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(response.body);
+  }
+}
 }
