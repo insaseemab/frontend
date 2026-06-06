@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/auth_services.dart';
 import '../register_screen/register.dart';
+import '../../routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,7 +33,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     setState(() => _isLoading = false);
-
     if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'admin') {
       final userName = result['data']['user']['name'];
@@ -42,9 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
 
-      Get.offAllNamed('/dashboard');
-    } 
-    else if (result['success'] &&
+      Get.offAllNamed(AppRoutes.adminDashboard);
+    } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'lawyer') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
@@ -53,11 +52,8 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
 
-      Get.offAllNamed(
-        '/lawyer_dashboard',
-      );
-    } 
-     else if (result['success'] &&
+      Get.offAllNamed(AppRoutes.lawyerDashboard);
+    } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'client') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
@@ -67,10 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('token', token);
 
       Get.offAllNamed(
-        '/client_dashboard',
+        AppRoutes.clientDashboard,
       ); // ✅ Make sure this route is registered
-    } 
-    else if (result['success']) {
+    } else if (result['success']) {
       // Logged in but unknown role
       Get.snackbar('Access Denied', 'Your role is not recognized.');
     } else {
