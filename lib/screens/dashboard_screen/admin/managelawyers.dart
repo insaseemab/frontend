@@ -15,11 +15,12 @@ class _ManagelawyersState extends State<Managelawyers> {
   bool _isLoading = true;
   String? _errorMessage;
   List<Map<String, dynamic>> _lawyers = [];
+
   int _getStatus(dynamic status) {
-  if (status == null) return -1;
-  if (status is int) return status;
-  return int.tryParse(status.toString()) ?? -1;
-}
+    if (status == null) return -1;
+    if (status is int) return status;
+    return int.tryParse(status.toString()) ?? -1;
+  }
 
   @override
   void initState() {
@@ -47,100 +48,203 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
+  // ── DELETE ────────────────────────────────────────────────────────────────
   Future<void> _deleteLawyer(int id) async {
-    try {
-      await _lawyerService.deleteLawyer(id);
-
-      _loadLawyers();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lawyer deleted successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
-  }
-
-  Future<void> _editLawyer(int id) async {
-  final lawyer = _lawyers.firstWhere((l) => l['id'] == id);
-  final nameController = TextEditingController(text: lawyer['name']);
-  final specController = TextEditingController(text: lawyer['specialization']);
-
-  await showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Edit Lawyer'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
-          TextField(controller: specController, decoration: const InputDecoration(labelText: 'Specialization')),
+    // Show confirmation dialog first
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Lawyer'),
+        content: const Text('Are you sure you want to delete this lawyer?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child:
+                const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
         ],
       ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-        ElevatedButton(
-          onPressed: () async {
-            Navigator.pop(ctx);
-            await _lawyerService.updateLawyer(
-              id: id,
-              name: nameController.text,
-              email: lawyer['email'] ?? '',
-              password: lawyer['password'] ?? '',
-              specialization: specController.text,
-              location: lawyer['location'] ?? '',
-              experience: lawyer['experience'].toString(),
-              cases: lawyer['cases'].toString(),
-              rating: lawyer['rating'].toString(),
-              status: lawyer['status'].toString(),
-            );
-            _loadLawyers();
-          },
-          child: const Text('Save'),
-        ),
-      ],
-    ),
-  );
-}
+    );
 
-  Future<void> _approveLawyer(int index) async {
-    final id = _lawyers[index]["id"];
+    if (confirmed != true) return;
+
     try {
-      await _lawyerService.approveLawyer(id);
-      setState(() {
-        _lawyers[index]["status"] = 1;
-      });
+      await _lawyerService.deleteLawyer(id);
+      if (!mounted) return;
+      _loadLawyers();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Lawyer approved ✅"),
+          content: Text('Lawyer deleted successfully'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
-  Future<void> _disapproveLawyer(int index) async {
-    final id = _lawyers[index]["id"];
+  // ── EDIT ──────────────────────────────────────────────────────────────────
+  Future<void> _editLawyer(Map<String, dynamic> lawyer) async {
+    final nameController =
+        TextEditingController(text: lawyer['name']?.toString() ?? '');
+    final specController = TextEditingController(
+        text: lawyer['specialization']?.toString() ?? '');
+    final locationController =
+        TextEditingController(text: lawyer['location']?.toString() ?? '');
+    final experienceController =
+        TextEditingController(text: lawyer['experience']?.toString() ?? '');
+    final casesController =
+        TextEditingController(text: lawyer['cases']?.toString() ?? '');
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text(
+          'Edit Lawyer',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: specController,
+                decoration:
+                    const InputDecoration(labelText: 'Specialization'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: locationController,
+                decoration: const InputDecoration(labelText: 'Location'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: experienceController,
+                decoration: const InputDecoration(labelText: 'Experience'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: casesController,
+                decoration: const InputDecoration(labelText: 'Cases'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await _lawyerService.updateLawyer(
+                  id: lawyer['id'],
+                  name: nameController.text.trim(),
+                  email: lawyer['email']?.toString() ?? '',
+                  password: lawyer['password']?.toString() ?? '',
+                  specialization: specController.text.trim(),
+                  location: locationController.text.trim(),
+                  experience: experienceController.text.trim(),
+                  cases: casesController.text.trim(),
+                  rating: lawyer['rating']?.toString() ?? '0',
+                  status: lawyer['status']?.toString() ?? '1',
+                );
+                if (!mounted) return;
+                _loadLawyers();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Lawyer updated successfully'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Error: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── APPROVE ───────────────────────────────────────────────────────────────
+  Future<void> _approveLawyer(int index) async {
+    final id = _lawyers[index]['id'];
     try {
-      await _lawyerService.disapproveLawyer(id);
+      await _lawyerService.approveLawyer(id);
+      if (!mounted) return;
       setState(() {
-        _lawyers[index]["status"] = 0;
+        _lawyers[index]['status'] = 1;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Lawyer rejected ❌"),
+          content: Text('Lawyer approved ✅'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // ── DISAPPROVE ────────────────────────────────────────────────────────────
+  Future<void> _disapproveLawyer(int index) async {
+    final id = _lawyers[index]['id'];
+    try {
+      await _lawyerService.disapproveLawyer(id);
+      if (!mounted) return;
+      setState(() {
+        _lawyers[index]['status'] = 0;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lawyer rejected ❌'),
           backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -155,13 +259,13 @@ class _ManagelawyersState extends State<Managelawyers> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
+              MaterialPageRoute(
+                  builder: (context) => const AdminDashboardScreen()),
             );
           },
         ),
-
         title: const Text(
-          "List of Lawyers",
+          'List of Lawyers',
           style: TextStyle(
             fontSize: 18,
             color: Colors.white,
@@ -174,7 +278,7 @@ class _ManagelawyersState extends State<Managelawyers> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddLawyerPage()),
+                MaterialPageRoute(builder: (context) => const AddLawyerPage()),
               ).then((_) => _loadLawyers());
             },
           ),
@@ -198,7 +302,8 @@ class _ManagelawyersState extends State<Managelawyers> {
             const SizedBox(height: 12),
             Text('Error: $_errorMessage', textAlign: TextAlign.center),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: _loadLawyers, child: const Text('Retry')),
+            ElevatedButton(
+                onPressed: _loadLawyers, child: const Text('Retry')),
           ],
         ),
       );
@@ -212,12 +317,10 @@ class _ManagelawyersState extends State<Managelawyers> {
       itemCount: _lawyers.length,
       itemBuilder: (context, index) {
         final lawyer = _lawyers[index];
-        final status = _getStatus(lawyer["status"]);
-
+        final status = _getStatus(lawyer['status']);
         final isApproved = status == 1;
         final isRejected = status == 0;
 
-        // ── Brown color — same as app theme ──────────
         const brownColor = Colors.brown;
 
         return Container(
@@ -236,30 +339,28 @@ class _ManagelawyersState extends State<Managelawyers> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header ─────────────────────────────
+              // ── Header ──────────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.brown,
                     child: Text(
-                      (lawyer["name"] ?? "").isNotEmpty
-                          ? lawyer["name"][0]
-                          : "?",
+                      (lawyer['name'] ?? '').isNotEmpty
+                          ? lawyer['name'][0].toUpperCase()
+                          : '?',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                        horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      "⭐ ${lawyer["rating"] ?? ""}",
+                      '⭐ ${lawyer["rating"] ?? ""}',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ),
@@ -267,37 +368,41 @@ class _ManagelawyersState extends State<Managelawyers> {
               ),
               const SizedBox(height: 10),
 
-              // ── Details ────────────────────────────
+              // ── Details ──────────────────────────────────────────────────
               Text(
-                (lawyer["name"] ?? "").isNotEmpty ? lawyer["name"][0] : "?",
-                style: const TextStyle(color: Colors.white),
+                lawyer['name']?.toString() ?? 'Unknown',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              Text((lawyer["id"]).toString() ?? ""),
-              Text(lawyer["specialization"] ?? ""),
-              Text("📍 ${lawyer["location"] ?? ""}"),
-              Text("${lawyer["experience"] ?? ""} years experience"),
-              Text("${lawyer["cases"] ?? ""} cases"),
+              Text(
+                'ID: ${lawyer["id"]}',
+                style:
+                    const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              Text(lawyer['specialization']?.toString() ?? ''),
+              Text('📍 ${lawyer["location"] ?? ""}'),
+              Text('${lawyer["experience"] ?? ""} years experience'),
+              Text('${lawyer["cases"] ?? ""} cases'),
               const SizedBox(height: 10),
 
-              // ── Status Badge ───────────────────────
+              // ── Status Badge ─────────────────────────────────────────────
               if (status != -1)
                 Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
+                      horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: isApproved
                         ? Colors.green.shade100
                         : Colors.red.shade100,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isApproved ? Colors.green : Colors.red,
+                      color:
+                          isApproved ? Colors.green : Colors.red,
                     ),
                   ),
                   child: Text(
-                    isApproved ? "✅ Approved" : "❌ Rejected",
+                    isApproved ? '✅ Approved' : '❌ Rejected',
                     style: TextStyle(
                       color: isApproved
                           ? Colors.green.shade800
@@ -308,16 +413,15 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                 ),
 
-              // ── Approve / Reject Toggle Buttons ────
+              // ── Approve / Reject Row ─────────────────────────────────────
               Row(
                 children: [
-                  // ── APPROVE BUTTON ────────────────
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        // brown jab approved, white jab nahi
-                        backgroundColor: isApproved ? brownColor : Colors.white,
+                        backgroundColor:
+                            isApproved ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -325,24 +429,22 @@ class _ManagelawyersState extends State<Managelawyers> {
                         ),
                       ),
                       child: Text(
-                        "Approve",
+                        'Approve',
                         style: TextStyle(
-                          // white text jab selected, brown jab nahi
-                          color: isApproved ? Colors.white : brownColor,
+                          color:
+                              isApproved ? Colors.white : brownColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 10),
-
-                  // ── REJECT BUTTON ─────────────────
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        // brown jab rejected, white jab nahi
-                        backgroundColor: isRejected ? brownColor : Colors.white,
+                        backgroundColor:
+                            isRejected ? brownColor : Colors.white,
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -350,10 +452,10 @@ class _ManagelawyersState extends State<Managelawyers> {
                         ),
                       ),
                       child: Text(
-                        "Reject",
+                        'Reject',
                         style: TextStyle(
-                          // white text jab selected, brown jab nahi
-                          color: isRejected ? Colors.white : brownColor,
+                          color:
+                              isRejected ? Colors.white : brownColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -361,48 +463,47 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+
+              // ── Edit / Delete Row ────────────────────────────────────────
+              // FIX: Edit button now has its OWN fixed style, not tied to isApproved
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => _editLawyer(lawyer['id']),
+                    child: ElevatedButton.icon(
+                      onPressed: () => _editLawyer(lawyer),
+                      icon: const Icon(Icons.edit, size: 16),
+                      label: const Text(
+                        'Edit',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        // brown jab approved, white jab nahi
-                        backgroundColor: isApproved ? brownColor : Colors.white,
+                        backgroundColor: Colors.white, // always white
+                        foregroundColor: brownColor,   // always brown text/icon
                         side: const BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
-                        "Edit",
-                        style: TextStyle(
-                          color: Colors.brown,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
-
                   Expanded(
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: () => _deleteLawyer(lawyer['id']),
+                      icon: const Icon(Icons.delete, size: 16),
+                      label: const Text(
+                        'Delete',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Colors.brown),
+                        backgroundColor: Colors.white, // always white
+                        foregroundColor: Colors.red,   // always red text/icon
+                        side: const BorderSide(color: Colors.red),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        "Delete",
-                        style: TextStyle(
-                          color: Colors.brown,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
