@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
+import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════
 //  ADMIN — ALL APPOINTMENTS PAGE
@@ -34,12 +36,14 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
       final apt = a as Map<String, dynamic>;
 
       // filter by status
-      final matchStatus = _selectedFilter == 'all' ||
+      final matchStatus =
+          _selectedFilter == 'all' ||
           (apt['status'] ?? '').toLowerCase() == _selectedFilter;
 
       // filter by search (client_id, lawyer_id, case_type, law_type)
       final q = _searchQuery.toLowerCase();
-      final matchSearch = q.isEmpty ||
+      final matchSearch =
+          q.isEmpty ||
           apt['id'].toString().contains(q) ||
           (apt['case_type'] ?? '').toLowerCase().contains(q) ||
           (apt['law_type'] ?? '').toLowerCase().contains(q) ||
@@ -57,7 +61,14 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5EFE6),
         elevation: 0,
-        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.brown),
+            onPressed: () {
+              Get.offAll(() => AdminDashboardScreen());
+            },
+          ),
+        ),
         title: Row(
           children: [
             Container(
@@ -69,8 +80,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child:
-                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
               ),
             ),
             const SizedBox(width: 10),
@@ -104,15 +114,18 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline,
-                      color: Colors.red, size: 48),
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
                   const SizedBox(height: 12),
-                  Text('${snap.error}',
-                      style: const TextStyle(color: Colors.grey)),
+                  Text(
+                    '${snap.error}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry',
-                        style: TextStyle(color: Color(0xFF5C3D2E))),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Color(0xFF5C3D2E)),
+                    ),
                   ),
                 ],
               ),
@@ -123,12 +136,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           final filtered = _filtered(all);
 
           // stats
-          final pending =
-              all.where((a) => a['status'] == 'pending').length;
-          final accepted =
-              all.where((a) => a['status'] == 'accepted').length;
-          final rejected =
-              all.where((a) => a['status'] == 'rejected').length;
+          final pending = all.where((a) => a['status'] == 'pending').length;
+          final accepted = all.where((a) => a['status'] == 'accepted').length;
+          final rejected = all.where((a) => a['status'] == 'rejected').length;
 
           return RefreshIndicator(
             color: const Color(0xFF5C3D2E),
@@ -141,24 +151,28 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   child: Row(
                     children: [
                       _StatCard(
-                          label: 'Total',
-                          value: '${all.length}',
-                          color: Colors.brown),
+                        label: 'Total',
+                        value: '${all.length}',
+                        color: Colors.brown,
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Pending',
-                          value: '$pending',
-                          color: const Color(0xFFB5651D)),
+                        label: 'Pending',
+                        value: '$pending',
+                        color: const Color(0xFFB5651D),
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Accepted',
-                          value: '$accepted',
-                          color: const Color(0xFF2E7D32)),
+                        label: 'Accepted',
+                        value: '$accepted',
+                        color: const Color(0xFF2E7D32),
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Rejected',
-                          value: '$rejected',
-                          color: const Color(0xFFB71C1C)),
+                        label: 'Rejected',
+                        value: '$rejected',
+                        color: const Color(0xFFB71C1C),
+                      ),
                     ],
                   ),
                 ),
@@ -173,8 +187,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                       prefixIcon: const Icon(Icons.search),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 0),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -189,8 +202,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: ['all', 'pending', 'accepted', 'rejected']
-                          .map((f) {
+                      children: ['all', 'pending', 'accepted', 'rejected'].map((
+                        f,
+                      ) {
                         final isSelected = _selectedFilter == f;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
@@ -214,8 +228,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                                 ),
                               ),
                             ),
-                            child: Text(
-                                f[0].toUpperCase() + f.substring(1)),
+                            child: Text(f[0].toUpperCase() + f.substring(1)),
                           ),
                         );
                       }).toList(),
@@ -228,8 +241,10 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                 Expanded(
                   child: filtered.isEmpty
                       ? const Center(
-                          child: Text('No appointments found.',
-                              style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            'No appointments found.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.all(16),
@@ -237,8 +252,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
                           itemBuilder: (_, i) => _AdminAppointmentCard(
-                            appointment:
-                                filtered[i] as Map<String, dynamic>,
+                            appointment: filtered[i] as Map<String, dynamic>,
                           ),
                         ),
                 ),
@@ -277,15 +291,19 @@ class _StatCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(value,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
             const SizedBox(height: 2),
-            Text(label,
-                style:
-                    const TextStyle(fontSize: 11, color: Colors.grey)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
           ],
         ),
       ),
@@ -303,17 +321,23 @@ class _AdminAppointmentCard extends StatelessWidget {
 
   Color get _statusColor {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFF2E7D32);
-      case 'rejected': return const Color(0xFFB71C1C);
-      default:         return const Color(0xFFB5651D);
+      case 'accepted':
+        return const Color(0xFF2E7D32);
+      case 'rejected':
+        return const Color(0xFFB71C1C);
+      default:
+        return const Color(0xFFB5651D);
     }
   }
 
   Color get _statusBg {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFFE8F5E9);
-      case 'rejected': return const Color(0xFFFFEBEE);
-      default:         return const Color(0xFFF5E6D3);
+      case 'accepted':
+        return const Color(0xFFE8F5E9);
+      case 'rejected':
+        return const Color(0xFFFFEBEE);
+      default:
+        return const Color(0xFFF5E6D3);
     }
   }
 
@@ -346,22 +370,27 @@ class _AdminAppointmentCard extends StatelessWidget {
               Text(
                 'Appointment #${appointment['id']}',
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Color(0xFF3E2C23)),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF3E2C23),
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 5),
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
-                    color: _statusBg,
-                    borderRadius: BorderRadius.circular(20)),
+                  color: _statusBg,
+                  borderRadius: BorderRadius.circular(20),
+                ),
                 child: Text(
                   (appointment['status'] ?? 'pending').toUpperCase(),
                   style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: _statusColor),
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: _statusColor,
+                  ),
                 ),
               ),
             ],
@@ -392,9 +421,10 @@ class _AdminAppointmentCard extends StatelessWidget {
 
           // ── Case details ──
           _InfoRow(
-              icon: Icons.folder_outlined,
-              text:
-                  '${appointment['case_type'] ?? ''} · ${appointment['law_type'] ?? ''}'),
+            icon: Icons.folder_outlined,
+            text:
+                '${appointment['case_type'] ?? ''} · ${appointment['law_type'] ?? ''}',
+          ),
           const SizedBox(height: 4),
           _InfoRow(
             icon: Icons.access_time,
@@ -415,9 +445,10 @@ class _AdminAppointmentCard extends StatelessWidget {
             Text(
               appointment['short_description'],
               style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF8C7B6B),
-                  height: 1.4),
+                fontSize: 12,
+                color: Color(0xFF8C7B6B),
+                height: 1.4,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -427,23 +458,26 @@ class _AdminAppointmentCard extends StatelessWidget {
           if (isAccepted && amount != null) ...[
             const SizedBox(height: 10),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F5E9),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.payments_outlined,
-                      size: 16, color: Color(0xFF2E7D32)),
+                  const Icon(
+                    Icons.payments_outlined,
+                    size: 16,
+                    color: Color(0xFF2E7D32),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Payment Amount: Rs. $amount',
                     style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E7D32)),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                    ),
                   ),
                 ],
               ),
@@ -469,10 +503,11 @@ class _InfoRow extends StatelessWidget {
         Icon(icon, size: 13, color: const Color(0xFF8C7B6B)),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(text,
-              style:
-                  const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
-              overflow: TextOverflow.ellipsis),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
@@ -483,8 +518,11 @@ class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _InfoChip(
-      {required this.icon, required this.label, required this.value});
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -501,14 +539,18 @@ class _InfoChip extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 10, color: Color(0xFF8C7B6B))),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF3E2C23))),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 10, color: Color(0xFF8C7B6B)),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF3E2C23),
+                ),
+              ),
             ],
           ),
         ],
