@@ -19,13 +19,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _descriptionCtrl = TextEditingController();
-  final _paymentAmountCtrl = TextEditingController();
-  final _paymentReceiptCtrl = TextEditingController();
-
+  
   String? _selectedLawType;
   String? _selectedCaseType;
   String _appointmentMode = 'online';
-  String _paymentMode = 'manual';
+  
 
   DateTime? _slotStart;
   DateTime? _slotEnd;
@@ -113,11 +111,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       _showSnack('Slot end time must be after slot start time.');
       return;
     }
-    if (_paymentMode == 'stripe' &&
-        (_paymentAmountCtrl.text.isEmpty || _paymentReceiptCtrl.text.isEmpty)) {
-      _showSnack('payment_amount and payment_receipt are required for Stripe.');
-      return;
-    }
 
     setState(() => _isLoading = true);
 
@@ -130,13 +123,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         slotStartTime: _fmtDateTime(_slotStart!),
         slotEndTime: _fmtDateTime(_slotEnd!),
         appointmentMode: _appointmentMode,
-        paymentMode: _paymentMode,
-        paymentAmount: _paymentAmountCtrl.text.isNotEmpty
-            ? double.tryParse(_paymentAmountCtrl.text)
-            : null,
-        paymentReceipt: _paymentReceiptCtrl.text.isNotEmpty
-            ? _paymentReceiptCtrl.text.trim()
-            : null,
       );
       if (!mounted) return;
       _showSuccessDialog();
@@ -186,8 +172,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   void dispose() {
     _descriptionCtrl.dispose();
-    _paymentAmountCtrl.dispose();
-    _paymentReceiptCtrl.dispose();
     super.dispose();
   }
 
@@ -288,53 +272,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
               const SizedBox(height: 20),
 
-              _sectionLabel('Payment'),
-              const SizedBox(height: 10),
-
-              _ModeSelector(
-                options: const ['manual', 'stripe'],
-                selected: _paymentMode,
-                icons: const [
-                  Icons.account_balance_outlined,
-                  Icons.credit_card_outlined,
-                ],
-                onSelected: (v) => setState(() {
-                  _paymentMode = v;
-                }),
-              ),
-
-              // Show amount field for BOTH manual and stripe
-              const SizedBox(height: 12),
-              _fieldLabel('Payment Amount (PKR)'),
-              const SizedBox(height: 6),
-              TextFormField(
-                controller: _paymentAmountCtrl,
-                keyboardType: TextInputType.number,
-                decoration: _inputDecor('e.g. 5000'),
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) {
-                    return 'Payment amount is required';
-                  }
-                  return null;
-                },
-              ),
-
-              // Show receipt field only when Stripe is selected
-              if (_paymentMode == 'stripe') ...[
-                const SizedBox(height: 12),
-                _fieldLabel('Payment Receipt / Transaction ID'),
-                const SizedBox(height: 6),
-                TextFormField(
-                  controller: _paymentReceiptCtrl,
-                  decoration: _inputDecor('Enter transaction ID or reference'),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return 'Receipt required for Stripe';
-                    }
-                    return null;
-                  },
-                ),
-              ],
               const SizedBox(height: 32),
 
               SizedBox(

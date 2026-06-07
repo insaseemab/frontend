@@ -11,5 +11,12 @@ class AppRoutes {
   static const createCase = "/create-case";
 
   static const clientDashboard = "/client-dashboard";
+  static const lawyerFind = '/lawyer-find';
+  static const lawyerProfile = '/lawyer-profile';
+  static const bookAppointment = '/book-appointment';
+  static const myAppointments = '/my-appointments';
+  static const calendar = '/calendar';
+  static const messages = '/messages';          // ✅ ADD THIS
+
   static const lawyerDashboard = "/lawyer-dashboard";
 }

@@ -73,9 +73,7 @@ class ApiService {
     required String slotStartTime,
     required String slotEndTime,
     required String appointmentMode,
-    required String paymentMode,
-    double? paymentAmount,
-    String? paymentReceipt,
+    
   }) async {
     final body = jsonEncode({
       'lawyer_id': lawyerId,
@@ -85,10 +83,6 @@ class ApiService {
       'slot_start_time': slotStartTime,
       'slot_end_time': slotEndTime,
       'appointment_mode': appointmentMode,
-      'payment_mode': paymentMode,
-      if (paymentAmount != null) 'payment_amount': paymentAmount,
-      'payment_receipt':
-          paymentMode == 'manual' ? 'MANUAL_PAYMENT' : paymentReceipt,
     });
 
     final res = await http.post(
@@ -122,9 +116,6 @@ class ApiService {
       'slot_start_time': slotStartTime,
       'slot_end_time': slotEndTime,
       'appointment_mode': appointmentMode,
-      'payment_mode': paymentMode,
-      if (paymentAmount != null) 'payment_amount': paymentAmount,
-      if (paymentReceipt != null) 'payment_receipt': paymentReceipt,
     });
 
     final res = await http.put(
