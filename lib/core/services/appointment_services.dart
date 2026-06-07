@@ -165,6 +165,37 @@ class ApiService {
       );
     }
   }
+  /// GET /appointments/:id — single appointment detail
+/// GET /appointments/:id
+/// GET /appointments/:id
+
+/// PUT /appointments/:id
+static Future<void> editAppointment({
+  required int id,
+  required int lawyerId,
+  required String lawType,
+  required String caseType,
+  required String shortDescription,
+  required String slotStartTime,
+  required String slotEndTime,
+  required String appointmentMode,
+}) async {
+  final body = jsonEncode({
+    'lawyer_id': lawyerId,
+    'law_type': lawType,
+    'case_type': caseType,
+    'short_description': shortDescription,
+    'slot_start_time': slotStartTime,
+    'slot_end_time': slotEndTime,
+    'appointment_mode': appointmentMode,
+  });
+  final res = await http.put(
+    Uri.parse('$baseUrl/appointments/$id'),
+    headers: _authHeaders(),
+    body: body,
+  );
+  _checkStatus(res);
+}
 }
 
 class ApiException implements Exception {
