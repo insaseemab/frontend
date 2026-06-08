@@ -26,7 +26,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   _homePage(),
   const Managelawyers(),
   const ManageCasesPage(),
-  const AdminAppointmentsPage(),  // ✅ ADD
+  const AdminAppointmentsPage(),
 ];
     return Scaffold(
       backgroundColor: Colors.white,
@@ -138,7 +138,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               leading: const Icon(Icons.home, color: Colors.brown),
               title: const Text("Home"),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 0);
               },
             ),
@@ -146,7 +146,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               leading: const Icon(Icons.verified_user, color: Colors.brown),
               title: const Text("Manage Lawyers"),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 1);
               },
             ),
@@ -154,7 +154,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               leading: const Icon(Icons.folder, color: Colors.brown),
               title: const Text("Manage Cases"),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 2);
               },
             ),
@@ -162,7 +162,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               leading: const Icon(Icons.person, color: Colors.brown),
               title: const Text("Appointments"),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 3);
               },
             ),
