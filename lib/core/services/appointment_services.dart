@@ -196,6 +196,16 @@ static Future<void> editAppointment({
   );
   _checkStatus(res);
 }
+
+static Future<List<dynamic>> getAppointmentsForLawyer(int lawyerId) async {
+  final res = await http.get(
+    Uri.parse('$baseUrl/appointments'),
+    headers: _authHeaders(),
+  );
+  _checkStatus(res);
+  final all = jsonDecode(res.body) as List<dynamic>;
+  return all.where((a) => a['lawyer_id'] == lawyerId).toList();
+}
 }
 
 class ApiException implements Exception {

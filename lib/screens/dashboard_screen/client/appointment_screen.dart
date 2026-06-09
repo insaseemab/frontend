@@ -19,11 +19,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _descriptionCtrl = TextEditingController();
-  
+
   String? _selectedLawType;
   String? _selectedCaseType;
   String _appointmentMode = 'online';
-  
 
   DateTime? _slotStart;
   DateTime? _slotEnd;
@@ -613,6 +612,42 @@ class _AppointmentTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ],
+          if (appointment['status'] == 'accepted') ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Your appointment has been accepted!',
+                    style: TextStyle(
+                      color: Color(0xFF2E7D32),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (appointment['payment_amount'] != null &&
+                      appointment['payment_amount'].toString() != '0.00') ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      'Consultation Fee: Rs. ${appointment['payment_amount']}',
+                      style: const TextStyle(
+                        color: Color(0xFF2E7D32),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+
           if (appointment['status'] == 'pending') ...[
             const SizedBox(height: 12),
             Align(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
 import 'message.dart';
+import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════
 //  CLIENT DASHBOARD SCREEN  (Bottom Nav Shell)
@@ -59,7 +61,92 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ],
         ),
       ),
-
+drawer: Drawer(
+        backgroundColor: const Color(0xFFF5EFE6),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.brown),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 55,
+                    width: 55,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Insaaf Connect",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    "Client",
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home, color: Colors.brown),
+              title: const Text("Home"),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 0);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.search, color: Colors.brown),
+              title: const Text("Lawyer Find"),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 1);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.calendar_month, color: Colors.brown),
+              title: const Text("My Calendar"),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 2);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.message, color: Colors.brown),
+              title: const Text("Messages"),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 3);
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.brown),
+              title: const Text("Logout"),
+              onTap: () {
+                Get.offAll(() => LoginScreen());
+              },
+            ),
+          ],
+        ),
+      ),
+     
       // ───────── BODY ─────────
       body: IndexedStack(
         index: currentIndex,

@@ -572,16 +572,16 @@ class _AdminAppointmentCard extends StatelessWidget {
               Expanded(
                 child: _InfoChip(
                   icon: Icons.person_outline,
-                  label: 'Client ID',
-                  value: '${appointment['client_id'] ?? '-'}',
+                  label: 'Client',
+                  value: '${appointment['client_name'] ?? '-'}',
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: _InfoChip(
                   icon: Icons.gavel,
-                  label: 'Lawyer ID',
-                  value: '${appointment['lawyer_id'] ?? '-'}',
+                  label: 'Lawyer',
+                  value: '${appointment['lawyer_name'] ?? '-'}',
                 ),
               ),
             ],

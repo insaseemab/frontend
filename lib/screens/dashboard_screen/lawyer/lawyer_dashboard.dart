@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
+
 
 
 class LawyerDashboard extends StatefulWidget {
@@ -26,7 +28,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       _HomePage(userName: userName),
-      const _ActiveCasesPage(),
+      const ManageCasesPage(),
       const AdminAppointmentsPage(),
       const _MessagesPage(),
     ];
