@@ -165,11 +165,7 @@ class ApiService {
       );
     }
   }
-  /// GET /appointments/:id — single appointment detail
-/// GET /appointments/:id
-/// GET /appointments/:id
-
-/// PUT /appointments/:id
+  
 static Future<void> editAppointment({
   required int id,
   required int lawyerId,
