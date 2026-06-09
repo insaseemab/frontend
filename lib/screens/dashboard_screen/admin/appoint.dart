@@ -61,26 +61,33 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
 
   // ── Edit Appointment ──
   Future<void> _showEdit(Map<String, dynamic> apt) async {
-    final lawyerIdCtrl =
-        TextEditingController(text: apt['lawyer_id']?.toString() ?? '');
-    final lawTypeCtrl =
-        TextEditingController(text: apt['law_type']?.toString() ?? '');
-    final caseTypeCtrl =
-        TextEditingController(text: apt['case_type']?.toString() ?? '');
-    final descCtrl =
-        TextEditingController(text: apt['short_description']?.toString() ?? '');
-    final startCtrl =
-        TextEditingController(text: apt['slot_start_time']?.toString() ?? '');
-    final endCtrl =
-        TextEditingController(text: apt['slot_end_time']?.toString() ?? '');
+    final lawyerIdCtrl = TextEditingController(
+      text: apt['lawyer_id']?.toString() ?? '',
+    );
+    final lawTypeCtrl = TextEditingController(
+      text: apt['law_type']?.toString() ?? '',
+    );
+    final caseTypeCtrl = TextEditingController(
+      text: apt['case_type']?.toString() ?? '',
+    );
+    final descCtrl = TextEditingController(
+      text: apt['short_description']?.toString() ?? '',
+    );
+    final startCtrl = TextEditingController(
+      text: apt['slot_start_time']?.toString() ?? '',
+    );
+    final endCtrl = TextEditingController(
+      text: apt['slot_end_time']?.toString() ?? '',
+    );
     String mode = apt['appointment_mode']?.toString() ?? 'online';
 
     await showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setS) => AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           title: const Text(
             'Edit Appointment',
             style: TextStyle(fontWeight: FontWeight.bold),
@@ -89,15 +96,25 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _editField('Lawyer ID', lawyerIdCtrl,
-                    keyboardType: TextInputType.number),
+                _editField(
+                  'Lawyer ID',
+                  lawyerIdCtrl,
+                  keyboardType: TextInputType.number,
+                ),
                 _editField('Law Type', lawTypeCtrl),
                 _editField('Case Type', caseTypeCtrl),
                 _editField('Short Description', descCtrl, maxLines: 3),
-                _editField('Slot Start Time', startCtrl,
-                    hint: 'YYYY-MM-DD HH:MM:SS'),
-                _editField('Slot End Time', endCtrl,
-                    hint: 'YYYY-MM-DD HH:MM:SS'),
+                _editField(
+                  'Slot Start Time',
+                  startCtrl,
+                  hint: 'YYYY-MM-DD HH:MM:SS',
+                ),
+                _editField(
+                  'Slot End Time',
+                  endCtrl,
+                  hint: 'YYYY-MM-DD HH:MM:SS',
+                ),
+                
                 const SizedBox(height: 8),
                 // ── Mode selector ──
                 Row(
@@ -107,8 +124,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                       child: GestureDetector(
                         onTap: () => setS(() => mode = m),
                         child: Container(
-                          margin:
-                              EdgeInsets.only(right: m == 'online' ? 8 : 0),
+                          margin: EdgeInsets.only(right: m == 'online' ? 8 : 0),
                           padding: const EdgeInsets.symmetric(vertical: 10),
                           decoration: BoxDecoration(
                             color: isActive
@@ -138,7 +154,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   }).toList(),
                 ),
               ],
+              
             ),
+            
           ),
           actions: [
             TextButton(
@@ -150,15 +168,15 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                 backgroundColor: const Color(0xFF5C3D2E),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () async {
                 Navigator.pop(ctx);
                 try {
                   await ApiService.editAppointment(
                     id: apt['id'] as int,
-                    lawyerId:
-                        int.tryParse(lawyerIdCtrl.text.trim()) ?? 0,
+                    lawyerId: int.tryParse(lawyerIdCtrl.text.trim()) ?? 0,
                     lawType: lawTypeCtrl.text.trim(),
                     caseType: caseTypeCtrl.text.trim(),
                     shortDescription: descCtrl.text.trim(),
@@ -170,12 +188,14 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   _load();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                        content: Text('Appointment updated successfully')),
+                      content: Text('Appointment updated successfully'),
+                    ),
                   );
                 } on ApiException catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(e.message)));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.message)));
                 }
               },
               child: const Text('Save Changes'),
@@ -203,21 +223,123 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          hintStyle:
-              const TextStyle(fontSize: 11, color: Color(0xFFAA9988)),
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          hintStyle: const TextStyle(fontSize: 11, color: Color(0xFFAA9988)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide:
-                const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
         ),
       ),
     );
   }
+  Future<void> _showUpdateStatus(Map<String, dynamic> apt) async {
+  String selectedStatus = apt['status'] ?? 'pending';
+  final paymentCtrl = TextEditingController(
+    text: apt['payment_amount']?.toString() ?? '',
+  );
+
+  await showDialog(
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setS) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Update Status', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: ['pending', 'accepted', 'rejected'].map((s) {
+                final isActive = selectedStatus == s;
+                Color col = s == 'accepted'
+                    ? const Color(0xFF2E7D32)
+                    : s == 'rejected'
+                        ? const Color(0xFFB71C1C)
+                        : const Color(0xFFB5651D);
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setS(() => selectedStatus = s),
+                    child: Container(
+                      margin: EdgeInsets.only(right: s != 'rejected' ? 6 : 0),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isActive ? col : Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: isActive ? col : const Color(0xFFEADDD0)),
+                      ),
+                      child: Text(
+                        s[0].toUpperCase() + s.substring(1),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: isActive ? Colors.white : const Color(0xFF8C7B6B),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: paymentCtrl,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Payment Amount (required if Accepted)',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF5C3D2E),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ApiService.updateAppointmentStatus(
+                  id: apt['id'] as int,
+                  status: selectedStatus,
+                  paymentAmount: paymentCtrl.text.trim().isEmpty
+                      ? null
+                      : double.tryParse(paymentCtrl.text.trim()),
+                );
+                if (!mounted) return;
+                _load();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Status updated to $selectedStatus')),
+                );
+              } on ApiException catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(e.message)));
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -245,8 +367,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child:
-                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
               ),
             ),
             const SizedBox(width: 10),
@@ -272,8 +393,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(
-              child:
-                  CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+              child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
             );
           }
           if (snap.hasError) {
@@ -281,15 +401,18 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline,
-                      color: Colors.red, size: 48),
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
                   const SizedBox(height: 12),
-                  Text('${snap.error}',
-                      style: const TextStyle(color: Colors.grey)),
+                  Text(
+                    '${snap.error}',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry',
-                        style: TextStyle(color: Color(0xFF5C3D2E))),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Color(0xFF5C3D2E)),
+                    ),
                   ),
                 ],
               ),
@@ -299,12 +422,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           final all = snap.data ?? [];
           final filtered = _filtered(all);
 
-          final pending =
-              all.where((a) => a['status'] == 'pending').length;
-          final accepted =
-              all.where((a) => a['status'] == 'accepted').length;
-          final rejected =
-              all.where((a) => a['status'] == 'rejected').length;
+          final pending = all.where((a) => a['status'] == 'pending').length;
+          final accepted = all.where((a) => a['status'] == 'accepted').length;
+          final rejected = all.where((a) => a['status'] == 'rejected').length;
 
           return RefreshIndicator(
             color: const Color(0xFF5C3D2E),
@@ -317,24 +437,28 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   child: Row(
                     children: [
                       _StatCard(
-                          label: 'Total',
-                          value: '${all.length}',
-                          color: Colors.brown),
+                        label: 'Total',
+                        value: '${all.length}',
+                        color: Colors.brown,
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Pending',
-                          value: '$pending',
-                          color: const Color(0xFFB5651D)),
+                        label: 'Pending',
+                        value: '$pending',
+                        color: const Color(0xFFB5651D),
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Accepted',
-                          value: '$accepted',
-                          color: const Color(0xFF2E7D32)),
+                        label: 'Accepted',
+                        value: '$accepted',
+                        color: const Color(0xFF2E7D32),
+                      ),
                       const SizedBox(width: 10),
                       _StatCard(
-                          label: 'Rejected',
-                          value: '$rejected',
-                          color: const Color(0xFFB71C1C)),
+                        label: 'Rejected',
+                        value: '$rejected',
+                        color: const Color(0xFFB71C1C),
+                      ),
                     ],
                   ),
                 ),
@@ -349,8 +473,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                       prefixIcon: const Icon(Icons.search),
                       filled: true,
                       fillColor: Colors.white,
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 0),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
@@ -365,12 +488,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: [
-                        'all',
-                        'pending',
-                        'accepted',
-                        'rejected',
-                      ].map((f) {
+                      children: ['all', 'pending', 'accepted', 'rejected'].map((
+                        f,
+                      ) {
                         final isSelected = _selectedFilter == f;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
@@ -394,8 +514,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                                 ),
                               ),
                             ),
-                            child: Text(
-                                f[0].toUpperCase() + f.substring(1)),
+                            child: Text(f[0].toUpperCase() + f.substring(1)),
                           ),
                         );
                       }).toList(),
@@ -408,8 +527,10 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                 Expanded(
                   child: filtered.isEmpty
                       ? const Center(
-                          child: Text('No appointments found.',
-                              style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            'No appointments found.',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         )
                       : ListView.separated(
                           padding: const EdgeInsets.all(16),
@@ -417,12 +538,12 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 10),
                           itemBuilder: (_, i) {
-                            final apt =
-                                filtered[i] as Map<String, dynamic>;
+                            final apt = filtered[i] as Map<String, dynamic>;
                             return _AdminAppointmentCard(
                               appointment: apt,
                               onViewDetail: () => _showDetail(apt),
                               onEdit: () => _showEdit(apt),
+                              onUpdateStatus: () => _showUpdateStatus(apt),
                             );
                           },
                         ),
@@ -462,15 +583,19 @@ class _StatCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(value,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: color)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
             const SizedBox(height: 2),
-            Text(label,
-                style:
-                    const TextStyle(fontSize: 11, color: Colors.grey)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, color: Colors.grey),
+            ),
           ],
         ),
       ),
@@ -485,11 +610,13 @@ class _AdminAppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback onViewDetail;
   final VoidCallback onEdit;
+  final VoidCallback onUpdateStatus;
 
   const _AdminAppointmentCard({
     required this.appointment,
     required this.onViewDetail,
     required this.onEdit,
+    required this.onUpdateStatus,
   });
 
   Color get _statusColor {
@@ -548,19 +675,82 @@ class _AdminAppointmentCard extends StatelessWidget {
                   color: Color(0xFF3E2C23),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 5),
-                decoration: BoxDecoration(
-                    color: _statusBg,
-                    borderRadius: BorderRadius.circular(20)),
-                child: Text(
-                  (appointment['status'] ?? 'pending').toUpperCase(),
-                  style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: _statusColor),
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _statusBg,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      (appointment['status'] ?? 'pending').toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: _statusColor,
+                      ),
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, color: Color(0xFF5C3D2E)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    onSelected: (value) {
+                      if (value == 'status') onUpdateStatus();
+                      if (value == 'detail') onViewDetail();
+                      if (value == 'edit') onEdit();
+                    },
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(
+                        value: 'status',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.sync_alt,
+                              size: 16,
+                              color: Color(0xFF5C3D2E),
+                            ),
+                            SizedBox(width: 10),
+                            Text('Update Status'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'detail',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.visibility_outlined,
+                              size: 16,
+                              color: Color(0xFF5C3D2E),
+                            ),
+                            SizedBox(width: 10),
+                            Text('View Detail'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.edit_outlined,
+                              size: 16,
+                              color: Color(0xFF5C3D2E),
+                            ),
+                            SizedBox(width: 10),
+                            Text('Edit'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -614,7 +804,10 @@ class _AdminAppointmentCard extends StatelessWidget {
             Text(
               appointment['short_description'],
               style: const TextStyle(
-                  fontSize: 12, color: Color(0xFF8C7B6B), height: 1.4),
+                fontSize: 12,
+                color: Color(0xFF8C7B6B),
+                height: 1.4,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -624,68 +817,31 @@ class _AdminAppointmentCard extends StatelessWidget {
           if (isAccepted && amount != null) ...[
             const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F5E9),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.payments_outlined,
-                      size: 16, color: Color(0xFF2E7D32)),
+                  const Icon(
+                    Icons.payments_outlined,
+                    size: 16,
+                    color: Color(0xFF2E7D32),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Payment Amount: Rs. $amount',
                     style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2E7D32)),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2E7D32),
+                    ),
                   ),
                 ],
               ),
             ),
           ],
-
-          // ── Action Buttons ──
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onViewDetail,
-                  icon: const Icon(Icons.visibility_outlined,
-                      size: 15, color: Color(0xFF5C3D2E)),
-                  label: const Text('View Detail',
-                      style: TextStyle(
-                          color: Color(0xFF5C3D2E), fontSize: 12)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF5C3D2E)),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onEdit,
-                  icon: const Icon(Icons.edit_outlined,
-                      size: 15, color: Colors.brown),
-                  label: const Text('Edit',
-                      style:
-                          TextStyle(color: Colors.brown, fontSize: 12)),
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.brown),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -727,8 +883,7 @@ class _DetailSheetState extends State<_DetailSheet> {
             return const SizedBox(
               height: 200,
               child: Center(
-                child: CircularProgressIndicator(
-                    color: Color(0xFF5C3D2E)),
+                child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
               ),
             );
           }
@@ -766,9 +921,10 @@ class _DetailSheetState extends State<_DetailSheet> {
                     Text(
                       'Appointment #${apt['id']}',
                       style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF3E2C23)),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF3E2C23),
+                      ),
                     ),
                     _StatusBadge(status: apt['status'] ?? 'pending'),
                   ],
@@ -776,52 +932,73 @@ class _DetailSheetState extends State<_DetailSheet> {
                 const SizedBox(height: 20),
 
                 // ── Parties ──
-                _DetailSection(title: 'Parties', children: [
-                  _DetailRow(
+                _DetailSection(
+                  title: 'Parties',
+                  children: [
+                    _DetailRow(
                       label: 'Client ID',
-                      value: '${apt['client_id'] ?? '-'}'),
-                  _DetailRow(
+                      value: '${apt['client_id'] ?? '-'}',
+                    ),
+                    _DetailRow(
                       label: 'Lawyer ID',
-                      value: '${apt['lawyer_id'] ?? '-'}'),
-                ]),
+                      value: '${apt['lawyer_id'] ?? '-'}',
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 12),
 
                 // ── Case Info ──
-                _DetailSection(title: 'Case Info', children: [
-                  _DetailRow(
-                      label: 'Law Type',
-                      value: apt['law_type'] ?? '-'),
-                  _DetailRow(
-                      label: 'Case Type',
-                      value: apt['case_type'] ?? '-'),
-                  _DetailRow(
-                      label: 'Mode',
-                      value: apt['appointment_mode'] ?? '-'),
-                  if (apt['short_description'] != null)
+                _DetailSection(
+                  title: 'Case Info',
+                  children: [
                     _DetailRow(
+                      label: 'Law Type',
+                      value: apt['law_type'] ?? '-',
+                    ),
+                    _DetailRow(
+                      label: 'Case Type',
+                      value: apt['case_type'] ?? '-',
+                    ),
+                    _DetailRow(
+                      label: 'Mode',
+                      value: apt['appointment_mode'] ?? '-',
+                    ),
+                    if (apt['short_description'] != null)
+                      _DetailRow(
                         label: 'Description',
-                        value: apt['short_description']),
-                ]),
+                        value: apt['short_description'],
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 12),
 
                 // ── Time Slot ──
-                _DetailSection(title: 'Time Slot', children: [
-                  _DetailRow(
+                _DetailSection(
+                  title: 'Time Slot',
+                  children: [
+                    _DetailRow(
                       label: 'Start',
-                      value: apt['slot_start_time'] ?? '-'),
-                  _DetailRow(
+                      value: apt['slot_start_time'] ?? '-',
+                    ),
+                    _DetailRow(
                       label: 'End',
-                      value: apt['slot_end_time'] ?? '-'),
-                ]),
+                      value: apt['slot_end_time'] ?? '-',
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 12),
 
                 // ── Payment ──
                 if (isAccepted) ...[
-                  _DetailSection(title: 'Payment', children: [
-                    _DetailRow(
+                  _DetailSection(
+                    title: 'Payment',
+                    children: [
+                      _DetailRow(
                         label: 'Amount',
-                        value: 'Rs. ${apt['payment_amount'] ?? '-'}'),
-                  ]),
+                        value: 'Rs. ${apt['payment_amount'] ?? '-'}',
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                 ],
 
@@ -834,7 +1011,8 @@ class _DetailSheetState extends State<_DetailSheet> {
                       backgroundColor: const Color(0xFF5C3D2E),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     child: const Text('Close'),
                   ),
@@ -870,11 +1048,14 @@ class _DetailSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: Color(0xFF5C3D2E))),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: Color(0xFF5C3D2E),
+            ),
+          ),
           const SizedBox(height: 10),
           ...children,
         ],
@@ -897,16 +1078,20 @@ class _DetailRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label,
-                style: const TextStyle(
-                    fontSize: 12, color: Color(0xFF8C7B6B))),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            ),
           ),
           Expanded(
-            child: Text(value,
-                style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF3E2C23))),
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3E2C23),
+              ),
+            ),
           ),
         ],
       ),
@@ -920,31 +1105,41 @@ class _StatusBadge extends StatelessWidget {
 
   Color get _color {
     switch (status) {
-      case 'accepted': return const Color(0xFF2E7D32);
-      case 'rejected': return const Color(0xFFB71C1C);
-      default:         return const Color(0xFFB5651D);
+      case 'accepted':
+        return const Color(0xFF2E7D32);
+      case 'rejected':
+        return const Color(0xFFB71C1C);
+      default:
+        return const Color(0xFFB5651D);
     }
   }
 
   Color get _bg {
     switch (status) {
-      case 'accepted': return const Color(0xFFE8F5E9);
-      case 'rejected': return const Color(0xFFFFEBEE);
-      default:         return const Color(0xFFF5E6D3);
+      case 'accepted':
+        return const Color(0xFFE8F5E9);
+      case 'rejected':
+        return const Color(0xFFFFEBEE);
+      default:
+        return const Color(0xFFF5E6D3);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-          color: _bg, borderRadius: BorderRadius.circular(20)),
+        color: _bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Text(
         status.toUpperCase(),
         style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.bold, color: _color),
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: _color,
+        ),
       ),
     );
   }
@@ -964,10 +1159,11 @@ class _InfoRow extends StatelessWidget {
         Icon(icon, size: 13, color: const Color(0xFF8C7B6B)),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(text,
-              style:
-                  const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
-              overflow: TextOverflow.ellipsis),
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
@@ -999,14 +1195,18 @@ class _InfoChip extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label,
-                  style: const TextStyle(
-                      fontSize: 10, color: Color(0xFF8C7B6B))),
-              Text(value,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF3E2C23))),
+              Text(
+                label,
+                style: const TextStyle(fontSize: 10, color: Color(0xFF8C7B6B)),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF3E2C23),
+                ),
+              ),
             ],
           ),
         ],
