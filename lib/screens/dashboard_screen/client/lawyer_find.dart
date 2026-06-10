@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:insaafconnect/core/services/message_services.dart';
 import 'appointment_screen.dart';
 import 'view_appoint.dart';
+import 'package:insaafconnect/routes/app_routes.dart'; // ← ADD THIS
 
 class LawyerFindScreen extends StatefulWidget {
   const LawyerFindScreen({super.key});
@@ -31,7 +34,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '15 years exp.',
       'cases': '250 cases',
       'rating': '4.8',
-      'bio': 'Experienced civil lawyer with 15 years of practice in Lahore High Court. Specializes in property disputes, contract law, and civil litigation.',
+      'bio':
+          'Experienced civil lawyer with 15 years of practice in Lahore High Court. Specializes in property disputes, contract law, and civil litigation.',
       'phone': '+92 300 1234567',
       'email': 'ahmed.khan@insaaf.pk',
       'education': 'LLB – University of Punjab',
@@ -46,7 +50,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '10 years exp.',
       'cases': '180 cases',
       'rating': '4.9',
-      'bio': 'Corporate law expert advising startups and enterprises on mergers, acquisitions, and compliance matters across Pakistan.',
+      'bio':
+          'Corporate law expert advising startups and enterprises on mergers, acquisitions, and compliance matters across Pakistan.',
       'phone': '+92 321 9876543',
       'email': 'sarah.ali@insaaf.pk',
       'education': 'LLM – Karachi University',
@@ -61,7 +66,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '12 years exp.',
       'cases': '200 cases',
       'rating': '4.7',
-      'bio': 'Criminal defense attorney with extensive experience in high-profile cases at the Islamabad High Court and Supreme Court of Pakistan.',
+      'bio':
+          'Criminal defense attorney with extensive experience in high-profile cases at the Islamabad High Court and Supreme Court of Pakistan.',
       'phone': '+92 333 4561234',
       'email': 'bilal.ahmed@insaaf.pk',
       'education': 'LLB – Quaid-e-Azam University',
@@ -76,7 +82,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '8 years exp.',
       'cases': '150 cases',
       'rating': '4.6',
-      'bio': 'Compassionate family lawyer handling divorce, custody, inheritance, and domestic matters with sensitivity and professionalism.',
+      'bio':
+          'Compassionate family lawyer handling divorce, custody, inheritance, and domestic matters with sensitivity and professionalism.',
       'phone': '+92 345 6789012',
       'email': 'fatima.malik@insaaf.pk',
       'education': 'LLB – University of the Punjab',
@@ -91,7 +98,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '20 years exp.',
       'cases': '300 cases',
       'rating': '4.9',
-      'bio': 'Senior property lawyer with two decades of handling land disputes, title transfers, and real estate transactions across Sindh.',
+      'bio':
+          'Senior property lawyer with two decades of handling land disputes, title transfers, and real estate transactions across Sindh.',
       'phone': '+92 300 9998887',
       'email': 'hassan.raza@insaaf.pk',
       'education': 'LLM – University of Karachi',
@@ -106,7 +114,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
       'experience': '7 years exp.',
       'cases': '120 cases',
       'rating': '4.5',
-      'bio': 'Civil litigation specialist with a focus on consumer protection and administrative law cases in federal courts.',
+      'bio':
+          'Civil litigation specialist with a focus on consumer protection and administrative law cases in federal courts.',
       'phone': '+92 311 2223334',
       'email': 'ayesha.khan@insaaf.pk',
       'education': 'LLB – International Islamic University',
@@ -156,8 +165,15 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search by name, specialization, or location...',
-                hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
-                prefixIcon: const Icon(Icons.search, color: Color(0xFFAA9988), size: 20),
+                hintStyle: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFFAA9988),
+                ),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: Color(0xFFAA9988),
+                  size: 20,
+                ),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
@@ -183,7 +199,11 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  const Icon(Icons.filter_list, color: Color(0xFF8C7B6B), size: 18),
+                  const Icon(
+                    Icons.filter_list,
+                    color: Color(0xFF8C7B6B),
+                    size: 18,
+                  ),
                   const SizedBox(width: 6),
                   ...filters.map((f) {
                     final isSelected = f == selectedFilter;
@@ -193,7 +213,9 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                         onTap: () => setState(() => selectedFilter = f),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? const Color(0xFF5C3D2E)
@@ -235,11 +257,11 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.72,
-                    ),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.72,
+                        ),
                     itemCount: filtered.length,
                     itemBuilder: (context, i) =>
                         _LawyerCard(lawyer: filtered[i]),
@@ -258,6 +280,23 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
 class _LawyerCard extends StatelessWidget {
   final Map<String, dynamic> lawyer;
   const _LawyerCard({required this.lawyer});
+
+  Future<void> _openChat() async {
+    // CORRECT — add the
+    final result = await MessageService().startConversation(
+      lawyerId: lawyer['id'],
+    );
+    if (result != null) {
+      Get.toNamed(
+        '/messages',
+        arguments: {
+          "conversation_id": result["id"],
+          "other_name": lawyer["name"],
+          "receiver_id": lawyer["user_id"] ?? lawyer["id"],
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -295,14 +334,21 @@ class _LawyerCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF0EBE5),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star, size: 13, color: Color(0xFFE6A817)),
+                      const Icon(
+                        Icons.star,
+                        size: 13,
+                        color: Color(0xFFE6A817),
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         lawyer['rating'],
@@ -336,12 +382,18 @@ class _LawyerCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.location_on_outlined,
-                    size: 13, color: Color(0xFF8C7B6B)),
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 13,
+                  color: Color(0xFF8C7B6B),
+                ),
                 const SizedBox(width: 3),
                 Text(
                   lawyer['location'],
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF8C7B6B),
+                  ),
                 ),
               ],
             ),
@@ -351,11 +403,17 @@ class _LawyerCard extends StatelessWidget {
               children: [
                 Text(
                   lawyer['experience'],
-                  style: const TextStyle(fontSize: 10, color: Color(0xFFAA9988)),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFFAA9988),
+                  ),
                 ),
                 Text(
                   lawyer['cases'],
-                  style: const TextStyle(fontSize: 10, color: Color(0xFFAA9988)),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFFAA9988),
+                  ),
                 ),
               ],
             ),
@@ -390,7 +448,7 @@ class _LawyerCard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: _openChat,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: const Color(0xFF5C3D2E),
                   padding: const EdgeInsets.symmetric(vertical: 9),
@@ -420,6 +478,22 @@ class LawyerProfileScreen extends StatelessWidget {
   final Map<String, dynamic> lawyer;
   const LawyerProfileScreen({super.key, required this.lawyer});
 
+  Future<void> _openChat() async {
+    final result = await MessageService().startConversation(
+      lawyerId: lawyer['id'],
+    );
+    if (result != null) {
+      Get.toNamed(
+        AppRoutes.messages,
+        arguments: {
+          "conversation_id": result["id"],
+          "other_name": lawyer["name"],
+          "receiver_id": lawyer["user_id"] ?? lawyer["id"],
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -428,8 +502,11 @@ class LawyerProfileScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFF1ECE5),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Color(0xFF3E2C23), size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF3E2C23),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -482,19 +559,26 @@ class LawyerProfileScreen extends StatelessWidget {
                   Text(
                     lawyer['specialty'],
                     style: const TextStyle(
-                        fontSize: 14, color: Color(0xFF8C7B6B)),
+                      fontSize: 14,
+                      color: Color(0xFF8C7B6B),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 15, color: Color(0xFF8C7B6B)),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 15,
+                        color: Color(0xFF8C7B6B),
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         lawyer['location'],
                         style: const TextStyle(
-                            fontSize: 13, color: Color(0xFF8C7B6B)),
+                          fontSize: 13,
+                          color: Color(0xFF8C7B6B),
+                        ),
                       ),
                     ],
                   ),
@@ -541,7 +625,10 @@ class LawyerProfileScreen extends StatelessWidget {
               child: Text(
                 lawyer['bio'],
                 style: const TextStyle(
-                    fontSize: 14, color: Color(0xFF6B5B4E), height: 1.6),
+                  fontSize: 14,
+                  color: Color(0xFF6B5B4E),
+                  height: 1.6,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -556,8 +643,11 @@ class LawyerProfileScreen extends StatelessWidget {
                       color: const Color(0xFFF5EDE4),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.school_outlined,
-                        color: Colors.brown, size: 20),
+                    child: const Icon(
+                      Icons.school_outlined,
+                      color: Colors.brown,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -578,10 +668,14 @@ class LawyerProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _ContactRow(
-                      icon: Icons.phone_outlined, label: lawyer['phone']),
+                    icon: Icons.phone_outlined,
+                    label: lawyer['phone'],
+                  ),
                   const SizedBox(height: 12),
                   _ContactRow(
-                      icon: Icons.email_outlined, label: lawyer['email']),
+                    icon: Icons.email_outlined,
+                    label: lawyer['email'],
+                  ),
                 ],
               ),
             ),
@@ -596,8 +690,7 @@ class LawyerProfileScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              BookAppointmentScreen(lawyer: lawyer),
+                          builder: (_) => BookAppointmentScreen(lawyer: lawyer),
                         ),
                       );
                     },
@@ -605,7 +698,9 @@ class LawyerProfileScreen extends StatelessWidget {
                     label: const Text(
                       'Book Appointment',
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF5C3D2E),
@@ -621,18 +716,22 @@ class LawyerProfileScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () {},
+                    onPressed: _openChat,
                     icon: const Icon(Icons.message_outlined, size: 18),
                     label: const Text(
                       'Send Message',
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF5C3D2E),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: const BorderSide(
-                          color: Color(0xFF5C3D2E), width: 1.5),
+                        color: Color(0xFF5C3D2E),
+                        width: 1.5,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -652,9 +751,8 @@ class LawyerProfileScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => ViewAppointmentsScreen(
-                            lawyerId: lawyer['id'],
-                          ),
+                          builder: (_) =>
+                              ViewAppointmentsScreen(lawyerId: lawyer['id']),
                         ),
                       );
                     },
@@ -662,7 +760,9 @@ class LawyerProfileScreen extends StatelessWidget {
                     label: const Text(
                       'View Appointments',
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF5C3D2E),
@@ -678,20 +778,22 @@ class LawyerProfileScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: navigate to messages screen
-                    },
+                    onPressed: _openChat,
                     icon: const Icon(Icons.forum_outlined, size: 18),
                     label: const Text(
                       'View Messages',
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF5C3D2E),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       side: const BorderSide(
-                          color: Color(0xFF5C3D2E), width: 1.5),
+                        color: Color(0xFF5C3D2E),
+                        width: 1.5,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -707,11 +809,8 @@ class LawyerProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _divider() => Container(
-        width: 1,
-        height: 36,
-        color: const Color(0xFFEADDD0),
-      );
+  Widget _divider() =>
+      Container(width: 1, height: 36, color: const Color(0xFFEADDD0));
 }
 
 // ════════════════════════════════════════════════
@@ -807,7 +906,10 @@ class _ContactRow extends StatelessWidget {
         const SizedBox(width: 12),
         Text(
           label,
-          style: const TextStyle(fontSize: 14, color: Color.fromARGB(255, 0, 0, 0)),
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color.fromARGB(255, 0, 0, 0),
+          ),
         ),
       ],
     );
