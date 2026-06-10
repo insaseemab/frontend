@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
+import 'package:get/get.dart';
+import 'package:insaafconnect/core/services/message_services.dart';
+import 'package:insaafconnect/screens/dashboard_screen/client/message.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/message.dart';
 
 
 
@@ -677,164 +681,127 @@ class _AppointmentsPage extends StatelessWidget {
 // ══════════════════════════════════════════════════════════
 // 4. MESSAGES PAGE
 // ══════════════════════════════════════════════════════════
-class _MessagesPage extends StatelessWidget {
+class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
 
   @override
+  State<_MessagesPage> createState() => _MessagesPageState();
+}
+
+class _MessagesPageState extends State<_MessagesPage> {
+
+  final MessageService service = MessageService();
+
+  List conversations = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadConversations();
+  }
+
+  Future<void> loadConversations() async {
+
+    final data = await service.fetchConversations();
+
+    if (mounted) {
+      setState(() {
+        conversations = data;
+        loading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final messages = [
-      {
-        "name": "Ali Raza",
-        "msg": "Can we reschedule the court hearing?",
-        "time": "10:30 AM",
-        "unread": "2",
-      },
-      {
-        "name": "Fatima Khan",
-        "msg": "Please review the contract documents",
-        "time": "9:15 AM",
-        "unread": "1",
-      },
-      {
-        "name": "Hassan Ahmed",
-        "msg": "Thank you for the consultation",
-        "time": "Yesterday",
-        "unread": "0",
-      },
-      {
-        "name": "Sara Malik",
-        "msg": "When is our next appointment?",
-        "time": "Yesterday",
-        "unread": "3",
-      },
-      {
-        "name": "Tariq Khan",
-        "msg": "Documents have been submitted",
-        "time": "Mon",
-        "unread": "0",
-      },
-    ];
+
+    if (loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (conversations.isEmpty) {
+      return const Center(
+        child: Text("No conversations found"),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.all(20),
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           const Text(
             "Messages",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
+
           const SizedBox(height: 4),
+
           const Text(
             "Your client conversations",
             style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-
-          // Search bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const TextField(
-              decoration: InputDecoration(
-                hintText: "Search messages...",
-                border: InputBorder.none,
-                icon: Icon(Icons.search, color: Colors.grey),
-              ),
-            ),
           ),
 
           const SizedBox(height: 16),
 
           Expanded(
             child: ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, i) {
-                final m = messages[i];
-                final hasUnread = m['unread'] != '0' && m['unread']!.isNotEmpty;
-                return Container(
+              itemCount: conversations.length,
+
+              itemBuilder: (context, index) {
+
+                final c = conversations[index];
+
+                return Card(
                   margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: const Color(0xFF6B4F3F),
-                        radius: 22,
-                        child: Text(
-                          m['name']![0],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+
+                  child: ListTile(
+
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          const Color(0xFF6B4F3F),
+
+                      child: Text(
+                        "C",
+                        style: const TextStyle(
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              m['name']!,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              m['msg']!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            m['time']!,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          if (hasUnread)
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF6B4F3F),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Text(
-                                m['unread']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
+                    ),
+
+                    title: Text(
+                      "Client #${c['client_id']}",
+                    ),
+
+                    subtitle: Text(
+                      "Conversation ID ${c['id']}",
+                    ),
+
+                    onTap: () {
+
+                      Get.to(
+                        () => const MessageScreen(),
+                        arguments: {
+
+                          "conversation_id":
+                              c["id"],
+
+                          "receiver_id":
+                              c["client_id"],
+
+                          "other_name":
+                              "Client #${c['client_id']}",
+                        },
+                      );
+                    },
                   ),
                 );
               },

@@ -20,6 +20,8 @@ import '../screens/dashboard_screen/client/calendar.dart';       // ✅ ADD
 import '../screens/dashboard_screen/client/message.dart';        // ✅ ADD
 
 import '../screens/dashboard_screen/lawyer/lawyer_dashboard.dart';
+import '../screens/dashboard_screen/lawyer/message.dart';
+
 
 class AppPages {
   static final routes = <GetPage>[
@@ -91,5 +93,10 @@ class AppPages {
       page: () => LawyerDashboard(),
       middlewares: [AuthMiddleware()],
     ),
+    GetPage(
+  name: "/lawyer-conversations",
+  page: () =>
+      const LawyerConversationScreen(),
+),
   ];
 }

@@ -19,4 +19,6 @@ class AppRoutes {
   static const messages = '/messages';          // ✅ ADD THIS
 
   static const lawyerDashboard = "/lawyer-dashboard";
+  static const lawyerMessages =
+    '/lawyer-messages';
 }

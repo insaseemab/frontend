@@ -56,7 +56,8 @@ class MessageService {
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       final int myId = GetStorage().read("user_id") ?? 0;
-
+print("MY ID = $myId");
+print("SENDER = ${["sender_id"]}");
       return data.map((m) {
         final map = Map<String, dynamic>.from(m);
         map["is_mine"] = map["sender_id"] == myId;
@@ -98,6 +99,26 @@ class MessageService {
     }
     return null;
   }
+Future<List<Map<String, dynamic>>> fetchLawyerConversations() async {
+
+  final lawyerId =
+      GetStorage().read("user_id");
+
+  final response = await http.get(
+    Uri.parse(
+      "$baseUrl/conversations/lawyer/$lawyerId",
+    ),
+    headers: _headers,
+  );
+
+  if (response.statusCode == 200) {
+    return List<Map<String, dynamic>>.from(
+      jsonDecode(response.body),
+    );
+  }
+
+  return [];
+}
 
   // =============================================
   // PATCH /messages/read/:conversationId
