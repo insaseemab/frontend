@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:3000";
+ static const String baseUrl =
+"http://localhost:3000";
 
   static final _box = GetStorage();
 
@@ -193,22 +195,73 @@ static Future<void> editAppointment({
   _checkStatus(res);
 }
 
-static Future<List<dynamic>> getAppointmentsForLawyer(int lawyerId) async {
+static Future<List> getAppointmentsForLawyer(
+    int lawyerId) async {
+
   final res = await http.get(
     Uri.parse('$baseUrl/appointments'),
     headers: _authHeaders(),
   );
+
   _checkStatus(res);
-  final all = jsonDecode(res.body) as List<dynamic>;
-  return all.where((a) => a['lawyer_id'] == lawyerId).toList();
-}
+
+  final all = jsonDecode(res.body) as List;
+
+  return all.where(
+    (a) => a['lawyer_id'] == lawyerId,
+  ).toList();
 }
 
+static Future<void> payAppointment(
+  int appointmentId,
+  String paymentMethod,
+  File? screenshot,
+) async {
+
+  var request = http.MultipartRequest(
+    "PATCH",
+    Uri.parse(
+      "$baseUrl/appointments/$appointmentId/pay",
+    ),
+  );
+
+  final token = getToken();
+
+  if (token != null) {
+    request.headers['Authorization'] =
+        'Bearer $token';
+  }
+
+  request.fields['payment_method'] =
+      paymentMethod;
+
+  if (screenshot != null) {
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'screenshot',
+        screenshot.path,
+      ),
+    );
+  }
+
+  final response = await request.send();
+
+  if (response.statusCode < 200 ||
+      response.statusCode >= 300) {
+    throw Exception("Payment failed");
+  }
+}
+}
 class ApiException implements Exception {
   final int statusCode;
   final String message;
-  const ApiException({required this.statusCode, required this.message});
+
+  const ApiException({
+    required this.statusCode,
+    required this.message,
+  });
 
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() =>
+      'ApiException($statusCode): $message';
 }

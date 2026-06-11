@@ -56,8 +56,6 @@ class MessageService {
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       final int myId = GetStorage().read("user_id") ?? 0;
-print("MY ID = $myId");
-print("SENDER = ${["sender_id"]}");
       return data.map((m) {
         final map = Map<String, dynamic>.from(m);
         map["is_mine"] = map["sender_id"] == myId;

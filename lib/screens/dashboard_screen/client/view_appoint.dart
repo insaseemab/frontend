@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/screens/dashboard_screen/client/payment_bottom_sheet.dart';
 
 class ViewAppointmentsScreen extends StatefulWidget {
   final int lawyerId;
@@ -326,6 +327,29 @@ class _AppointmentCard extends StatelessWidget {
               text: 'PKR ${appointment['payment_amount']}',
             ),
           ],
+          if (status.toLowerCase() == "accepted" &&
+    appointment['payment_amount'] != null &&
+    appointment['payment_status'] != "paid")
+  SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => PaymentBottomSheet(
+            appointment: appointment,
+          ),
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF5C3D2E),
+        foregroundColor: Colors.white,
+      ),
+      child: const Text("Proceed To Payment"),
+    ),
+  ),
         ],
       ),
     );
