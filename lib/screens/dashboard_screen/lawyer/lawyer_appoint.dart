@@ -83,7 +83,7 @@ class _LawyerAppointmentsPageState extends State<LawyerAppointmentsPage> {
 }
 
 // ─────────────────────────────────────────────────────────
-// TILE — shows each appointment with Accept / Reject buttons
+// TILE
 // ─────────────────────────────────────────────────────────
 class _LawyerAppointmentTile extends StatelessWidget {
   final Map<String, dynamic> appointment;
@@ -112,7 +112,10 @@ class _LawyerAppointmentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPending = appointment['status'] == 'pending';
+    final isPending  = appointment['status'] == 'pending';
+    final isAccepted = appointment['status'] == 'accepted';
+    final hasPayment = appointment['payment_mode'] != null;
+    final amount     = appointment['payment_amount'];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -131,7 +134,7 @@ class _LawyerAppointmentTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header row ──
+          // ── Header ──
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -162,7 +165,7 @@ class _LawyerAppointmentTile extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // ── Client name ──
+          // ── Info rows ──
           _InfoRow(
             icon: Icons.person_outline,
             text: 'Client: ${appointment['client_name'] ?? appointment['client_id']}',
@@ -192,14 +195,13 @@ class _LawyerAppointmentTile extends StatelessWidget {
             ),
           ],
 
-          // ── Accept / Reject buttons (only when pending) ──
+          // ── Accept / Reject (pending only) ──
           if (isPending) ...[
             const SizedBox(height: 14),
             const Divider(color: Color(0xFFEADDD0), height: 1),
             const SizedBox(height: 12),
             Row(
               children: [
-                // REJECT
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => _reject(context),
@@ -214,7 +216,6 @@ class _LawyerAppointmentTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                // ACCEPT
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _showPaymentForm(context),
@@ -233,10 +234,8 @@ class _LawyerAppointmentTile extends StatelessWidget {
             ),
           ],
 
-          // ── Show payment amount if accepted ──
-          if (appointment['status'] == 'accepted' &&
-              appointment['payment_amount'] != null &&
-              appointment['payment_amount'].toString() != '0.00') ...[
+          // ── Payment amount chip (accepted) ──
+          if (isAccepted && amount != null && amount.toString() != '0.00') ...[
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(10),
@@ -249,7 +248,7 @@ class _LawyerAppointmentTile extends StatelessWidget {
                   const Icon(Icons.payments_outlined, size: 16, color: Color(0xFF2E7D32)),
                   const SizedBox(width: 8),
                   Text(
-                    'Fee: Rs. ${appointment['payment_amount']}',
+                    'Fee: Rs. $amount',
                     style: const TextStyle(
                       color: Color(0xFF2E7D32),
                       fontWeight: FontWeight.w600,
@@ -257,6 +256,65 @@ class _LawyerAppointmentTile extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+          ],
+
+          // ── Client payment proof (accepted + client submitted payment) ──
+          if (isAccepted && hasPayment) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5EFE6),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFEADDD0)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Client Payment Submitted',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF5C3D2E),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  if (appointment['payment_mode'] != null)
+                    _InfoRow(
+                      icon: Icons.payment,
+                      text: 'Mode: ${appointment['payment_mode']}',
+                    ),
+                  if (appointment['payment_receipt'] != null) ...[
+                    const SizedBox(height: 4),
+                    _InfoRow(
+                      icon: Icons.receipt_outlined,
+                      text: 'Receipt: ${appointment['payment_receipt']}',
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // ── Approve Payment button ──
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _approvePayment(context),
+                icon: const Icon(Icons.check_circle_outline, size: 16),
+                label: const Text('Approve Payment'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2E7D32),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
               ),
             ),
           ],
@@ -313,10 +371,81 @@ class _LawyerAppointmentTile extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _approvePayment(BuildContext context) async {
+    
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: const Text('Approve Payment'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (appointment['payment_mode'] != null)
+              _DetailChip(
+                label: 'Mode',
+                value: appointment['payment_mode'].toString(),
+              ),
+            if (appointment['payment_receipt'] != null)
+              _DetailChip(
+                label: 'Receipt',
+                value: appointment['payment_receipt'].toString(),
+              ),
+            if (appointment['payment_amount'] != null)
+              _DetailChip(
+                label: 'Amount',
+                value: 'Rs. ${appointment['payment_amount']}',
+              ),
+            const SizedBox(height: 6),
+            const Text(
+              'Confirm you have verified the client\'s payment?',
+              style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2E7D32),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Approve'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await ApiService.approvePayment(id: appointment['id'] as int);
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment approved successfully'),
+          backgroundColor: Color(0xFF2E7D32),
+        ),
+      );
+      onRefresh();
+    } on ApiException catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────
-// PAYMENT FORM — bottom sheet shown when lawyer taps Accept
+// PAYMENT FORM SHEET
 // ─────────────────────────────────────────────────────────
 class _PaymentFormSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
@@ -332,9 +461,8 @@ class _PaymentFormSheet extends StatefulWidget {
 }
 
 class _PaymentFormSheetState extends State<_PaymentFormSheet> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey  = GlobalKey<FormState>();
   final _amountCtrl = TextEditingController();
-  String _paymentMode = 'Manual';
   bool _isLoading = false;
 
   @override
@@ -354,7 +482,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
         paymentAmount: double.parse(_amountCtrl.text.trim()),
       );
       if (!mounted) return;
-      Navigator.pop(context); // close sheet
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Appointment accepted! Client has been notified.'),
@@ -386,7 +514,6 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle bar
               Center(
                 child: Container(
                   width: 40,
@@ -398,7 +525,6 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 'Set Payment Details',
                 style: TextStyle(
@@ -413,8 +539,6 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                 style: const TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
               ),
               const SizedBox(height: 20),
-
-              // Amount field
               const Text(
                 'Consultation Fee (Rs.)',
                 style: TextStyle(
@@ -447,48 +571,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-
-              // Payment mode selector
-              const Text(
-                'Payment Mode',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF5C3D2E),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: ['Manual', 'Stripe'].map((mode) {
-                  final isSelected = _paymentMode == mode;
-                  return Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _paymentMode = mode),
-                      child: Container(
-                        margin: EdgeInsets.only(right: mode == 'Manual' ? 8 : 0),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF5C3D2E) : const Color(0xFFF1ECE5),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Text(
-                            mode,
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : const Color(0xFF8C7B6B),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
               const SizedBox(height: 24),
-
-              // Confirm button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -506,7 +589,8 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2.5),
                         )
                       : const Text(
                           'Confirm & Notify Client',
@@ -524,7 +608,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
 }
 
 // ─────────────────────────────────────────────────────────
-// REUSABLE
+// REUSABLE WIDGETS
 // ─────────────────────────────────────────────────────────
 class _InfoRow extends StatelessWidget {
   final IconData icon;
@@ -545,6 +629,43 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _DetailChip extends StatelessWidget {
+  final String label;
+  final String value;
+  const _DetailChip({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5EFE6),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3E2C23),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

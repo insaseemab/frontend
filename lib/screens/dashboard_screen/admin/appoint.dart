@@ -59,6 +59,137 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
     );
   }
 
+  Future<void> _showUpdatePaymentStatus(Map<String, dynamic> apt) async {
+  final bool? confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text(
+        'Approve Payment',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (apt['payment_mode'] != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5EFE6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.payment, size: 16, color: Color(0xFF5C3D2E)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Mode: ${apt['payment_mode']}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF3E2C23),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (apt['payment_receipt'] != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5EFE6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Receipt',
+                    style: TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    apt['payment_receipt'].toString(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF3E2C23),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (apt['payment_amount'] != null)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.payments_outlined,
+                      size: 16, color: Color(0xFF2E7D32)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Amount: Rs. ${apt['payment_amount']}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2E7D32),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 6),
+          const Text(
+            'Confirm you have verified the client\'s payment and want to approve it?',
+            style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2E7D32),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+          ),
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Approve'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirmed != true) return;
+
+  try {
+    await ApiService.approvePayment(id: apt['id'] as int);
+    if (!mounted) return;
+    _load();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Payment approved successfully')),
+    );
+  } on ApiException catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(e.message)));
+  }
+}
   // ── Edit Appointment ──
   Future<void> _showEdit(Map<String, dynamic> apt) async {
     final lawyerIdCtrl = TextEditingController(
@@ -114,7 +245,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   endCtrl,
                   hint: 'YYYY-MM-DD HH:MM:SS',
                 ),
-                
+
                 const SizedBox(height: 8),
                 // ── Mode selector ──
                 Row(
@@ -154,9 +285,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   }).toList(),
                 ),
               ],
-              
             ),
-            
           ),
           actions: [
             TextButton(
@@ -237,109 +366,132 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
       ),
     );
   }
-  Future<void> _showUpdateStatus(Map<String, dynamic> apt) async {
-  String selectedStatus = apt['status'] ?? 'pending';
-  final paymentCtrl = TextEditingController(
-    text: apt['payment_amount']?.toString() ?? '',
-  );
 
-  await showDialog(
-    context: context,
-    builder: (ctx) => StatefulBuilder(
-      builder: (ctx, setS) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Update Status', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: ['pending', 'accepted', 'rejected'].map((s) {
-                final isActive = selectedStatus == s;
-                Color col = s == 'accepted'
-                    ? const Color(0xFF2E7D32)
-                    : s == 'rejected'
-                        ? const Color(0xFFB71C1C)
-                        : const Color(0xFFB5651D);
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => setS(() => selectedStatus = s),
-                    child: Container(
-                      margin: EdgeInsets.only(right: s != 'rejected' ? 6 : 0),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isActive ? col : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: isActive ? col : const Color(0xFFEADDD0)),
-                      ),
-                      child: Text(
-                        s[0].toUpperCase() + s.substring(1),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: isActive ? Colors.white : const Color(0xFF8C7B6B),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+  Future<void> _showUpdateStatus(Map<String, dynamic> apt) async {
+    String selectedStatus = apt['status'] ?? 'pending';
+    final paymentCtrl = TextEditingController(
+      text: apt['payment_amount']?.toString() ?? '',
+    );
+
+    await showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Update Status',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: ['pending', 'accepted', 'rejected'].map((s) {
+                  final isActive = selectedStatus == s;
+                  Color col = s == 'accepted'
+                      ? const Color(0xFF2E7D32)
+                      : s == 'rejected'
+                      ? const Color(0xFFB71C1C)
+                      : const Color(0xFFB5651D);
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setS(() => selectedStatus = s),
+                      child: Container(
+                        margin: EdgeInsets.only(right: s != 'rejected' ? 6 : 0),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isActive ? col : Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isActive ? col : const Color(0xFFEADDD0),
+                          ),
+                        ),
+                        child: Text(
+                          s[0].toUpperCase() + s.substring(1),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: isActive
+                                ? Colors.white
+                                : const Color(0xFF8C7B6B),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: paymentCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Payment Amount (required if Accepted)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  );
+                }).toList(),
               ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: paymentCtrl,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Payment Amount (required if Accepted)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF5C3D2E),
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5C3D2E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () async {
+                Navigator.pop(ctx);
+                try {
+                  await ApiService.updateAppointmentStatus(
+                    id: apt['id'] as int,
+                    status: selectedStatus,
+                    paymentAmount: paymentCtrl.text.trim().isEmpty
+                        ? null
+                        : double.tryParse(paymentCtrl.text.trim()),
+                  );
+                  if (!mounted) return;
+                  _load();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Status updated to $selectedStatus'),
+                    ),
+                  );
+                } on ApiException catch (e) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(e.message)));
+                }
+              },
+              child: const Text('Save'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5C3D2E),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              try {
-                await ApiService.updateAppointmentStatus(
-                  id: apt['id'] as int,
-                  status: selectedStatus,
-                  paymentAmount: paymentCtrl.text.trim().isEmpty
-                      ? null
-                      : double.tryParse(paymentCtrl.text.trim()),
-                );
-                if (!mounted) return;
-                _load();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Status updated to $selectedStatus')),
-                );
-              } on ApiException catch (e) {
-                if (!mounted) return;
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(e.message)));
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -544,6 +696,8 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                               onViewDetail: () => _showDetail(apt),
                               onEdit: () => _showEdit(apt),
                               onUpdateStatus: () => _showUpdateStatus(apt),
+                              onUpdatePaymentStatus: () =>
+                                  _showUpdatePaymentStatus(apt), // ADD THIS
                             );
                           },
                         ),
@@ -611,12 +765,14 @@ class _AdminAppointmentCard extends StatelessWidget {
   final VoidCallback onViewDetail;
   final VoidCallback onEdit;
   final VoidCallback onUpdateStatus;
+  final VoidCallback onUpdatePaymentStatus;
 
   const _AdminAppointmentCard({
     required this.appointment,
     required this.onViewDetail,
     required this.onEdit,
     required this.onUpdateStatus,
+    required this.onUpdatePaymentStatus,
   });
 
   Color get _statusColor {
@@ -704,6 +860,7 @@ class _AdminAppointmentCard extends StatelessWidget {
                       if (value == 'status') onUpdateStatus();
                       if (value == 'detail') onViewDetail();
                       if (value == 'edit') onEdit();
+                      if (value == 'payment') onUpdatePaymentStatus();
                     },
                     itemBuilder: (_) => const [
                       PopupMenuItem(
@@ -745,6 +902,20 @@ class _AdminAppointmentCard extends StatelessWidget {
                             ),
                             SizedBox(width: 10),
                             Text('Edit'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'payment',
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.payments_outlined,
+                              size: 16,
+                              color: Color(0xFF5C3D2E),
+                            ),
+                            SizedBox(width: 10),
+                            Text('Update Payment Status'),
                           ],
                         ),
                       ),

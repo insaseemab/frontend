@@ -17,9 +17,11 @@ class _MessageScreenState extends State<MessageScreen> {
   //   "other_name": String,
   //   "receiver_id": int,
   // })
-  int get conversationId => (Get.arguments as Map?)?["conversation_id"] as int? ?? 0;
-String get otherName => (Get.arguments as Map?)?["other_name"] as String? ?? "Chat";
-int get receiverId => (Get.arguments as Map?)?["receiver_id"] as int? ?? 0;
+  int get conversationId =>
+      (Get.arguments as Map?)?["conversation_id"] as int? ?? 0;
+  String get otherName =>
+      (Get.arguments as Map?)?["other_name"] as String? ?? "Chat";
+  int get receiverId => (Get.arguments as Map?)?["receiver_id"] as int? ?? 0;
 
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -150,9 +152,12 @@ int get receiverId => (Get.arguments as Map?)?["receiver_id"] as int? ?? 0;
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
                       final msg = messages[index];
+
+                      final myId = GetStorage().read("user_id");
+
                       return _MessageBubble(
                         body: msg["body"] ?? "",
-                        isMine: msg["is_mine"] == true,
+                        isMine: msg["sender_id"].toString() == myId.toString(),
                         createdAt: msg["created_at"] ?? "",
                       );
                     },

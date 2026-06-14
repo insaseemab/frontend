@@ -16,7 +16,7 @@ class PaymentBottomSheet extends StatefulWidget {
 }
 
 class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
-  String selectedMethod = "manual";
+  String selectedMethod = "Manual";
 
   File? screenshot;
 
@@ -107,13 +107,13 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedMethod = "manual";
+                      selectedMethod = "Manual";
                     });
                   },
                   child: Container(
                     height: 120,
                     decoration: BoxDecoration(
-                      color: selectedMethod == "manual"
+                      color: selectedMethod == "Manual"
                           ? const Color(0xFF5C3D2E)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -124,7 +124,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                       children: [
                         Icon(
                           Icons.upload,
-                          color: selectedMethod == "manual"
+                          color: selectedMethod == "Manual"
                               ? Colors.white
                               : Colors.black,
                         ),
@@ -133,7 +133,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                           "Manual Payment",
                           style: TextStyle(
                             color:
-                                selectedMethod == "manual"
+                                selectedMethod == "Manual"
                                     ? Colors.white
                                     : Colors.black,
                           ),
@@ -150,13 +150,13 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedMethod = "card";
+                      selectedMethod = "Stripe";
                     });
                   },
                   child: Container(
                     height: 120,
                     decoration: BoxDecoration(
-                      color: selectedMethod == "card"
+                      color: selectedMethod == "Stripe"
                           ? const Color(0xFF5C3D2E)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -166,16 +166,16 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                           MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.credit_card,
-                          color: selectedMethod == "card"
+                          Icons.payment_outlined,
+                          color: selectedMethod == "Stripe"
                               ? Colors.white
                               : Colors.black,
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          "Card Payment",
+                          "Stripe",
                           style: TextStyle(
-                            color: selectedMethod == "card"
+                            color: selectedMethod == "Stripe"
                                 ? Colors.white
                                 : Colors.black,
                           ),
@@ -190,7 +190,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
           const SizedBox(height: 20),
 
-          if (selectedMethod == "manual")
+          if (selectedMethod == "Manual")
             Column(
               children: [
                 OutlinedButton(

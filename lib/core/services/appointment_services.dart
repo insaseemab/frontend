@@ -217,41 +217,41 @@ static Future<void> payAppointment(
   String paymentMethod,
   File? screenshot,
 ) async {
+  // Convert screenshot to base64 string if provided
+  String? receiptBase64;
+  if (screenshot != null) {
+    final bytes = await screenshot.readAsBytes();
+    receiptBase64 = base64Encode(bytes);
+  }
 
-  var request = http.MultipartRequest(
-    "PATCH",
-    Uri.parse(
-      "$baseUrl/appointments/$appointmentId/pay",
-    ),
+  final body = jsonEncode({
+    'payment_mode': paymentMethod,
+    if (receiptBase64 != null) 'payment_receipt': receiptBase64,
+  });
+
+  final res = await http.patch(
+    Uri.parse('$baseUrl/appointments/$appointmentId/pay'),
+    headers: _authHeaders(), // already has Content-Type: application/json
+    body: body,
   );
 
-  final token = getToken();
-
-  if (token != null) {
-    request.headers['Authorization'] =
-        'Bearer $token';
-  }
-
-  request.fields['payment_method'] =
-      paymentMethod;
-
-  if (screenshot != null) {
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'screenshot',
-        screenshot.path,
-      ),
+  if (res.statusCode < 200 || res.statusCode >= 300) {
+    final decoded = jsonDecode(res.body);
+    throw ApiException(
+      statusCode: res.statusCode,
+      message: decoded['error'] ?? 'Payment failed',
     );
   }
-
-  final response = await request.send();
-
-  if (response.statusCode < 200 ||
-      response.statusCode >= 300) {
-    throw Exception("Payment failed");
-  }
+}
+static Future<void> approvePayment({required int id}) async {
+  final res = await http.patch(
+    Uri.parse('$baseUrl/appointments/$id/approve-payment'),
+    headers: _authHeaders(),
+  );
+  _checkStatus(res);
 }
 }
+
 class ApiException implements Exception {
   final int statusCode;
   final String message;
