@@ -12,11 +12,6 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreenState extends State<MessageScreen> {
-  // Arguments passed via Get.toNamed('/message', arguments: {
-  //   "conversation_id": int,
-  //   "other_name": String,
-  //   "receiver_id": int,
-  // })
   int get conversationId =>
       (Get.arguments as Map?)?["conversation_id"] as int? ?? 0;
   String get otherName =>
@@ -40,7 +35,7 @@ class _MessageScreenState extends State<MessageScreen> {
     fetchMessages();
     _messageService.markAsRead(conversationId: conversationId);
 
-    // poll every 5 seconds for new messages
+    // Poll every 5 seconds for new messages
     _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       fetchMessages(silent: true);
     });
@@ -61,7 +56,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
     if (mounted) {
       setState(() {
-        messages = data;
+        messages = List<Map<String, dynamic>>.from(data);
         if (!silent) isLoading = false;
         isLoading = false;
       });
@@ -135,7 +130,7 @@ class _MessageScreenState extends State<MessageScreen> {
       ),
       body: Column(
         children: [
-          // ── MESSAGES LIST ──────────────────────────
+          // ── MESSAGES LIST ──────────────────────────────────────
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -153,18 +148,20 @@ class _MessageScreenState extends State<MessageScreen> {
                     itemBuilder: (context, index) {
                       final msg = messages[index];
 
-                      final myId = GetStorage().read("user_id");
+                      // ← Use is_mine from service, NOT sender_id comparison
+                      final isMine = msg["is_mine"] == true;
 
                       return _MessageBubble(
                         body: msg["body"] ?? "",
-                        isMine: msg["sender_id"].toString() == myId.toString(),
+                        isMine: isMine,
+                        senderName: msg["sender_name"] ?? "",
                         createdAt: msg["created_at"] ?? "",
                       );
                     },
                   ),
           ),
 
-          // ── INPUT BAR ──────────────────────────────
+          // ── INPUT BAR ──────────────────────────────────────────
           Container(
             padding: EdgeInsets.only(
               left: 16,
@@ -176,7 +173,7 @@ class _MessageScreenState extends State<MessageScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: Colors.black.withOpacity(0.06),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -184,28 +181,33 @@ class _MessageScreenState extends State<MessageScreen> {
             ),
             child: Row(
               children: [
+                // Text field
                 Expanded(
-                  child: TextField(
-                    controller: _inputController,
-                    maxLines: null,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => sendMessage(),
-                    decoration: InputDecoration(
-                      hintText: "Type your message...",
-                      filled: true,
-                      fillColor: const Color(0xFFF5F0E8),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F0E8),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: TextField(
+                      controller: _inputController,
+                      maxLines: null,
+                      textInputAction: TextInputAction.send,
+                      onSubmitted: (_) => sendMessage(),
+                      decoration: const InputDecoration(
+                        hintText: "Type your message...",
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 8),
+
+                // Send button
                 GestureDetector(
                   onTap: sendMessage,
                   child: Container(
@@ -235,22 +237,25 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 }
 
-// ── MESSAGE BUBBLE ─────────────────────────────────────
+// ── MESSAGE BUBBLE ─────────────────────────────────────────────
 class _MessageBubble extends StatelessWidget {
   final String body;
   final bool isMine;
+  final String senderName;
   final String createdAt;
 
   const _MessageBubble({
     required this.body,
     required this.isMine,
+    required this.senderName,
     required this.createdAt,
   });
 
   String _formatTime(String iso) {
     try {
       final dt = DateTime.parse(iso).toLocal();
-      return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+      return '${dt.hour.toString().padLeft(2, '0')}:'
+          '${dt.minute.toString().padLeft(2, '0')}';
     } catch (_) {
       return '';
     }
@@ -280,6 +285,21 @@ class _MessageBubble extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: [
+            // Show sender name on received messages (like RiceMart)
+            if (!isMine && senderName.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(
+                  senderName,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3D2B1F),
+                  ),
+                ),
+              ),
+
+            // Message body
             Text(
               body,
               style: TextStyle(
@@ -287,7 +307,10 @@ class _MessageBubble extends StatelessWidget {
                 color: isMine ? Colors.white : Colors.black87,
               ),
             ),
+
             const SizedBox(height: 4),
+
+            // Timestamp
             Text(
               _formatTime(createdAt),
               style: TextStyle(

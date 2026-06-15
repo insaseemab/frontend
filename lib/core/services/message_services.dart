@@ -7,7 +7,6 @@ class MessageService {
 
   String get _token => GetStorage().read("token") ?? "";
 
-  // your backend reads raw token, not "Bearer token"
   Map<String, String> get _headers => {
     "Authorization": _token,
     "Accept": "application/json",
@@ -30,11 +29,26 @@ class MessageService {
   }
 
   // =============================================
-  // GET /conversations
+  // GET /conversations  (client side)
   // =============================================
   Future<List<Map<String, dynamic>>> fetchConversations() async {
     final response = await http.get(
       Uri.parse("$baseUrl/conversations"),
+      headers: _headers,
+    );
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    }
+    return [];
+  }
+
+  // =============================================
+  // GET /conversations/lawyer/:lawyerId
+  // =============================================
+  Future<List<Map<String, dynamic>>> fetchLawyerConversations() async {
+    final lawyerId = GetStorage().read("user_id");
+    final response = await http.get(
+      Uri.parse("$baseUrl/conversations/lawyer/$lawyerId"),
       headers: _headers,
     );
     if (response.statusCode == 200) {
@@ -56,10 +70,11 @@ class MessageService {
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       final int myId = GetStorage().read("user_id") ?? 0;
+
       return data.map((m) {
         final map = Map<String, dynamic>.from(m);
-        map["is_mine"] = map["sender_id"] == myId;
-        map["body"] = map["message"];  // DB column is "message"
+        map["is_mine"] = map["sender_id"] == myId;  // ← key fix
+        map["body"] = map["message"];                // ← map DB column
         return map;
       }).toList();
     }
@@ -75,48 +90,30 @@ class MessageService {
     required int receiverId,
     required String body,
   }) async {
+    final int myId = GetStorage().read("user_id") ?? 0;
+
     final response = await http.post(
       Uri.parse("$baseUrl/messages"),
       headers: _headers,
       body: jsonEncode({
         "conversation_id": conversationId,
         "receiver_id": receiverId,
-        "message": body,   // DB column is "message" not "body"
+        "message": body,
       }),
     );
+
     if (response.statusCode == 201) {
-      // backend returns { message: "Message sent", id: result.insertId }
-      // build the message map manually for instant UI update
+      // Build message map manually for instant UI update
       return {
-        "is_mine": true,
+        "is_mine": true,        // ← always true, we just sent it
         "body": body,
         "message": body,
-        "sender_id": GetStorage().read("user_id") ?? 0,
+        "sender_id": myId,
         "created_at": DateTime.now().toIso8601String(),
       };
     }
     return null;
   }
-Future<List<Map<String, dynamic>>> fetchLawyerConversations() async {
-
-  final lawyerId =
-      GetStorage().read("user_id");
-
-  final response = await http.get(
-    Uri.parse(
-      "$baseUrl/conversations/lawyer/$lawyerId",
-    ),
-    headers: _headers,
-  );
-
-  if (response.statusCode == 200) {
-    return List<Map<String, dynamic>>.from(
-      jsonDecode(response.body),
-    );
-  }
-
-  return [];
-}
 
   // =============================================
   // PATCH /messages/read/:conversationId

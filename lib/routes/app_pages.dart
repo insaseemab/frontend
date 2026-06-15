@@ -2,6 +2,9 @@ import 'package:get/get.dart';
 
 import 'app_routes.dart';
 import 'auth_middleware.dart';
+import 'package:insaafconnect/screens/chat/message.dart';
+import 'package:insaafconnect/screens/chat/conversation.dart';
+
 
 import '../screens/splash_screen/splash.dart';
 import '../screens/login_screen/login.dart';
@@ -17,10 +20,10 @@ import '../screens/dashboard_screen/admin/createcase.dart';
 import '../screens/dashboard_screen/client/client_dashboard.dart';
 import '../screens/dashboard_screen/client/lawyer_find.dart';    // ✅ ADD
 import '../screens/dashboard_screen/client/calendar.dart';       // ✅ ADD
-import '../screens/dashboard_screen/client/message.dart';        // ✅ ADD
+
 
 import '../screens/dashboard_screen/lawyer/lawyer_dashboard.dart';
-import '../screens/dashboard_screen/lawyer/message.dart';
+
 
 
 class AppPages {
@@ -94,9 +97,9 @@ class AppPages {
       middlewares: [AuthMiddleware()],
     ),
     GetPage(
-  name: "/lawyer-conversations",
+  name: "/conversations",
   page: () =>
-      const LawyerConversationScreen(),
+      const ConversationsScreen(),
 ),
   ];
 }

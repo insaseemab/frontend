@@ -4,9 +4,8 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/client/message.dart';
-import 'package:insaafconnect/screens/dashboard_screen/lawyer/message.dart';
-
+import 'package:insaafconnect/screens/chat/message.dart';
+import 'package:insaafconnect/screens/chat/conversation.dart';
 
 
 class LawyerDashboard extends StatefulWidget {
