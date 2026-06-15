@@ -158,7 +158,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
+          onPressed: () => Get.back(result: false),
           child: const Text('Cancel'),
         ),
         ElevatedButton(
@@ -168,7 +168,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10)),
           ),
-          onPressed: () => Navigator.pop(ctx, true),
+         onPressed: () => Get.back(result: true),
           child: const Text('Approve'),
         ),
       ],
@@ -289,7 +289,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(ctx),
+             onPressed: () => Get.back(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -301,7 +301,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                 ),
               ),
               onPressed: () async {
-                Navigator.pop(ctx);
+                Get.back();
                 try {
                   await ApiService.editAppointment(
                     id: apt['id'] as int,
@@ -450,7 +450,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(ctx),
+             onPressed: () => Get.back(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -462,7 +462,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                 ),
               ),
               onPressed: () async {
-                Navigator.pop(ctx);
+                Get.back();
                 try {
                   await ApiService.updateAppointmentStatus(
                     id: apt['id'] as int,
@@ -1177,7 +1177,7 @@ class _DetailSheetState extends State<_DetailSheet> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Get.back(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF5C3D2E),
                       foregroundColor: Colors.white,

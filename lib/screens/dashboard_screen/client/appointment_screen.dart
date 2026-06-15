@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
-
+import 'package:get/get.dart';
 // ════════════════════════════════════════════════
 //  BOOK APPOINTMENT SCREEN
 //  POST /appointments
@@ -158,8 +158,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              Get.back();
+              Get.back(result: true);
             },
             child: const Text('OK', style: TextStyle(color: Color(0xFF5C3D2E))),
           ),
@@ -187,7 +187,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             color: Color(0xFF3E2C23),
             size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
           'Book Appointment',
@@ -420,7 +420,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
             color: Color(0xFF3E2C23),
             size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
           'My Appointments',
@@ -687,11 +687,11 @@ class _AppointmentTile extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Get.back(result: false),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Get.back(result: true),
             child: const Text(
               'Yes, Cancel',
               style: TextStyle(color: Color(0xFFB71C1C)),

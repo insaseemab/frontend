@@ -167,10 +167,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   }
 
   void _openEditDialog(CaseModel c) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) => EditCaseDialog(caseData: c),
-    );
+    final result = await Get.dialog(EditCaseDialog(caseData: c));
     if (!mounted) return;
     if (result == true) {
       _loadCases();
@@ -207,8 +204,9 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           const SnackBar(content: Text('Case deleted successfully')),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -232,11 +230,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         }
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -298,26 +298,30 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(10)),
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child:
-                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
               ),
             ),
             const SizedBox(width: 10),
-            const Text("List of Cases",
-                style: TextStyle(
-                    color: Colors.brown,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20)),
+            const Text(
+              "List of Cases",
+              style: TextStyle(
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
           ],
         ),
         actions: [
           IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.brown),
-              onPressed: _loadCases),
+            icon: const Icon(Icons.refresh, color: Colors.brown),
+            onPressed: _loadCases,
+          ),
           IconButton(
             icon: const Icon(Icons.add, color: Colors.brown),
             onPressed: () async {
@@ -338,8 +342,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               padding: EdgeInsets.fromLTRB(16, 20, 16, 4),
               child: Text(
                 'Case Management',
-                style:
-                    TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
             ),
             const Padding(
@@ -374,32 +377,33 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    'All',
-                    'Approved',
-                    'Pending',
-                    'Rejected',
-                    'Hearing',
-                    'Closed',
-                  ].map((filter) {
-                    final isSelected = selectedFilter == filter;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            setState(() => selectedFilter = filter),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isSelected
-                              ? const Color(0xFF5D4037)
-                              : Colors.white,
-                          foregroundColor: isSelected
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                        child: Text(filter),
-                      ),
-                    );
-                  }).toList(),
+                  children:
+                      [
+                        'All',
+                        'Approved',
+                        'Pending',
+                        'Rejected',
+                        'Hearing',
+                        'Closed',
+                      ].map((filter) {
+                        final isSelected = selectedFilter == filter;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ElevatedButton(
+                            onPressed: () =>
+                                setState(() => selectedFilter = filter),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? const Color(0xFF5D4037)
+                                  : Colors.white,
+                              foregroundColor: isSelected
+                                  ? Colors.white
+                                  : Colors.black87,
+                            ),
+                            child: Text(filter),
+                          ),
+                        );
+                      }).toList(),
                 ),
               ),
             ),
@@ -448,13 +452,18 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             child: Column(
               children: [
-                Text(stat['value']!,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  stat['value']!,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(stat['label']!,
-                    style:
-                        const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  stat['label']!,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -469,25 +478,34 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       child: const Row(
         children: [
           Expanded(
-              flex: 1,
-              child:
-                  Text('ID', style: TextStyle(fontWeight: FontWeight.bold))),
+            flex: 1,
+            child: Text('ID', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
           Expanded(
-              flex: 2,
-              child: Text('Type',
-                  style: TextStyle(fontWeight: FontWeight.bold))),
+            flex: 2,
+            child: Text('Type', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
           Expanded(
-              flex: 2,
-              child: Text('Lawyer',
-                  style: TextStyle(fontWeight: FontWeight.bold))),
+            flex: 2,
+            child: Text(
+              'Lawyer',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(
-              flex: 2,
-              child: Text('Status',
-                  style: TextStyle(fontWeight: FontWeight.bold))),
+            flex: 2,
+            child: Text(
+              'Status',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(
-              flex: 1,
-              child: Text('Actions',
-                  style: TextStyle(fontWeight: FontWeight.bold))),
+            flex: 1,
+            child: Text(
+              'Actions',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
     );
@@ -511,11 +529,14 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(c.caseType,
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
-                Text(c.clientName,
-                    style:
-                        const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  c.caseType,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  c.clientName,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -524,8 +545,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           Expanded(
             flex: 2,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: statusColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
@@ -551,24 +571,34 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               },
               itemBuilder: (_) => [
                 const PopupMenuItem(
-                    value: 'approved', child: Text('Set Approved')),
+                  value: 'approved',
+                  child: Text('Set Approved'),
+                ),
                 const PopupMenuItem(
-                    value: 'pending', child: Text('Set Pending')),
+                  value: 'pending',
+                  child: Text('Set Pending'),
+                ),
                 const PopupMenuItem(
-                    value: 'rejected', child: Text('Set Rejected')),
+                  value: 'rejected',
+                  child: Text('Set Rejected'),
+                ),
                 const PopupMenuItem(
-                    value: 'hearing', child: Text('Set Hearing')),
-                const PopupMenuItem(
-                    value: 'closed', child: Text('Set Closed')),
+                  value: 'hearing',
+                  child: Text('Set Hearing'),
+                ),
+                const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
                 const PopupMenuDivider(),
                 const PopupMenuItem(
-                    value: 'edit',
-                    child: Text('Edit Case',
-                        style: TextStyle(color: Colors.blue))),
+                  value: 'edit',
+                  child: Text(
+                    'Edit Case',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
                 const PopupMenuItem(
-                    value: 'delete',
-                    child: Text('Delete',
-                        style: TextStyle(color: Colors.red))),
+                  value: 'delete',
+                  child: Text('Delete', style: TextStyle(color: Colors.red)),
+                ),
               ],
             ),
           ),

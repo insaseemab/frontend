@@ -52,18 +52,17 @@ class _ManagelawyersState extends State<Managelawyers> {
   // ── DELETE ────────────────────────────────────────────────────────────────
   Future<void> _deleteLawyer(int id) async {
     // Show confirmation dialog first
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
+    final confirmed = await Get.dialog(
+      AlertDialog(
         title: const Text('Delete Lawyer'),
         content: const Text('Are you sure you want to delete this lawyer?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+            onPressed: () => Get.back(result: false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => Get.back(result: true),
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
@@ -111,9 +110,8 @@ class _ManagelawyersState extends State<Managelawyers> {
       text: lawyer['cases']?.toString() ?? '',
     );
 
-    await showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
+    await Get.dialog(
+      AlertDialog(
         title: const Text(
           'Edit Lawyer',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -152,17 +150,14 @@ class _ManagelawyersState extends State<Managelawyers> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.brown,
               foregroundColor: Colors.white,
             ),
             onPressed: () async {
-              Navigator.pop(ctx);
+              Get.back();
               try {
                 await _lawyerService.updateLawyer(
                   id: lawyer['id'],
@@ -254,13 +249,13 @@ class _ManagelawyersState extends State<Managelawyers> {
         backgroundColor: const Color(0xFFF5EFE6),
         elevation: 0,
         leading: Builder(
-    builder: (context) => IconButton(
-  icon: const Icon(Icons.arrow_back, color: Colors.brown),
-  onPressed: () {
-    Get.offAll(() => AdminDashboardScreen());
-  },
-),
-  ),
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.brown),
+            onPressed: () {
+              Get.offAll(() => AdminDashboardScreen());
+            },
+          ),
+        ),
         title: Row(
           children: [
             Container(

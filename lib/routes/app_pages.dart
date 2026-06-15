@@ -71,17 +71,17 @@ class AppPages {
       page: () => ClientDashboardScreen(),
       middlewares: [AuthMiddleware()],
     ),
-    GetPage(                                          // ✅ ADD
+    GetPage(                                        
       name: AppRoutes.lawyerFind,
       page: () => const LawyerFindScreen(),
       middlewares: [AuthMiddleware()],
     ),
-    GetPage(                                          // ✅ ADD
+    GetPage(                                        
       name: AppRoutes.calendar,
       page: () => const CalendarScreen(),
       middlewares: [AuthMiddleware()],
     ),
-    GetPage(                                          // ✅ ADD
+    GetPage(                                    
       name: AppRoutes.messages,
       page: () => const MessageScreen(),
       middlewares: [AuthMiddleware()],

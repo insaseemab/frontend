@@ -16,7 +16,7 @@ class AppRoutes {
   static const bookAppointment = '/book-appointment';
   static const myAppointments = '/my-appointments';
   static const calendar = '/calendar';
-  static const messages = '/messages';          // ✅ ADD THIS
+  static const messages = '/messages';          
 
   static const lawyerDashboard = "/lawyer-dashboard";
   static const lawyerMessages =

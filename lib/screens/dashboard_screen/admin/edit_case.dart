@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
+import 'package:get/get.dart';
 
 class EditCaseDialog extends StatefulWidget {
   final CaseModel caseData;
@@ -75,7 +76,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
 
       if (!mounted) return;
 
-      Navigator.pop(context, true);
+      Get.back(result: true);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -150,7 +151,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: loading ? null : () => Navigator.pop(context),
+          onPressed: loading ? null : () => Get.back(),
           child: const Text('Cancel'),
         ),
         ElevatedButton(

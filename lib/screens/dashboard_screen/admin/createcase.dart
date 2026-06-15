@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 
 class CreateCasePage extends StatefulWidget {
   const CreateCasePage({super.key});
@@ -76,7 +77,10 @@ class _CreateCasePageState extends State<CreateCasePage> {
   }
 
   Future<void> createCase() async {
-    if (selectedClientId == null || selectedLawyerId == null || selectedDepartment == null || selectedHearingDate == null) {
+    if (selectedClientId == null ||
+        selectedLawyerId == null ||
+        selectedDepartment == null ||
+        selectedHearingDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all required fields')),
       );
@@ -111,11 +115,11 @@ class _CreateCasePageState extends State<CreateCasePage> {
         const SnackBar(content: Text('Case Created Successfully')),
       );
 
-      Navigator.pop(context, true);
+      Get.back(result: true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -156,14 +160,20 @@ class _CreateCasePageState extends State<CreateCasePage> {
               child: DropdownButtonFormField<String>(
                 value: selectedClientId,
                 hint: const Text('Select Client'),
-                items: clients.map((c) => DropdownMenuItem(
-                  value: c['id'],
-                  child: Text('${c['name']} (${c['id']})'),
-                )).toList(),
+                items: clients
+                    .map(
+                      (c) => DropdownMenuItem(
+                        value: c['id'],
+                        child: Text('${c['name']} (${c['id']})'),
+                      ),
+                    )
+                    .toList(),
                 onChanged: (v) => setState(() => selectedClientId = v),
                 decoration: InputDecoration(
                   labelText: 'Client',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -174,14 +184,20 @@ class _CreateCasePageState extends State<CreateCasePage> {
               child: DropdownButtonFormField<String>(
                 value: selectedLawyerId,
                 hint: const Text('Select Lawyer'),
-                items: lawyers.map((l) => DropdownMenuItem(
-                  value: l['id'],
-                  child: Text('${l['name']} (${l['id']})'),
-                )).toList(),
+                items: lawyers
+                    .map(
+                      (l) => DropdownMenuItem(
+                        value: l['id'],
+                        child: Text('${l['name']} (${l['id']})'),
+                      ),
+                    )
+                    .toList(),
                 onChanged: (v) => setState(() => selectedLawyerId = v),
                 decoration: InputDecoration(
                   labelText: 'Lawyer',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -195,14 +211,15 @@ class _CreateCasePageState extends State<CreateCasePage> {
               child: DropdownButtonFormField<String>(
                 value: selectedDepartment,
                 hint: const Text('Select Department'),
-                items: departments.map((d) => DropdownMenuItem(
-                  value: d,
-                  child: Text(d),
-                )).toList(),
+                items: departments
+                    .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                    .toList(),
                 onChanged: (v) => setState(() => selectedDepartment = v),
                 decoration: InputDecoration(
                   labelText: 'Department Concern',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -220,8 +237,13 @@ class _CreateCasePageState extends State<CreateCasePage> {
                       hintText: selectedHearingDate == null
                           ? 'Select a date'
                           : selectedHearingDate!.toString().split(' ')[0],
-                      suffixIcon: const Icon(Icons.calendar_today, color: Colors.brown),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      suffixIcon: const Icon(
+                        Icons.calendar_today,
+                        color: Colors.brown,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     controller: TextEditingController(
                       text: selectedHearingDate == null
