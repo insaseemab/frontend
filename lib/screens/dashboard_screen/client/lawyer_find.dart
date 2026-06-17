@@ -422,12 +422,7 @@ class _LawyerCard extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LawyerProfileScreen(lawyer: lawyer),
-                    ),
-                  );
+                  Get.to(() => LawyerProfileScreen(lawyer: lawyer));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF5C3D2E),
@@ -507,7 +502,7 @@ class LawyerProfileScreen extends StatelessWidget {
             color: Color(0xFF3E2C23),
             size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
           'Lawyer Profile',
@@ -687,12 +682,7 @@ class LawyerProfileScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BookAppointmentScreen(lawyer: lawyer),
-                        ),
-                      );
+                      Get.to(() => BookAppointmentScreen(lawyer: lawyer));
                     },
                     icon: const Icon(Icons.calendar_month, size: 18),
                     label: const Text(
@@ -748,12 +738,8 @@ class LawyerProfileScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ViewAppointmentsScreen(lawyerId: lawyer['id']),
-                        ),
+                      Get.to(
+                        () => ViewAppointmentsScreen(lawyerId: lawyer['id']),
                       );
                     },
                     icon: const Icon(Icons.calendar_today_outlined, size: 18),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:get/get.dart';
 
 class LawyerAppointmentsPage extends StatefulWidget {
   final int lawyerId;
@@ -41,12 +42,22 @@ class _LawyerAppointmentsPageState extends State<LawyerAppointmentsPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: Color(0xFF8C7B6B), size: 48),
+                  const Icon(
+                    Icons.error_outline,
+                    color: Color(0xFF8C7B6B),
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
-                  Text('${snap.error}', style: const TextStyle(color: Color(0xFF8C7B6B))),
+                  Text(
+                    '${snap.error}',
+                    style: const TextStyle(color: Color(0xFF8C7B6B)),
+                  ),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry', style: TextStyle(color: Color(0xFF6B4F3F))),
+                    child: const Text(
+                      'Retry',
+                      style: TextStyle(color: Color(0xFF6B4F3F)),
+                    ),
                   ),
                 ],
               ),
@@ -56,7 +67,10 @@ class _LawyerAppointmentsPageState extends State<LawyerAppointmentsPage> {
           final list = snap.data ?? [];
           if (list.isEmpty) {
             return const Center(
-              child: Text('No appointments yet.', style: TextStyle(color: Color(0xFF8C7B6B))),
+              child: Text(
+                'No appointments yet.',
+                style: TextStyle(color: Color(0xFF8C7B6B)),
+              ),
             );
           }
 
@@ -96,26 +110,32 @@ class _LawyerAppointmentTile extends StatelessWidget {
 
   Color get _statusColor {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFF2E7D32);
-      case 'rejected': return const Color(0xFFB71C1C);
-      default:         return const Color(0xFFB5651D);
+      case 'accepted':
+        return const Color(0xFF2E7D32);
+      case 'rejected':
+        return const Color(0xFFB71C1C);
+      default:
+        return const Color(0xFFB5651D);
     }
   }
 
   Color get _statusBg {
     switch (appointment['status']) {
-      case 'accepted': return const Color(0xFFE8F5E9);
-      case 'rejected': return const Color(0xFFFFEBEE);
-      default:         return const Color(0xFFF5E6D3);
+      case 'accepted':
+        return const Color(0xFFE8F5E9);
+      case 'rejected':
+        return const Color(0xFFFFEBEE);
+      default:
+        return const Color(0xFFF5E6D3);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isPending  = appointment['status'] == 'pending';
+    final isPending = appointment['status'] == 'pending';
     final isAccepted = appointment['status'] == 'accepted';
     final hasPayment = appointment['payment_mode'] != null;
-    final amount     = appointment['payment_amount'];
+    final amount = appointment['payment_amount'];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -147,7 +167,10 @@ class _LawyerAppointmentTile extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: _statusBg,
                   borderRadius: BorderRadius.circular(20),
@@ -168,14 +191,16 @@ class _LawyerAppointmentTile extends StatelessWidget {
           // ── Info rows ──
           _InfoRow(
             icon: Icons.person_outline,
-            text: 'Client: ${appointment['client_name'] ?? appointment['client_id']}',
+            text:
+                'Client: ${appointment['client_name'] ?? appointment['client_id']}',
           ),
           const SizedBox(height: 4),
           _InfoRow(icon: Icons.gavel, text: appointment['law_type'] ?? ''),
           const SizedBox(height: 4),
           _InfoRow(
             icon: Icons.access_time,
-            text: '${appointment['slot_start_time'] ?? ''} → ${appointment['slot_end_time'] ?? ''}',
+            text:
+                '${appointment['slot_start_time'] ?? ''} → ${appointment['slot_end_time'] ?? ''}',
           ),
           const SizedBox(height: 4),
           _InfoRow(
@@ -189,7 +214,11 @@ class _LawyerAppointmentTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               appointment['short_description'],
-              style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B), height: 1.4),
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF8C7B6B),
+                height: 1.4,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -245,7 +274,11 @@ class _LawyerAppointmentTile extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.payments_outlined, size: 16, color: Color(0xFF2E7D32)),
+                  const Icon(
+                    Icons.payments_outlined,
+                    size: 16,
+                    color: Color(0xFF2E7D32),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Fee: Rs. $amount',
@@ -329,15 +362,20 @@ class _LawyerAppointmentTile extends StatelessWidget {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         title: const Text('Reject Appointment'),
-        content: const Text('Are you sure you want to reject this appointment?'),
+        content: const Text(
+          'Are you sure you want to reject this appointment?',
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Get.back(result: false),
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes, Reject', style: TextStyle(color: Color(0xFFB71C1C))),
+            onPressed: () => Get.back(result: true),
+            child: const Text(
+              'Yes, Reject',
+              style: TextStyle(color: Color(0xFFB71C1C)),
+            ),
           ),
         ],
       ),
@@ -350,13 +388,13 @@ class _LawyerAppointmentTile extends StatelessWidget {
         status: 'rejected',
       );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Appointment rejected')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Appointment rejected')));
       onRefresh();
     } on ApiException catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -365,15 +403,12 @@ class _LawyerAppointmentTile extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _PaymentFormSheet(
-        appointment: appointment,
-        onAccepted: onRefresh,
-      ),
+      builder: (_) =>
+          _PaymentFormSheet(appointment: appointment, onAccepted: onRefresh),
     );
   }
 
   Future<void> _approvePayment(BuildContext context) async {
-    
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -407,7 +442,7 @@ class _LawyerAppointmentTile extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Get.back(result: false),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
@@ -415,9 +450,10 @@ class _LawyerAppointmentTile extends StatelessWidget {
               backgroundColor: const Color(0xFF2E7D32),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Get.back(result: true),
             child: const Text('Approve'),
           ),
         ],
@@ -429,17 +465,15 @@ class _LawyerAppointmentTile extends StatelessWidget {
     try {
       await ApiService.approvePayment(id: appointment['id'] as int);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment approved successfully'),
-          backgroundColor: Color(0xFF2E7D32),
-        ),
+      Get.snackbar(
+        'Success',
+        'Payment approved successfully',
+        snackPosition: SnackPosition.BOTTOM,
       );
       onRefresh();
     } on ApiException catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     }
   }
 }
@@ -461,7 +495,7 @@ class _PaymentFormSheet extends StatefulWidget {
 }
 
 class _PaymentFormSheetState extends State<_PaymentFormSheet> {
-  final _formKey  = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _amountCtrl = TextEditingController();
   bool _isLoading = false;
 
@@ -482,17 +516,15 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
         paymentAmount: double.parse(_amountCtrl.text.trim()),
       );
       if (!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Appointment accepted! Client has been notified.'),
-          backgroundColor: Color(0xFF2E7D32),
-        ),
+      Get.snackbar(
+        'Success',
+        'Appointment accepted! Client has been notified.',
+        snackPosition: SnackPosition.BOTTOM,
       );
       widget.onAccepted();
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -501,7 +533,9 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
@@ -550,7 +584,9 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
               const SizedBox(height: 6),
               TextFormField(
                 controller: _amountCtrl,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   hintText: 'e.g. 2000',
                   prefixText: 'Rs. ',
@@ -562,12 +598,17 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF5C3D2E),
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Amount is required';
-                  if (double.tryParse(v.trim()) == null) return 'Enter a valid number';
+                  if (v == null || v.trim().isEmpty)
+                    return 'Amount is required';
+                  if (double.tryParse(v.trim()) == null)
+                    return 'Enter a valid number';
                   return null;
                 },
               ),
@@ -590,11 +631,16 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2.5),
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
                         )
                       : const Text(
                           'Confirm & Notify Client',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),

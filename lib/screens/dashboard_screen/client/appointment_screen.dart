@@ -401,9 +401,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       ).showSnackBar(const SnackBar(content: Text('Appointment cancelled')));
     } on ApiException catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.message)));
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     }
   }
 

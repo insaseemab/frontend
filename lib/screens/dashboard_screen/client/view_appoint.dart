@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client/payment_bottom_sheet.dart';
+import 'package:get/get.dart';
 
 class ViewAppointmentsScreen extends StatefulWidget {
   final int lawyerId;
@@ -72,7 +73,7 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               color: Color(0xFF3E2C23), size: 20),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
         ),
         title: const Text(
           'Appointments',

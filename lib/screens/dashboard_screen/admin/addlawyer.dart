@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:get/get.dart';
 
 class AddLawyerPage extends StatefulWidget {
   const AddLawyerPage({super.key});
@@ -107,7 +108,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
                         experience: experienceController.text,
                         cases: casesController.text,
                       );
-                      Navigator.pop(context);
+                      Get.back();
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

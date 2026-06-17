@@ -46,7 +46,7 @@ class MessageService {
   // GET /conversations/lawyer/:lawyerId
   // =============================================
   Future<List<Map<String, dynamic>>> fetchLawyerConversations() async {
-    final lawyerId = GetStorage().read("user_id");
+    final lawyerId = GetStorage().read("id");
     final response = await http.get(
       Uri.parse("$baseUrl/conversations/lawyer/$lawyerId"),
       headers: _headers,
@@ -69,7 +69,7 @@ class MessageService {
     );
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
-      final int myId = GetStorage().read("user_id") ?? 0;
+      final int myId = GetStorage().read("id") ?? 0;
 
       return data.map((m) {
         final map = Map<String, dynamic>.from(m);
@@ -90,7 +90,7 @@ class MessageService {
     required int receiverId,
     required String body,
   }) async {
-    final int myId = GetStorage().read("user_id") ?? 0;
+    final int myId = GetStorage().read("id") ?? 0;
 
     final response = await http.post(
       Uri.parse("$baseUrl/messages"),

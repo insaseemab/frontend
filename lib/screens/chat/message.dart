@@ -27,7 +27,7 @@ class _MessageScreenState extends State<MessageScreen> {
   bool isSending = false;
   Timer? _pollTimer;
 
-  int get myUserId => GetStorage().read("user_id") ?? 0;
+  int get myUserId => GetStorage().read("id") ?? 0;
 
   @override
   void initState() {

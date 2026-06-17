@@ -60,136 +60,144 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
   }
 
   Future<void> _showUpdatePaymentStatus(Map<String, dynamic> apt) async {
-  final bool? confirmed = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text(
-        'Approve Payment',
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (apt['payment_mode'] != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5EFE6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.payment, size: 16, color: Color(0xFF5C3D2E)),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Mode: ${apt['payment_mode']}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF3E2C23),
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Approve Payment',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (apt['payment_mode'] != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5EFE6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.payment,
+                      size: 16,
+                      color: Color(0xFF5C3D2E),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          if (apt['payment_receipt'] != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5EFE6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Receipt',
-                    style: TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    apt['payment_receipt'].toString(),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF3E2C23),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Mode: ${apt['payment_mode']}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3E2C23),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          if (apt['payment_amount'] != null)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(10),
+            if (apt['payment_receipt'] != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5EFE6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Receipt',
+                      style: TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      apt['payment_receipt'].toString(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3E2C23),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
-                children: [
-                  const Icon(Icons.payments_outlined,
-                      size: 16, color: Color(0xFF2E7D32)),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Amount: Rs. ${apt['payment_amount']}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+            if (apt['payment_amount'] != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8F5E9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.payments_outlined,
+                      size: 16,
                       color: Color(0xFF2E7D32),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      'Amount: Rs. ${apt['payment_amount']}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2E7D32),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 6),
+            const Text(
+              'Confirm you have verified the client\'s payment and want to approve it?',
+              style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2E7D32),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-          const SizedBox(height: 6),
-          const Text(
-            'Confirm you have verified the client\'s payment and want to approve it?',
-            style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
-            textAlign: TextAlign.center,
+            onPressed: () => Get.back(result: true),
+            child: const Text('Approve'),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(result: false),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2E7D32),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
-          ),
-         onPressed: () => Get.back(result: true),
-          child: const Text('Approve'),
-        ),
-      ],
-    ),
-  );
-
-  if (confirmed != true) return;
-
-  try {
-    await ApiService.approvePayment(id: apt['id'] as int);
-    if (!mounted) return;
-    _load();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Payment approved successfully')),
     );
-  } on ApiException catch (e) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(e.message)));
+
+    if (confirmed != true) return;
+
+    try {
+      await ApiService.approvePayment(id: apt['id'] as int);
+      if (!mounted) return;
+      _load();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Payment approved successfully')),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
+    }
   }
-}
+
   // ── Edit Appointment ──
   Future<void> _showEdit(Map<String, dynamic> apt) async {
     final lawyerIdCtrl = TextEditingController(
@@ -289,7 +297,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           ),
           actions: [
             TextButton(
-             onPressed: () => Get.back(),
+              onPressed: () => Get.back(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -322,9 +330,11 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   );
                 } on ApiException catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(e.message)));
+                  Get.snackbar(
+                    'Error',
+                    e.message,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                 }
               },
               child: const Text('Save Changes'),
@@ -450,7 +460,7 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           ),
           actions: [
             TextButton(
-             onPressed: () => Get.back(),
+              onPressed: () => Get.back(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -480,9 +490,11 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                   );
                 } on ApiException catch (e) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(e.message)));
+                  Get.snackbar(
+                    'Error',
+                    e.message,
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                 }
               },
               child: const Text('Save'),
