@@ -4,8 +4,7 @@ import 'package:insaafconnect/screens/dashboard_screen/client/payment_bottom_she
 import 'package:get/get.dart';
 
 class ViewAppointmentsScreen extends StatefulWidget {
-  final int lawyerId;
-  const ViewAppointmentsScreen({super.key, required this.lawyerId});
+  const ViewAppointmentsScreen({super.key});
 
   @override
   State<ViewAppointmentsScreen> createState() => _ViewAppointmentsScreenState();
@@ -25,35 +24,18 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
     _fetchAppointments();
   }
 
-  Future<void> _fetchAppointments() async {
+ Future<void> _fetchAppointments() async {
+  setState(() { _isLoading = true; _error = null; });
+  try {
+    final data = await ApiService.getMyAppointments(); // ← change this
     setState(() {
-      _isLoading = true;
-      _error = null;
+      _appointments = data;
+      _isLoading = false;
     });
-    try {
-      // Uses GET /appointments (no auth needed per your router)
-      // then filters client-side by lawyer_id
-      final data = await ApiService.getAllAppointments();
-      final filtered = data
-          .where((a) => a['lawyer_id'] == widget.lawyerId)
-          .toList();
-      setState(() {
-        _appointments = filtered;
-        _isLoading = false;
-      });
-    } on ApiException catch (e) {
-      setState(() {
-        _error = e.message;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Something went wrong. Please try again.';
-        _isLoading = false;
-      });
-    }
+  } on ApiException catch (e) {
+    setState(() { _error = e.message; _isLoading = false; });
   }
-
+}
   List<dynamic> get _filteredList {
     if (_selectedFilter == 'All') return _appointments;
     return _appointments

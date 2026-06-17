@@ -195,21 +195,30 @@ static Future<void> editAppointment({
   _checkStatus(res);
 }
 
-static Future<List> getAppointmentsForLawyer(
-    int lawyerId) async {
+// static Future<List> getAppointmentsForLawyer(
+//     int lawyerId) async {
 
+//   final res = await http.get(
+//     Uri.parse('$baseUrl/appointments'),
+//     headers: _authHeaders(),
+//   );
+
+//   _checkStatus(res);
+
+//   final all = jsonDecode(res.body) as List;
+
+//   return all.where(
+//     (a) => a['lawyer_id'] == lawyerId,
+//   ).toList();
+// }
+/// GET /appointments/mine — role-based (client/lawyer/admin)
+static Future<List<dynamic>> getMyAppointments() async {
   final res = await http.get(
-    Uri.parse('$baseUrl/appointments'),
-    headers: _authHeaders(),
+    Uri.parse('$baseUrl/appointments/mine'),
+    headers: _authHeaders(), // token already handled here
   );
-
   _checkStatus(res);
-
-  final all = jsonDecode(res.body) as List;
-
-  return all.where(
-    (a) => a['lawyer_id'] == lawyerId,
-  ).toList();
+  return jsonDecode(res.body) as List<dynamic>;
 }
 
 static Future<void> payAppointment(

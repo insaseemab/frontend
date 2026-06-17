@@ -738,9 +738,7 @@ class LawyerProfileScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Get.to(
-                        () => ViewAppointmentsScreen(lawyerId: lawyer['id']),
-                      );
+                      Get.to(() => const ViewAppointmentsScreen());
                     },
                     icon: const Icon(Icons.calendar_today_outlined, size: 18),
                     label: const Text(

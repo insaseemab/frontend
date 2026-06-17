@@ -3,8 +3,7 @@ import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:get/get.dart';
 
 class LawyerAppointmentsPage extends StatefulWidget {
-  final int lawyerId;
-  const LawyerAppointmentsPage({super.key, required this.lawyerId});
+  const LawyerAppointmentsPage({super.key});
 
   @override
   State<LawyerAppointmentsPage> createState() => _LawyerAppointmentsPageState();
@@ -21,7 +20,7 @@ class _LawyerAppointmentsPageState extends State<LawyerAppointmentsPage> {
 
   void _load() {
     setState(() {
-      _future = ApiService.getAppointmentsForLawyer(widget.lawyerId);
+      _future = ApiService.getMyAppointments(); // ← uses token automatically
     });
   }
 

@@ -369,8 +369,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 // ════════════════════════════════════════════════
 
 class MyAppointmentsScreen extends StatefulWidget {
-  final int clientId;
-  const MyAppointmentsScreen({super.key, required this.clientId});
+  const MyAppointmentsScreen({super.key});
 
   @override
   State<MyAppointmentsScreen> createState() => _MyAppointmentsScreenState();
@@ -386,10 +385,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   }
 
   void _load() {
-    setState(() {
-      _future = ApiService.getAppointmentsByClient(widget.clientId);
-    });
-  }
+  setState(() {
+    _future = ApiService.getMyAppointments(); // ← uses token automatically
+  });
+}
 
   Future<void> _delete(int id) async {
     try {
