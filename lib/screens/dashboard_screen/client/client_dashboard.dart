@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
+import 'package:insaafconnect/screens/dashboard_screen/client/view_appoint.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -145,7 +146,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ), // ← fix icon
               title: const Text("Appointments"),
               onTap: () {
-                Get.back();
+                Get.to(() => const ViewAppointmentsScreen());
                 setState(() => currentIndex = 4); // ← this now works
               },
             ),
@@ -165,55 +166,59 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       body: IndexedStack(index: currentIndex, children: pages),
 
       // ───────── BOTTOM NAVIGATION ─────────
-      bottomNavigationBar: currentIndex >= 4 ? null :  Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFFEADDD0), width: 1)),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x10000000),
-              blurRadius: 10,
-              offset: Offset(0, -2),
+      bottomNavigationBar: currentIndex >= 4
+          ? null
+          : Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: Color(0xFFEADDD0), width: 1),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x10000000),
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: currentIndex,
+                onTap: (index) => setState(() => currentIndex = index),
+                selectedItemColor: Colors.brown,
+                unselectedItemColor: Colors.brown,
+                backgroundColor: const Color(0xFFF5EFE6),
+                type: BottomNavigationBarType.fixed,
+                elevation: 0,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+                unselectedLabelStyle: const TextStyle(fontSize: 12),
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search_outlined),
+                    activeIcon: Icon(Icons.search),
+                    label: 'Lawyer Find',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.calendar_month_outlined),
+                    activeIcon: Icon(Icons.calendar_month),
+                    label: 'My Calendar',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.message_outlined),
+                    activeIcon: Icon(Icons.message),
+                    label: 'Messages',
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) => setState(() => currentIndex = index),
-          selectedItemColor: Colors.brown,
-          unselectedItemColor: Colors.brown,
-          backgroundColor: const Color(0xFFF5EFE6),
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-          unselectedLabelStyle: const TextStyle(fontSize: 12),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search_outlined),
-              activeIcon: Icon(Icons.search),
-              label: 'Lawyer Find',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month_outlined),
-              activeIcon: Icon(Icons.calendar_month),
-              label: 'My Calendar',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.message_outlined),
-              activeIcon: Icon(Icons.message),
-              label: 'Messages',
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

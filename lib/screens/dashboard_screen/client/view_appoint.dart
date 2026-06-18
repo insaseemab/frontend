@@ -52,11 +52,6 @@ class _ViewAppointmentsScreenState extends State<ViewAppointmentsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1ECE5),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Color(0xFF3E2C23), size: 20),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           'Appointments',
           style: TextStyle(

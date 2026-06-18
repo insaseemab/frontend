@@ -183,7 +183,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_back,
             color: Color(0xFF3E2C23),
             size: 20,
           ),
@@ -413,7 +413,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
-            Icons.arrow_back_ios_new,
+            Icons.arrow_back,
             color: Color(0xFF3E2C23),
             size: 20,
           ),
