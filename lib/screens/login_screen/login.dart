@@ -37,39 +37,41 @@ class _LoginScreenState extends State<LoginScreen> {
         result['data']['user']['role'].toString().toLowerCase() == 'admin') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
+      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
       box.write('userName', userName);
       box.write('token', token);
+      box.write('userId', userId); // ← ADDED
 
       Get.offAllNamed(AppRoutes.adminDashboard);
     } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'lawyer') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
+      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
       box.write('userName', userName);
       box.write('token', token);
+      box.write('userId', userId); // ← ADDED
 
       Get.offAllNamed(AppRoutes.lawyerDashboard);
     } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'client') {
       final userName = result['data']['user']['name'];
       final token = result['token'];
+      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
       box.write('userName', userName);
       box.write('token', token);
+      box.write('userId', userId); // ← ADDED
 
-      Get.offAllNamed(
-        AppRoutes.clientDashboard,
-      ); // ✅ Make sure this route is registered
+      Get.offAllNamed(AppRoutes.clientDashboard);
     } else if (result['success']) {
-      // Logged in but unknown role
       Get.snackbar('Access Denied', 'Your role is not recognized.');
     } else {
-      // Login failed
       final errorMessage =
           result['message'] ?? 'Login failed. Please try again.';
       Get.snackbar('Error', errorMessage, snackPosition: SnackPosition.BOTTOM);

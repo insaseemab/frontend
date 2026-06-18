@@ -27,7 +27,8 @@ class _MessageScreenState extends State<MessageScreen> {
   bool isSending = false;
   Timer? _pollTimer;
 
-  int get myUserId => GetStorage().read("id") ?? 0;
+  // ← FIXED: correct key, correct location (class level)
+  int get myUserId => GetStorage().read("userId") ?? 0;
 
   @override
   void initState() {
@@ -35,7 +36,6 @@ class _MessageScreenState extends State<MessageScreen> {
     fetchMessages();
     _messageService.markAsRead(conversationId: conversationId);
 
-    // Poll every 5 seconds for new messages
     _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       fetchMessages(silent: true);
     });
@@ -57,7 +57,6 @@ class _MessageScreenState extends State<MessageScreen> {
     if (mounted) {
       setState(() {
         messages = List<Map<String, dynamic>>.from(data);
-        if (!silent) isLoading = false;
         isLoading = false;
       });
 
@@ -135,30 +134,29 @@ class _MessageScreenState extends State<MessageScreen> {
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : messages.isEmpty
-                ? const Center(
-                    child: Text("Say hello! Start the conversation."),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
+                    ? const Center(
+                        child: Text("Say hello! Start the conversation."),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = messages[index];
+                          // ← FIXED: use class-level myUserId, compute isMine here
+                          final isMine = msg["sender_id"] == myUserId;
 
-                      // ← Use is_mine from service, NOT sender_id comparison
-                      final isMine = msg["is_mine"] == true;
-
-                      return _MessageBubble(
-                        body: msg["body"] ?? "",
-                        isMine: isMine,
-                        senderName: msg["sender_name"] ?? "",
-                        createdAt: msg["created_at"] ?? "",
-                      );
-                    },
-                  ),
+                          return _MessageBubble(
+                            body: msg["message"] ?? "",
+                            isMine: isMine,
+                            senderName: msg["sender_name"] ?? "",
+                            createdAt: msg["created_at"] ?? "",
+                          );
+                        },
+                      ),
           ),
 
           // ── INPUT BAR ──────────────────────────────────────────
@@ -173,7 +171,7 @@ class _MessageScreenState extends State<MessageScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -181,7 +179,6 @@ class _MessageScreenState extends State<MessageScreen> {
             ),
             child: Row(
               children: [
-                // Text field
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -207,7 +204,6 @@ class _MessageScreenState extends State<MessageScreen> {
 
                 const SizedBox(width: 8),
 
-                // Send button
                 GestureDetector(
                   onTap: sendMessage,
                   child: Container(
@@ -281,11 +277,9 @@ class _MessageBubble extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: isMine
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            // Show sender name on received messages (like RiceMart)
             if (!isMine && senderName.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
@@ -299,7 +293,6 @@ class _MessageBubble extends StatelessWidget {
                 ),
               ),
 
-            // Message body
             Text(
               body,
               style: TextStyle(
@@ -310,12 +303,14 @@ class _MessageBubble extends StatelessWidget {
 
             const SizedBox(height: 4),
 
-            // Timestamp
             Text(
               _formatTime(createdAt),
               style: TextStyle(
                 fontSize: 10,
-                color: isMine ? Colors.white.withOpacity(0.65) : Colors.black38,
+                // ← FIXED: withValues instead of withOpacity
+                color: isMine
+                    ? Colors.white.withValues(alpha: 0.65)
+                    : Colors.black38,
               ),
             ),
           ],
