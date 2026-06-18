@@ -4,11 +4,13 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dar
 import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════
-//  ADMIN — ALL APPOINTMENTS PAGE
+//  ADMIN & CLIENT — APPOINTMENTS PAGE
 // ════════════════════════════════════════════════
 
 class AdminAppointmentsPage extends StatefulWidget {
-  const AdminAppointmentsPage({super.key});
+  final bool isClientView;
+  
+  const AdminAppointmentsPage({super.key, this.isClientView = false});
 
   @override
   State<AdminAppointmentsPage> createState() => _AdminAppointmentsPageState();
@@ -27,7 +29,10 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
 
   void _load() {
     setState(() {
-      _future = ApiService.getAllAppointments();
+      // Load client appointments if isClientView is true, otherwise load all
+      _future = widget.isClientView 
+          ? ApiService.getMyAppointments()
+          : ApiService.getAllAppointments();
     });
   }
 
@@ -516,7 +521,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           builder: (context) => IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.brown),
             onPressed: () {
-              Get.offAll(() => AdminDashboardScreen());
+              widget.isClientView 
+                  ? Get.back()
+                  : Get.offAll(() => AdminDashboardScreen());
             },
           ),
         ),
@@ -535,9 +542,9 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
-              'All Appointments',
-              style: TextStyle(
+            Text(
+              widget.isClientView ? 'My Appointments' : 'All Appointments',
+              style: const TextStyle(
                 color: Colors.brown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
@@ -709,7 +716,8 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
                               onEdit: () => _showEdit(apt),
                               onUpdateStatus: () => _showUpdateStatus(apt),
                               onUpdatePaymentStatus: () =>
-                                  _showUpdatePaymentStatus(apt), // ADD THIS
+                                  _showUpdatePaymentStatus(apt),
+                              isClientView: widget.isClientView,
                             );
                           },
                         ),
@@ -778,6 +786,7 @@ class _AdminAppointmentCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onUpdateStatus;
   final VoidCallback onUpdatePaymentStatus;
+  final bool isClientView;
 
   const _AdminAppointmentCard({
     required this.appointment,
@@ -785,6 +794,7 @@ class _AdminAppointmentCard extends StatelessWidget {
     required this.onEdit,
     required this.onUpdateStatus,
     required this.onUpdatePaymentStatus,
+    this.isClientView = false,
   });
 
   Color get _statusColor {
@@ -863,76 +873,77 @@ class _AdminAppointmentCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, color: Color(0xFF5C3D2E)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  if (!isClientView) // Only show menu for admin view
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert, color: Color(0xFF5C3D2E)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      onSelected: (value) {
+                        if (value == 'status') onUpdateStatus();
+                        if (value == 'detail') onViewDetail();
+                        if (value == 'edit') onEdit();
+                        if (value == 'payment') onUpdatePaymentStatus();
+                      },
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(
+                          value: 'status',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.sync_alt,
+                                size: 16,
+                                color: Color(0xFF5C3D2E),
+                              ),
+                              SizedBox(width: 10),
+                              Text('Update Status'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'detail',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.visibility_outlined,
+                                size: 16,
+                                color: Color(0xFF5C3D2E),
+                              ),
+                              SizedBox(width: 10),
+                              Text('View Detail'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit_outlined,
+                                size: 16,
+                                color: Color(0xFF5C3D2E),
+                              ),
+                              SizedBox(width: 10),
+                              Text('Edit'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'payment',
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.payments_outlined,
+                                size: 16,
+                                color: Color(0xFF5C3D2E),
+                              ),
+                              SizedBox(width: 10),
+                              Text('Update Payment Status'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    onSelected: (value) {
-                      if (value == 'status') onUpdateStatus();
-                      if (value == 'detail') onViewDetail();
-                      if (value == 'edit') onEdit();
-                      if (value == 'payment') onUpdatePaymentStatus();
-                    },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(
-                        value: 'status',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.sync_alt,
-                              size: 16,
-                              color: Color(0xFF5C3D2E),
-                            ),
-                            SizedBox(width: 10),
-                            Text('Update Status'),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'detail',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.visibility_outlined,
-                              size: 16,
-                              color: Color(0xFF5C3D2E),
-                            ),
-                            SizedBox(width: 10),
-                            Text('View Detail'),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.edit_outlined,
-                              size: 16,
-                              color: Color(0xFF5C3D2E),
-                            ),
-                            SizedBox(width: 10),
-                            Text('Edit'),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'payment',
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.payments_outlined,
-                              size: 16,
-                              color: Color(0xFF5C3D2E),
-                            ),
-                            SizedBox(width: 10),
-                            Text('Update Payment Status'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],

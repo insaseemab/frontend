@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -13,8 +14,7 @@ class ClientDashboardScreen extends StatefulWidget {
   const ClientDashboardScreen({super.key});
 
   @override
-  State<ClientDashboardScreen> createState() =>
-      _ClientDashboardScreenState();
+  State<ClientDashboardScreen> createState() => _ClientDashboardScreenState();
 }
 
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
@@ -25,6 +25,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const LawyerFindScreen(),
     const CalendarScreen(),
     const MessageScreen(),
+    const AdminAppointmentsPage(isClientView: true),
   ];
 
   @override
@@ -33,7 +34,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       backgroundColor: Colors.white,
 
       // ───────── APP BAR ─────────
-     appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: const Color(0xFFF5EFE6),
         elevation: 0,
         title: Row(
@@ -42,26 +43,27 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(10)),
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child:
-                    Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
               ),
             ),
             const SizedBox(width: 10),
             const Text(
               "Insaaf Connect",
               style: TextStyle(
-                  color: Colors.brown,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ],
         ),
       ),
-drawer: Drawer(
+      drawer: Drawer(
         backgroundColor: const Color(0xFFF5EFE6),
         child: ListView(
           padding: EdgeInsets.zero,
@@ -135,6 +137,18 @@ drawer: Drawer(
                 setState(() => currentIndex = 3);
               },
             ),
+
+            ListTile(
+              leading: const Icon(
+                Icons.calendar_today,
+                color: Colors.brown,
+              ), // ← fix icon
+              title: const Text("Appointments"),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 4); // ← this now works
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.brown),
@@ -146,20 +160,15 @@ drawer: Drawer(
           ],
         ),
       ),
-     
+
       // ───────── BODY ─────────
-      body: IndexedStack(
-        index: currentIndex,
-        children: pages,
-      ),
+      body: IndexedStack(index: currentIndex, children: pages),
 
       // ───────── BOTTOM NAVIGATION ─────────
-      bottomNavigationBar: Container(
+      bottomNavigationBar: currentIndex >= 4 ? null :  Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Color(0xFFEADDD0), width: 1),
-          ),
+          border: Border(top: BorderSide(color: Color(0xFFEADDD0), width: 1)),
           boxShadow: [
             BoxShadow(
               color: Color(0x10000000),
@@ -384,8 +393,7 @@ class _CaseCard extends StatelessWidget {
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: statusBg,
               borderRadius: BorderRadius.circular(20),
@@ -421,7 +429,7 @@ class _AppointmentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color:const Color(0xFFF5EFE6),
+        color: const Color(0xFFF5EFE6),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFEADDD0)),
       ),

@@ -5,6 +5,7 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/screens/chat/message.dart';
+import 'package:insaafconnect/screens/login_screen/login.dart';
 
 
 
@@ -39,63 +40,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // ── TOP APPBAR (matches Figma) ──────────────────────
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Container(
-              height: 36,
-              width: 36,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE6DED3),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              padding: const EdgeInsets.all(6),
-              child: const Icon(
-                Icons.balance,
-                size: 18,
-                color: Color(0xFF6B4F3F),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "Insaaf Connect",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('No new notifications')),
-              );
-            },
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
-          ),
-          TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.person_outline,
-              color: Color(0xFF6B4F3F),
-              size: 18,
-            ),
-            label: const Text(
-              "Profile",
-              style: TextStyle(color: Color(0xFF6B4F3F)),
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-
+      
       // ── PAGE BODY ───────────────────────────────────────
       body: pages[_currentIndex],
 
