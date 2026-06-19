@@ -27,8 +27,11 @@ class _MessageScreenState extends State<MessageScreen> {
   bool isSending = false;
   Timer? _pollTimer;
 
-  // ← FIXED: correct key, correct location (class level)
-  int get myUserId => GetStorage().read("userId") ?? 0;
+  int get myUserId {
+  final val = GetStorage().read("userId");
+  if (val == null) return 0;
+  return val is int ? val : int.tryParse(val.toString()) ?? 0;
+}
 
   @override
   void initState() {
@@ -74,38 +77,40 @@ class _MessageScreenState extends State<MessageScreen> {
     }
   }
 
-  Future<void> sendMessage() async {
-    final body = _inputController.text.trim();
-    if (body.isEmpty || isSending) return;
+ Future<void> sendMessage() async {
+  final body = _inputController.text.trim();
+  if (body.isEmpty || isSending) return;
 
-    setState(() => isSending = true);
-    _inputController.clear();
+  setState(() => isSending = true);
+  _inputController.clear();
 
-    final sent = await _messageService.sendMessage(
-      conversationId: conversationId,
-      receiverId: receiverId,
-      body: body,
-    );
+  final sent = await _messageService.sendMessage(
+    conversationId: conversationId,
+    receiverId: receiverId,
+    body: body,
+  );
 
-    if (sent != null && mounted) {
-      setState(() {
-        messages.add(sent);
-        isSending = false;
+  if (sent != null && mounted) {
+    setState(() {
+      messages.add({
+        ...sent,
+        "sender_id": myUserId, // ← FORCE your own id here
       });
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    } else {
-      setState(() => isSending = false);
-    }
+      isSending = false;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  } else {
+    setState(() => isSending = false);
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,7 +152,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         itemBuilder: (context, index) {
                           final msg = messages[index];
                           // ← FIXED: use class-level myUserId, compute isMine here
-                          final isMine = msg["sender_id"] == myUserId;
+                          final isMine = msg["sender_id"].toString() == myUserId.toString();
 
                           return _MessageBubble(
                             body: msg["message"] ?? "",
