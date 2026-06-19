@@ -307,7 +307,8 @@ class _AppointmentCard extends StatelessWidget {
           ],
           if (status.toLowerCase() == "accepted" &&
     appointment['payment_amount'] != null &&
-    appointment['payment_status'] != "paid")
+    appointment['payment_status'] != 1 &&
+    appointment['payment_status'] != true)
   SizedBox(
     width: double.infinity,
     child: ElevatedButton(

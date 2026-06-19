@@ -521,37 +521,22 @@ class _AdminAppointmentsPageState extends State<AdminAppointmentsPage> {
           builder: (context) => IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.brown),
             onPressed: () {
-              widget.isClientView 
-                  ? Get.back()
-                  : Get.offAll(() => AdminDashboardScreen());
+             Get.back();
+                  
             },
           ),
         ),
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
+        
+            title:  Text(
               widget.isClientView ? 'My Appointments' : 'All Appointments',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.brown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
             ),
-          ],
-        ),
+          
+        
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.brown),

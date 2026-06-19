@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
+import 'package:insaafconnect/core/services/cases_services.dart';
 
 const String baseUrl = 'http://localhost:3000';
 
@@ -128,7 +129,8 @@ class CaseApiService {
 }
 
 class ManageCasesPage extends StatefulWidget {
-  const ManageCasesPage({super.key});
+  final String userRole; // 'admin' | 'lawyer' | 'client'
+  const ManageCasesPage({super.key, this.userRole = 'admin'});
 
   @override
   State<ManageCasesPage> createState() => _ManageCasesPageState();
@@ -140,6 +142,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   String? errorMessage;
   String selectedFilter = 'All';
   String searchQuery = '';
+  final box = GetStorage();
 
   @override
   void initState() {
@@ -153,7 +156,18 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       errorMessage = null;
     });
     try {
-      final cases = await CaseApiService.fetchAllCases();
+      List<CaseModel> cases;
+
+      final String role = box.read('role') ?? 'client';
+      final String token = box.read('token') ?? '';
+
+      if (role == 'admin') {
+        cases = await CaseApiService.fetchAllCases();
+      } else {
+        final raw = await CasesService.fetchMyCases(token);
+        cases = raw.map((json) => CaseModel.fromJson(json)).toList();
+      }
+
       setState(() {
         allCases = cases;
         isLoading = false;
@@ -523,22 +537,59 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       ),
       child: Row(
         children: [
-          Expanded(flex: 1, child: Text('#${c.id}')),
           Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  c.caseType,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  c.clientName,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ],
-            ),
+            flex: 1,
+            child: box.read('role') == 'admin'
+                ? PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, size: 18),
+                    onSelected: (value) {
+                      if (value == 'delete') {
+                        _deleteCase(c);
+                      } else if (value == 'edit') {
+                        _openEditDialog(c);
+                      } else {
+                        _updateStatus(c, value);
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      const PopupMenuItem(
+                        value: 'approved',
+                        child: Text('Set Approved'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'pending',
+                        child: Text('Set Pending'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'rejected',
+                        child: Text('Set Rejected'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'hearing',
+                        child: Text('Set Hearing'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'closed',
+                        child: Text('Set Closed'),
+                      ),
+                      const PopupMenuDivider(),
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Text(
+                          'Edit Case',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  )
+                : const SizedBox(), // lawyers & clients see no actions
           ),
           Expanded(flex: 2, child: Text(c.lawyerName)),
           // ✅ Dynamic status badge

@@ -43,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
       box.write('userId', userId); // ← ADDED
+      box.write('role', 'admin'); 
 
       Get.offAllNamed(AppRoutes.adminDashboard);
     } else if (result['success'] &&
@@ -55,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
       box.write('userId', userId); // ← ADDED
+      box.write('role', 'lawyer'); 
 
       Get.offAllNamed(AppRoutes.lawyerDashboard);
     } else if (result['success'] &&
@@ -66,7 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('isLoggedIn', true);
       box.write('userName', userName);
       box.write('token', token);
-      box.write('userId', userId); // ← ADDED
+      box.write('userId', userId); 
+      box.write('role', 'client'); 
 
       Get.offAllNamed(AppRoutes.clientDashboard);
     } else if (result['success']) {

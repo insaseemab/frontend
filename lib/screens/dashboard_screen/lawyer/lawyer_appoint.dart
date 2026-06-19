@@ -132,9 +132,12 @@ class _LawyerAppointmentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPending = appointment['status'] == 'pending';
-    final isAccepted = appointment['status'] == 'accepted';
-    final hasPayment = appointment['payment_mode'] != null;
-    final amount = appointment['payment_amount'];
+final isAccepted = appointment['status'] == 'accepted';
+final hasPayment = appointment['payment_mode'] != null;
+final amount = appointment['payment_amount'];
+final paymentApproved =
+    appointment['payment_status'] == 1 ||
+    appointment['payment_status'] == true;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -293,7 +296,8 @@ class _LawyerAppointmentTile extends StatelessWidget {
           ],
 
           // ── Client payment proof (accepted + client submitted payment) ──
-          if (isAccepted && hasPayment) ...[
+          // ── Client payment proof (accepted + client submitted payment, not yet approved) ──
+          if (isAccepted && hasPayment && !paymentApproved) ...[
             const SizedBox(height: 10),
             Container(
               width: double.infinity,
