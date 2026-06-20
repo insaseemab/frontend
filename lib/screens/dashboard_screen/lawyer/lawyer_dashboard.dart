@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client/calendar.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
+import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
@@ -774,7 +774,7 @@ class _MessagesPageState extends State<_MessagesPage> {
 
   Future<void> loadConversations() async {
 
-    final data = await service.fetchConversations();
+    final data = await service.fetchMyConversations();
 
     if (mounted) {
       setState(() {

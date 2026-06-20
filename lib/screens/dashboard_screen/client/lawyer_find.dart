@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
-import 'appointment_screen.dart';
+import 'package:insaafconnect/screens/appointments/appointments_page.dart';
+import '../../appointments/appointment_screen.dart';
 import 'package:insaafconnect/routes/app_routes.dart'; // ← ADD THIS
 
 class LawyerFindScreen extends StatefulWidget {

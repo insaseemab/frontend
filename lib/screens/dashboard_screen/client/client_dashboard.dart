@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
+import 'package:insaafconnect/screens/appointments/appointments_page.dart';
+import 'package:insaafconnect/screens/chat/conversation.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -24,7 +25,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const HomeScreen(),
     const LawyerFindScreen(),
     const CalendarScreen(),
-    const MessageScreen(),
+    const ConversationsScreen(),
     const AppointmentsPage(role: AppointmentRole.client)
   ];
 

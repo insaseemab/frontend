@@ -7,8 +7,10 @@ class MessageService {
 
   String get _token => GetStorage().read("token") ?? "";
 
+  // FIX: added "Bearer " prefix to match authMiddleware expectations
+  // (this is the same pattern appointment_services.dart already uses).
   Map<String, String> get _headers => {
-    "Authorization": _token,
+    "Authorization": "Bearer $_token",
     "Accept": "application/json",
     "Content-Type": "application/json",
   };
@@ -29,26 +31,15 @@ class MessageService {
   }
 
   // =============================================
-  // GET /conversations  (client side)
+  // GET /conversations/mine  (role-based: client OR lawyer)
+  // FIX: replaces old fetchConversations() (unscoped GET /conversations,
+  // which returned everyone's conversations) and fetchLawyerConversations()
+  // (lawyer-only). One endpoint, backend branches by req.user.role —
+  // same pattern as /appointments/mine.
   // =============================================
-  Future<List<Map<String, dynamic>>> fetchConversations() async {
+  Future<List<Map<String, dynamic>>> fetchMyConversations() async {
     final response = await http.get(
-      Uri.parse("$baseUrl/conversations"),
-      headers: _headers,
-    );
-    if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
-    }
-    return [];
-  }
-
-  // =============================================
-  // GET /conversations/lawyer/:lawyerId
-  // =============================================
-  Future<List<Map<String, dynamic>>> fetchLawyerConversations() async {
-    final lawyerId = GetStorage().read("id");
-    final response = await http.get(
-      Uri.parse("$baseUrl/conversations/lawyer/$lawyerId"),
+      Uri.parse("$baseUrl/conversations/mine"),
       headers: _headers,
     );
     if (response.statusCode == 200) {
@@ -69,12 +60,14 @@ class MessageService {
     );
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
-      final int myId = GetStorage().read("id") ?? 0;
+      // FIX: standardized on "userId" key — verify this matches what your
+      // login screen actually writes to GetStorage after authentication.
+      final int myId = GetStorage().read("userId") ?? 0;
 
       return data.map((m) {
         final map = Map<String, dynamic>.from(m);
-        map["is_mine"] = map["sender_id"] == myId;  // ← key fix
-        map["body"] = map["message"];                // ← map DB column
+        map["is_mine"] = map["sender_id"] == myId;
+        map["body"] = map["message"];
         return map;
       }).toList();
     }
@@ -90,7 +83,7 @@ class MessageService {
     required int receiverId,
     required String body,
   }) async {
-    final int myId = GetStorage().read("id") ?? 0;
+    final int myId = GetStorage().read("userId") ?? 0;
 
     final response = await http.post(
       Uri.parse("$baseUrl/messages"),
@@ -103,9 +96,8 @@ class MessageService {
     );
 
     if (response.statusCode == 201) {
-      // Build message map manually for instant UI update
       return {
-        "is_mine": true,        // ← always true, we just sent it
+        "is_mine": true,
         "body": body,
         "message": body,
         "sender_id": myId,

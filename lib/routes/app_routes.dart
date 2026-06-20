@@ -16,9 +16,16 @@ class AppRoutes {
   static const bookAppointment = '/book-appointment';
   static const myAppointments = '/my-appointments';
   static const calendar = '/calendar';
-  static const messages = '/messages';          
+
+  // Conversation list (role-aware: client sees lawyers, lawyer sees clients)
+  static const messages = '/messages';
+  // Single chat thread — always navigated to WITH arguments
+  // (conversation_id, receiver_id, other_name) from ConversationsScreen.
+  static const message = '/message';
 
   static const lawyerDashboard = "/lawyer-dashboard";
-  static const lawyerMessages =
-    '/lawyer-messages';
+  // NOTE: removed lawyerMessages ('/lawyer-messages') — dead route.
+  // ConversationsScreen now serves both lawyer and client via the
+  // single `messages` route above; backend's /conversations/mine
+  // branches by role server-side.
 }

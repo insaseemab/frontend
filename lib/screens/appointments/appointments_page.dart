@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
-import 'package:insaafconnect/screens/dashboard_screen/client/payment_bottom_sheet.dart';
+import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
 import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════
