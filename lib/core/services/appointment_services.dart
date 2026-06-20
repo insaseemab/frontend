@@ -259,6 +259,21 @@ class ApiService {
     );
     _checkStatus(res);
   }
+
+  // ════════════════════════════════════════════════
+//  ADD THIS METHOD to ApiService in appointment_services.dart
+//  (matches: POST /appointments/:id/convert-to-case, no body)
+// ════════════════════════════════════════════════
+
+  static Future<int> convertToCase({required int id}) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/appointments/$id/convert-to-case'),
+      headers: _authHeaders(),
+    );
+    _checkStatus(res);
+    final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+    return decoded['caseId'] as int;
+  }
 }
 
 class ApiException implements Exception {

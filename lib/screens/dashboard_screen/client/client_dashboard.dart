@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/chat/conversation.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -26,7 +27,8 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const LawyerFindScreen(),
     const CalendarScreen(),
     const ConversationsScreen(),
-    const AppointmentsPage(role: AppointmentRole.client)
+    const AppointmentsPage(role: AppointmentRole.client),
+    const ManageCasesPage()
   ];
 
   @override
@@ -148,6 +150,18 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               onTap: () {
                 Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
                 setState(() => currentIndex = 4); // ← this now works
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(
+                Icons.calendar_today,
+                color: Colors.brown,
+              ), // ← fix icon
+              title: const Text("Cases"),
+              onTap: () {
+                Get.to(() => const ManageCasesPage());
+                setState(() => currentIndex = 5); // ← this now works
               },
             ),
             const Divider(),

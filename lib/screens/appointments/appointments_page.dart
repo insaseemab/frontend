@@ -25,9 +25,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   String _searchQuery = '';
 
   bool get _isAdmin => widget.role == AppointmentRole.admin;
-  bool get _isLawyer => widget.role == AppointmentRole.lawyer;
-  bool get _isClient => widget.role == AppointmentRole.client;
-
+  
   @override
   void initState() {
     super.initState();
@@ -404,7 +402,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     }
   }
-
+// ── Convert appointment → case (admin + lawyer only) ──
+void _showConvertToCase(Map<String, dynamic> apt) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => _ConvertToCaseSheet(appointment: apt, onConverted: _load),
+  );
+}
   // ── Client: cancel a pending appointment ──
   Future<void> _clientCancel(Map<String, dynamic> apt) async {
     final confirmed = await showDialog<bool>(
@@ -593,17 +599,18 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                           itemBuilder: (_, i) {
                             final apt = filtered[i] as Map<String, dynamic>;
                             return _AppointmentCard(
-                              appointment: apt,
-                              role: widget.role,
-                              onViewDetail: () => _showDetail(apt),
-                              onEdit: () => _showEdit(apt),
-                              onAdminUpdateStatus: () => _showAdminUpdateStatus(apt),
-                              onApprovePayment: () => _showApprovePayment(apt),
-                              onLawyerReject: () => _lawyerReject(apt),
-                              onLawyerAccept: () => _lawyerShowAcceptSheet(apt),
-                              onClientCancel: () => _clientCancel(apt),
-                              onClientPay: () => _clientShowPayment(apt),
-                            );
+  appointment: apt,
+  role: widget.role,
+  onViewDetail: () => _showDetail(apt),
+  onEdit: () => _showEdit(apt),
+  onAdminUpdateStatus: () => _showAdminUpdateStatus(apt),
+  onApprovePayment: () => _showApprovePayment(apt),
+  onLawyerReject: () => _lawyerReject(apt),
+  onLawyerAccept: () => _lawyerShowAcceptSheet(apt),
+  onClientCancel: () => _clientCancel(apt),
+  onClientPay: () => _clientShowPayment(apt),
+  onConvertToCase: () => _showConvertToCase(apt), );// ← add this
+
                           },
                         ),
                 ),
@@ -661,6 +668,7 @@ class _AppointmentCard extends StatelessWidget {
   final VoidCallback onLawyerAccept;
   final VoidCallback onClientCancel;
   final VoidCallback onClientPay;
+  final VoidCallback onConvertToCase;   // ← add this line
 
   const _AppointmentCard({
     required this.appointment,
@@ -673,6 +681,7 @@ class _AppointmentCard extends StatelessWidget {
     required this.onLawyerAccept,
     required this.onClientCancel,
     required this.onClientPay,
+    required this.onConvertToCase,
   });
 
   Color get _statusColor {
@@ -697,7 +706,7 @@ class _AppointmentCard extends StatelessWidget {
     }
   }
 
-  @override
+ @override
   Widget build(BuildContext context) {
     final status = (appointment['status'] ?? 'pending').toString();
     final isPending = status == 'pending';
@@ -706,6 +715,8 @@ class _AppointmentCard extends StatelessWidget {
     final hasClientPayment = appointment['payment_mode'] != null;
     final paymentApproved =
         appointment['payment_status'] == 1 || appointment['payment_status'] == true;
+    final isConverted = appointment['converted_to_case'] == true ||  // ← add here
+        appointment['converted_to_case'] == 1;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -988,8 +999,7 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ],
-
-          // ── CLIENT: payment submitted, waiting on lawyer ──
+// ── CLIENT: payment submitted, waiting on lawyer ──
           if (role == AppointmentRole.client && isAccepted && hasClientPayment && !paymentApproved) ...[
             const SizedBox(height: 10),
             Container(
@@ -1001,12 +1011,55 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ],
+
+          // ── ADMIN / LAWYER: Convert to Case (accepted, payment approved, not yet converted) ──
+          if ((role == AppointmentRole.admin || role == AppointmentRole.lawyer) &&
+              isAccepted && paymentApproved && !isConverted) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: onConvertToCase,
+                icon: const Icon(Icons.cases_outlined, size: 16, color: Color(0xFF5C3D2E)),
+                label: const Text(
+                  'Convert to Case',
+                  style: TextStyle(color: Color(0xFF5C3D2E), fontWeight: FontWeight.w600),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFF5C3D2E)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              ),
+            ),
+          ],
+
+          // ── Already converted badge ──
+          if (isConverted) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle_outline, size: 14, color: Color(0xFF2E7D32)),
+                  SizedBox(width: 6),
+                  Text(
+                    'Converted to Case',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 }
-
 // ════════════════════════════════════════════════
 //  DETAIL BOTTOM SHEET (admin only)
 // ════════════════════════════════════════════════
@@ -1424,6 +1477,158 @@ class _DetailChip extends StatelessWidget {
           Expanded(
             child: Text(value,
                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF3E2C23))),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class _ConvertToCaseSheet extends StatefulWidget {
+  final Map<String, dynamic> appointment;
+  final VoidCallback onConverted;
+
+  const _ConvertToCaseSheet({required this.appointment, required this.onConverted});
+
+  @override
+  State<_ConvertToCaseSheet> createState() => _ConvertToCaseSheetState();
+}
+
+class _ConvertToCaseSheetState extends State<_ConvertToCaseSheet> {
+  bool _isLoading = false;
+
+  Future<void> _submit() async {
+    setState(() => _isLoading = true);
+    try {
+      await ApiService.convertToCase(id: widget.appointment['id'] as int);
+      if (!mounted) return;
+      Get.back();
+      Get.snackbar(
+        'Case Created',
+        'Appointment #${widget.appointment['id']} has been converted to a case.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      widget.onConverted();
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final apt = widget.appointment;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEADDD0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const Text(
+            'Convert to Case',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3E2C23)),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Appointment #${apt['id']}  ·  ${apt['client_name'] ?? ''}',
+            style: const TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF5EFE6),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFEADDD0)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'The following will be carried over:',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF5C3D2E)),
+                ),
+                const SizedBox(height: 10),
+                _SummaryRow(label: 'Case Type',   value: apt['case_type']?.toString()         ?? '-'),
+                _SummaryRow(label: 'Law Type',    value: apt['law_type']?.toString()          ?? '-'),
+                _SummaryRow(label: 'Description', value: apt['short_description']?.toString() ?? '-'),
+                _SummaryRow(label: 'Client',      value: apt['client_name']?.toString()       ?? '-'),
+                _SummaryRow(label: 'Lawyer',      value: apt['lawyer_name']?.toString()       ?? '-'),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text(
+              'Client contact details will be pulled automatically from their profile.',
+              style: TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : _submit,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 18, height: 18,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                    )
+                  : const Icon(Icons.cases_outlined, size: 18),
+              label: Text(_isLoading ? 'Creating Case...' : 'Confirm & Create Case'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5C3D2E),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+                textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+  const _SummaryRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B))),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF3E2C23)),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
