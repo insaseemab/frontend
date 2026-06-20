@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/appoint.dart';
-import 'package:insaafconnect/screens/dashboard_screen/client/view_appoint.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -26,7 +25,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const LawyerFindScreen(),
     const CalendarScreen(),
     const MessageScreen(),
-    const AdminAppointmentsPage(isClientView: true),
+    const AppointmentsPage(role: AppointmentRole.client)
   ];
 
   @override
@@ -146,7 +145,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ), // ← fix icon
               title: const Text("Appointments"),
               onTap: () {
-                Get.to(() => const ViewAppointmentsScreen());
+                Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
                 setState(() => currentIndex = 4); // ← this now works
               },
             ),

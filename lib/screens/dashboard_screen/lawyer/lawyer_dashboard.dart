@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client/calendar.dart';
-import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_appoint.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
@@ -33,7 +33,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     final List<Widget> pages = [
       _HomePage(userName: userName),
       const ManageCasesPage(),
-      const LawyerAppointmentsPage(),
+      const AppointmentsPage(role: AppointmentRole.lawyer),
       const _MessagesPage(),
     ];
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/appointments_page.dart';
 import 'appointment_screen.dart';
-import 'view_appoint.dart';
 import 'package:insaafconnect/routes/app_routes.dart'; // ← ADD THIS
 
 class LawyerFindScreen extends StatefulWidget {
@@ -703,7 +703,7 @@ class LawyerProfileScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Get.to(() => const ViewAppointmentsScreen());
+                      Get.to(() => const AppointmentsPage(role: AppointmentRole.lawyer));
                     },
                     icon: const Icon(Icons.calendar_today_outlined, size: 18),
                     label: const Text(
