@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/services/appointment_services.dart';
@@ -16,43 +16,41 @@ class PaymentBottomSheet extends StatefulWidget {
 class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   String selectedMethod = "Manual";
 
-  File? screenshot;
+  Uint8List? screenshotBytes;
+  String? screenshotName;
 
   Future pickImage() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-
     if (picked != null) {
+      final bytes = await picked.readAsBytes();
       setState(() {
-        screenshot = File(picked.path);
+        screenshotBytes = bytes;
+        screenshotName = picked.name;
       });
     }
   }
 
- Future submitPayment() async {
-  try {
-    await ApiService.payAppointment(
-      widget.appointment['id'],
-      selectedMethod,
-      screenshot,
-    );
+  Future submitPayment() async {
+    try {
+      await ApiService.payAppointment(
+        widget.appointment['id'],
+        selectedMethod,
+        screenshotBytes, // pass bytes instead of File
+      );
 
-    Get.back();
+      Get.back();
 
-    Get.snackbar(
-      "Success",
-      "Payment submitted successfully",
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  } catch (e) {
-    print(e);
+      Get.snackbar(
+        "Success",
+        "Payment submitted successfully",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      print(e);
 
-    Get.snackbar(
-      "Error",
-      e.toString(),
-      snackPosition: SnackPosition.BOTTOM,
-    );
+      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -190,10 +188,10 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                   child: const Text("Upload Screenshot"),
                 ),
 
-                if (screenshot != null)
+                if (screenshotName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
-                    child: Text(screenshot!.path.split('/').last),
+                    child: Text(screenshotName!),
                   ),
               ],
             ),

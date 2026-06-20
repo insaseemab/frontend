@@ -19,7 +19,7 @@ class LawyerService {
   Future<List<Map<String, dynamic>>> fetchLawyers() async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/lawyers'),
+        Uri.parse('$_baseUrl/lawyers/approved'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${_getToken()}',

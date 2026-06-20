@@ -105,7 +105,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
                     ),
                   ),
                   const Text(
-                    "Client",
+                    "Lawyer",
                     style: TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                 ],
