@@ -6,9 +6,6 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart'
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
 
-// ════════════════════════════════════════════════════════════════
-// AdminDashboardScreen
-// ════════════════════════════════════════════════════════════════
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
 
@@ -20,16 +17,54 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final box = GetStorage();
   int currentIndex = 0;
 
+  final List<String> _titles = [
+    'Insaaf Connect',
+    'Insaaf Connect',
+    'Insaaf Connect',
+    'Insaaf Connect',
+  ];
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-  _homePage(),
-  const Managelawyers(),
-  const ManageCasesPage(),
-  const AppointmentsPage(role: AppointmentRole.admin)
-];
+      _homePage(),
+      const Managelawyers(),
+      const ManageCasesPage(),
+      const AppointmentsPage(role: AppointmentRole.admin),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF5EFE6),
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              _titles[currentIndex],
+              style: const TextStyle(
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+      ),
+      drawer: _buildDrawer(),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
@@ -57,238 +92,208 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ══════════════════════════════════════════════════════════════
-  // HOME PAGE
-  // ══════════════════════════════════════════════════════════════
-  Widget _homePage() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "Insaaf Connect",
-              style: TextStyle(
-                color: Colors.brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-      ),
-      drawer: Drawer(
-        backgroundColor: const Color(0xFFF5EFE6),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.brown),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Insaaf Connect",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Text(
-                    "Admin Panel",
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home, color: Colors.brown),
-              title: const Text("Home"),
-              onTap: () {
-                Get.back();
-                setState(() => currentIndex = 0);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.verified_user, color: Colors.brown),
-              title: const Text("Manage Lawyers"),
-              onTap: () {
-                Get.back();
-                setState(() => currentIndex = 1);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.folder, color: Colors.brown),
-              title: const Text("Manage Cases"),
-              onTap: () {
-                Get.back();
-                setState(() => currentIndex = 2);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person, color: Colors.brown),
-              title: const Text("Appointments"),
-              onTap: () {
-                Get.back();
-                setState(() => currentIndex = 3);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.brown),
-              title: const Text("Logout"),
-              onTap: () {
-                Get.offAll(() => LoginScreen());
-              },
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ── Welcome banner ─────────────────────────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.brown,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Welcome back, Admin",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    "Manage your platform easily",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // ── Platform stat cards ────────────────────────────
-            SizedBox(
-              height: 100,
-              child: Row(
-                children: [
-                  Expanded(child: _statCard("Cases", "120", Icons.folder)),
-                  const SizedBox(width: 12),
-                  Expanded(child: _statCard("Clients", "80", Icons.people)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 100,
-              child: Row(
-                children: [
-                  Expanded(child: _statCard("Lawyers", "45", Icons.gavel)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _statCard("Pending lawyers", "11", Icons.pending),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // ── Earnings cards ─────────────────────────────────
-            Row(
+  // ── DRAWER ──────────────────────────────────────────────────
+  Widget _buildDrawer() {
+    return Drawer(
+      backgroundColor: const Color(0xFFF5EFE6),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(color: Colors.brown),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: _earningsCard(
-                    'PKR 43,000',
-                    'Total Platform Earnings',
-                    Icons.attach_money,
-                    const Color(0xFFC48A6A),
+                Container(
+                  height: 55,
+                  width: 55,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: _earningsCard(
-                    'PKR 8,500',
-                    'May 2026 Earnings',
-                    Icons.calendar_today_outlined,
-                    const Color(0xFF6B7D6B),
+                const SizedBox(height: 10),
+                const Text(
+                  "Insaaf Connect",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                const Text(
+                  "Admin Panel",
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
-
-            // ── Payment count cards ────────────────────────────
-            Row(
-              children: [
-                Expanded(
-                  child: _countCard(
-                    Icons.account_balance_wallet_outlined,
-                    'Manual Payments',
-                    4,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: _countCard(
-                    Icons.credit_card_outlined,
-                    'Card Payments',
-                    4,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-          ],
-        ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.home, color: Colors.brown),
+            title: const Text("Home"),
+            onTap: () {
+              Get.back();
+              setState(() => currentIndex = 0);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.verified_user, color: Colors.brown),
+            title: const Text("Manage Lawyers"),
+            onTap: () {
+              Get.back();
+              setState(() => currentIndex = 1);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.folder, color: Colors.brown),
+            title: const Text("Manage Cases"),
+            onTap: () {
+              Get.back();
+              setState(() => currentIndex = 2);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.brown),
+            title: const Text("Appointments"),
+            onTap: () {
+              Get.back();
+              setState(() => currentIndex = 3);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.brown),
+            title: const Text("Logout"),
+            onTap: () {
+              Get.offAll(() => LoginScreen());
+            },
+          ),
+        ],
       ),
     );
   }
 
-  // ── Stat card (Cases / Clients / Lawyers) ──────────────────
+  // ── HOME PAGE (body only, no Scaffold) ──────────────────────
+  Widget _homePage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Welcome banner ────────────────────────────────
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.brown,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Welcome back, Admin",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "Manage your platform easily",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Platform stat cards ──────────────────────────
+          SizedBox(
+            height: 100,
+            child: Row(
+              children: [
+                Expanded(child: _statCard("Cases", "120", Icons.folder)),
+                const SizedBox(width: 12),
+                Expanded(child: _statCard("Clients", "80", Icons.people)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 100,
+            child: Row(
+              children: [
+                Expanded(child: _statCard("Lawyers", "45", Icons.gavel)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _statCard("Pending lawyers", "11", Icons.pending),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Earnings cards ───────────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: _earningsCard(
+                  'PKR 43,000',
+                  'Total Platform Earnings',
+                  Icons.attach_money,
+                  const Color(0xFFC48A6A),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _earningsCard(
+                  'PKR 8,500',
+                  'May 2026 Earnings',
+                  Icons.calendar_today_outlined,
+                  const Color(0xFF6B7D6B),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // ── Payment count cards ──────────────────────────
+          Row(
+            children: [
+              Expanded(
+                child: _countCard(
+                  Icons.account_balance_wallet_outlined,
+                  'Manual Payments',
+                  4,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: _countCard(
+                  Icons.credit_card_outlined,
+                  'Card Payments',
+                  4,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+        ],
+      ),
+    );
+  }
+
+  // ── Stat card ────────────────────────────────────────────────
   Widget _statCard(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -317,7 +322,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ── Earnings card ───────────────────────────────────────────
+  // ── Earnings card ────────────────────────────────────────────
   Widget _earningsCard(String val, String lbl, IconData ic, Color bg) =>
       Container(
         padding: const EdgeInsets.all(18),
@@ -375,7 +380,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       );
 
-  // ── Payment count card ──────────────────────────────────────
+  // ── Payment count card ───────────────────────────────────────
   Widget _countCard(IconData ic, String lbl, int n) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
     decoration: BoxDecoration(

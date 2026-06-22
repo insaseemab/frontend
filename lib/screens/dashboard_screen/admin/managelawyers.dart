@@ -243,59 +243,46 @@ class _ManagelawyersState extends State<Managelawyers> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.brown),
-            onPressed: () {
-              Get.offAll(() => AdminDashboardScreen());
-            },
-          ),
-        ),
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // This replaces your old AppBar — now it's just a header row in the body
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
+              children: [
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    "List of Lawyers",
+                    style: TextStyle(
+                      color: Colors.brown,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add, color: Colors.brown),
+                  onPressed: () async {
+                    await Get.toNamed(AppRoutes.addLawyer);
+                    _loadLawyers();
+                  },
+                ),
+              ],
             ),
-            const SizedBox(width: 10),
-            const Text(
-              "List of Lawyers",
-              style: TextStyle(
-                color: Colors.brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.brown),
-            onPressed: () async {
-              await Get.toNamed(AppRoutes.addLawyer);
-              _loadLawyers();
-            },
           ),
+          // The rest of your page content
+          Expanded(child: _buildBody()),
         ],
       ),
-      // <-- ADD THIS
-      body: _buildBody(),
-    );
-  }
-
+    ),
+  );
+}
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());

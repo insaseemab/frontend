@@ -5,7 +5,6 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
-import 'package:insaafconnect/screens/chat/message.dart';
 import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════

@@ -296,43 +296,32 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   int get pendingPayment =>
       allCases.where((c) => c.paymentStatus.toLowerCase() == 'unpaid').length;
 
+ 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.brown),
-          onPressed: () => Get.offAll(() => AdminDashboardScreen()),
-        ),
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "List of Cases",
-              style: TextStyle(
-                color: Colors.brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
+  return Scaffold(
+    backgroundColor: const Color(0xFFF5EFE6),
+      body: SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // This replaces your old AppBar — now it's just a header row in the body
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
+              children: [
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    "Case Management",
+                    style: TextStyle(
+                      color: Colors.brown,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                 IconButton(
             icon: const Icon(Icons.refresh, color: Colors.brown),
             onPressed: _loadCases,
           ),
@@ -345,27 +334,23 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               }
             },
           ),
-        ],
-      ),
-      body: Container(
-        color: const Color(0xFFF5F0EB),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(16, 20, 16, 4),
-              child: Text(
-                'Case Management',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              ],
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'View and manage all cases',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
+          ),
+          //     IconButton(
+          //   icon: const Icon(Icons.refresh, color: Colors.brown),
+          //   onPressed: _loadCases,
+          // ),
+          // IconButton(
+          //   icon: const Icon(Icons.add, color: Colors.brown),
+          //   onPressed: () async {
+          //     final result = await Get.toNamed(AppRoutes.createCase);
+          //     if (result == true) {
+          //       _loadCases();
+          //     }
+          //   },
+          // ),
+            
             const SizedBox(height: 16),
             _buildStatsRow(),
             const SizedBox(height: 16),
