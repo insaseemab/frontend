@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class LawyerService {
-  static const String _baseUrl = 'http://localhost:3000';
+  static const String _baseUrl = 'http://insaaf.sandbox.pk';
 
   // ─────────────────────────────────────────
   // GET TOKEN
