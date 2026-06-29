@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 
 class CasesService {
-  static const String baseUrl = "http://insaaf.sandbox.pk";
+  static const String baseUrl = "http://localhost:3000";
 
   static Future<List<dynamic>> fetchCases() async {
     print('fetch cases');
