@@ -4,11 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 
-const String baseUrl = 'http://insaaf.sandbox.pk';
+const String baseUrl = 'http://localhost:3000';
 
 class CaseModel {
   final int id;
@@ -18,6 +17,11 @@ class CaseModel {
   final String caseStatus;
   final String paymentStatus;
   final String hearingDate;
+  final String descriptionCase;
+  final String phone;
+  final String address;
+  final String departConcern;
+  final String caseStartDate;
 
   CaseModel({
     required this.id,
@@ -27,6 +31,11 @@ class CaseModel {
     required this.caseStatus,
     required this.paymentStatus,
     required this.hearingDate,
+    required this.descriptionCase,
+    required this.phone,
+    required this.address,
+    required this.departConcern,
+    required this.caseStartDate,
   });
 
   factory CaseModel.fromJson(Map<String, dynamic> json) {
@@ -40,16 +49,29 @@ class CaseModel {
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
       hearingDate: json['hearing_date']?.toString() ?? 'N/A',
+      descriptionCase: json['description_case']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      address: json['address']?.toString() ?? '',
+      departConcern: json['depart_concern']?.toString() ?? '',
+      caseStartDate: json['case_start_date']?.toString() ?? '',
     );
   }
 }
 
+// ─────────────────────────────────────────
+// CASE API SERVICE
+// ─────────────────────────────────────────
 class CaseApiService {
-  // GET ALL CASES
   static Future<List<CaseModel>> fetchAllCases() async {
+    final box = GetStorage();
+    final String token = box.read('token') ?? '';
+
     final response = await http.get(
       Uri.parse('$baseUrl/cases'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -60,7 +82,6 @@ class CaseApiService {
     }
   }
 
-  // DELETE CASE
   static Future<void> deleteCase(int caseId, String token) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/cases/$caseId'),
@@ -75,11 +96,16 @@ class CaseApiService {
     }
   }
 
-  // UPDATE STATUS
   static Future<void> updateCaseStatus(int caseId, String newStatus) async {
+    final box = GetStorage();
+    final String token = box.read('token') ?? '';
+
     final response = await http.patch(
       Uri.parse('$baseUrl/cases/$caseId/status/$newStatus'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode != 200) {
@@ -87,7 +113,6 @@ class CaseApiService {
     }
   }
 
-  // UPDATE CASE (edit)
   static Future<void> updateCase({
     required int id,
     required String name,
@@ -99,7 +124,7 @@ class CaseApiService {
     required String caseStartDate,
     required String departConcern,
     required String hearingDate,
-    required String paymentStatus,
+    required int paymentStatus,
     required String token,
   }) async {
     final response = await http.put(
@@ -128,8 +153,11 @@ class CaseApiService {
   }
 }
 
+// ─────────────────────────────────────────
+// MANAGE CASES PAGE
+// ─────────────────────────────────────────
 class ManageCasesPage extends StatefulWidget {
-  final String userRole; // 'admin' | 'lawyer' | 'client'
+  final String userRole;
   const ManageCasesPage({super.key, this.userRole = 'admin'});
 
   @override
@@ -209,15 +237,15 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     if (confirmed == true) {
       try {
-        final box = GetStorage();
-        String token = box.read('token') ?? '';
+        final String token = box.read('token') ?? '';
         await CaseApiService.deleteCase(c.id, token);
-        _loadCases();
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Case deleted successfully')),
         );
+        _loadCases();
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -228,7 +256,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   Future<void> _updateStatus(CaseModel c, String newStatus) async {
     try {
       await CaseApiService.updateCaseStatus(c.id, newStatus);
-      // ✅ Update UI locally without full reload
       setState(() {
         final index = allCases.indexWhere((x) => x.id == c.id);
         if (index != -1) {
@@ -240,6 +267,11 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             caseStatus: newStatus,
             paymentStatus: c.paymentStatus,
             hearingDate: c.hearingDate,
+            descriptionCase: c.descriptionCase,
+            phone: c.phone,
+            address: c.address,
+            departConcern: c.departConcern,
+            caseStartDate: c.caseStartDate,
           );
         }
       });
@@ -248,13 +280,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         context,
       ).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
-  // ── Status color helper ────────────────────────────────────
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -296,61 +328,45 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   int get pendingPayment =>
       allCases.where((c) => c.paymentStatus.toLowerCase() == 'unpaid').length;
 
- 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: const Color(0xFFF5EFE6),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5EFE6),
       body: SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // This replaces your old AppBar — now it's just a header row in the body
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text(
-                    "Case Management",
-                    style: TextStyle(
-                      color: Colors.brown,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      "Case Management",
+                      style: TextStyle(
+                        color: Colors.brown,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                ),
-                 IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.brown),
-            onPressed: _loadCases,
-          ),
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.brown),
-            onPressed: () async {
-              final result = await Get.toNamed(AppRoutes.createCase);
-              if (result == true) {
-                _loadCases();
-              }
-            },
-          ),
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.refresh, color: Colors.brown),
+                    onPressed: _loadCases,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add, color: Colors.brown),
+                    onPressed: () async {
+                      final result = await Get.toNamed(AppRoutes.createCase);
+                      if (result == true) {
+                        _loadCases();
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          //     IconButton(
-          //   icon: const Icon(Icons.refresh, color: Colors.brown),
-          //   onPressed: _loadCases,
-          // ),
-          // IconButton(
-          //   icon: const Icon(Icons.add, color: Colors.brown),
-          //   onPressed: () async {
-          //     final result = await Get.toNamed(AppRoutes.createCase);
-          //     if (result == true) {
-          //       _loadCases();
-          //     }
-          //   },
-          // ),
-            
             const SizedBox(height: 16),
             _buildStatsRow(),
             const SizedBox(height: 16),
@@ -478,16 +494,22 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         children: [
           Expanded(
             flex: 1,
-            child: Text('ID', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text('Type', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(
+              'Case ID',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           Expanded(
             flex: 2,
             child: Text(
-              'Lawyer',
+              'Case Type',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              'Lawyer ID',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
@@ -522,6 +544,25 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       ),
       child: Row(
         children: [
+          Expanded(flex: 1, child: Text('#${c.id}')),
+          Expanded(flex: 2, child: Text(c.caseType)),
+          Expanded(flex: 2, child: Text(c.lawyerName)),
+          Expanded(
+            flex: 2,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: statusColor.withValues(
+                  alpha: 0.12,
+                ), // ← fixed deprecation
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                c.caseStatus,
+                style: TextStyle(fontSize: 11, color: statusColor),
+              ),
+            ),
+          ),
           Expanded(
             flex: 1,
             child: box.read('role') == 'admin'
@@ -574,69 +615,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                       ),
                     ],
                   )
-                : const SizedBox(), // lawyers & clients see no actions
-          ),
-          Expanded(flex: 2, child: Text(c.lawyerName)),
-          // ✅ Dynamic status badge
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                c.caseStatus,
-                style: TextStyle(fontSize: 11, color: statusColor),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, size: 18),
-              onSelected: (value) {
-                if (value == 'delete') {
-                  _deleteCase(c);
-                } else if (value == 'edit') {
-                  _openEditDialog(c);
-                } else {
-                  _updateStatus(c, value);
-                }
-              },
-              itemBuilder: (_) => [
-                const PopupMenuItem(
-                  value: 'approved',
-                  child: Text('Set Approved'),
-                ),
-                const PopupMenuItem(
-                  value: 'pending',
-                  child: Text('Set Pending'),
-                ),
-                const PopupMenuItem(
-                  value: 'rejected',
-                  child: Text('Set Rejected'),
-                ),
-                const PopupMenuItem(
-                  value: 'hearing',
-                  child: Text('Set Hearing'),
-                ),
-                const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
-                const PopupMenuDivider(),
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Text(
-                    'Edit Case',
-                    style: TextStyle(color: Colors.blue),
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'delete',
-                  child: Text('Delete', style: TextStyle(color: Colors.red)),
-                ),
-              ],
-            ),
+                : const SizedBox(),
           ),
         ],
       ),

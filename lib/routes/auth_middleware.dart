@@ -17,27 +17,15 @@ class AuthMiddleware extends GetMiddleware {
 }
 
 class RoleMiddleware extends GetMiddleware {
-  final String role;
-
-  RoleMiddleware({required this.role});
+  final List<String> allowedRoles;
+  RoleMiddleware({required this.allowedRoles});
 
   @override
   RouteSettings? redirect(String? route) {
-    final box = GetStorage();
-
-    // Read the user's role from GetStorage
-    final userRole = box.read('role');
-
-    if (userRole == null) {
+    final role = GetStorage().read<String>('role') ?? '';
+    if (!allowedRoles.contains(role)) {
       return const RouteSettings(name: AppRoutes.login);
     }
-
-    if (userRole != role) {
-      // Redirect if the role doesn't match
-      return const RouteSettings(name: AppRoutes.login);
-      // Or use an Access Denied page if you have one.
-    }
-
     return null;
   }
 }

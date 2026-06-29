@@ -29,14 +29,20 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.caseData.clientName);
-    caseTypeController = TextEditingController(text: widget.caseData.caseType);
-    phoneController = TextEditingController();
-    addressController = TextEditingController();
-    descriptionController = TextEditingController();
-    departController = TextEditingController();
-    hearingDateController =
-        TextEditingController(text: widget.caseData.hearingDate);
-    selectedPaymentStatus = widget.caseData.paymentStatus.toLowerCase() == 'paid'
+caseTypeController = TextEditingController(text: widget.caseData.caseType);
+phoneController = TextEditingController(text: widget.caseData.phone);
+addressController = TextEditingController(text: widget.caseData.address);
+descriptionController =
+    TextEditingController(text: widget.caseData.descriptionCase);
+departController =
+    TextEditingController(text: widget.caseData.departConcern);
+hearingDateController = TextEditingController(
+  text: widget.caseData.hearingDate.contains('T')
+      ? widget.caseData.hearingDate.split('T')[0]
+      : widget.caseData.hearingDate,
+);
+    selectedPaymentStatus =
+        widget.caseData.paymentStatus.toLowerCase() == 'paid'
         ? 'paid'
         : 'unpaid';
   }
@@ -54,48 +60,53 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
   }
 
   Future<void> _updateCase() async {
-    try {
-      setState(() => loading = true);
+  try {
+    setState(() => loading = true);
 
-      final String token = GetStorage().read('token') ?? '';
+    final String token = GetStorage().read('token') ?? '';
 
-      await CaseApiService.updateCase(
-        id: widget.caseData.id,
-        name: nameController.text.trim(),
-        caseType: caseTypeController.text.trim(),
-        caseStatus: widget.caseData.caseStatus,
-        descriptionCase: descriptionController.text.trim(),
-        phone: phoneController.text.trim(),
-        address: addressController.text.trim(),
-        caseStartDate: '',
-        departConcern: departController.text.trim(),
-        hearingDate: hearingDateController.text.trim(),
-        paymentStatus: selectedPaymentStatus,
-        token: token,
-      );
+    await CaseApiService.updateCase(
+      id: widget.caseData.id,
+      name: nameController.text.trim(),
+      caseType: caseTypeController.text.trim(),
+      caseStatus: widget.caseData.caseStatus,
+      descriptionCase: descriptionController.text.trim(),
+      phone: phoneController.text.trim(),
+      address: addressController.text.trim(),
+     caseStartDate: widget.caseData.caseStartDate.contains('T')
+    ? widget.caseData.caseStartDate.split('T')[0]
+    : widget.caseData.caseStartDate,
+departConcern: departController.text.trim(),
+hearingDate: hearingDateController.text.trim(),
+paymentStatus: selectedPaymentStatus == 'paid' ? 1 : 0,   // ← convert string to int
+token: token,
+    );
 
-      if (!mounted) return;
+    if (!mounted) return;
 
-      Get.back(result: true);
+    Get.back(result: true);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Case updated successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => loading = false);
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Case updated successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  } finally {
+    if (mounted) setState(() => loading = false);
   }
+}
 
-  Widget _buildField(String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
@@ -125,28 +136,30 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
             _buildField('Client Name', nameController),
             _buildField('Case Type', caseTypeController),
             _buildField('Description', descriptionController),
-            _buildField('Phone', phoneController,
-                keyboardType: TextInputType.phone),
+            _buildField(
+              'Phone',
+              phoneController,
+              keyboardType: TextInputType.phone,
+            ),
             _buildField('Address', addressController),
             _buildField('Department Concern', departController),
             _buildField('Hearing Date (YYYY-MM-DD)', hearingDateController),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedPaymentStatus,
-              decoration: const InputDecoration(
-                labelText: 'Payment Status',
-                border: UnderlineInputBorder(),
-                isDense: true,
-              ),
-              items: const [
-                DropdownMenuItem(value: 'paid', child: Text('Paid')),
-                DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
-              ],
-              onChanged: (v) {
-                if (v != null) setState(() => selectedPaymentStatus = v);
-              },
-            ),
-          ],
+  initialValue: selectedPaymentStatus,
+  decoration: const InputDecoration(
+    labelText: 'Payment Status',
+    border: UnderlineInputBorder(),
+    isDense: true,
+  ),
+  items: const [
+    DropdownMenuItem(value: 'paid', child: Text('Paid')),
+    DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
+  ],
+  onChanged: (v) {
+    if (v != null) setState(() => selectedPaymentStatus = v);
+  },
+),   ],
         ),
       ),
       actions: [
@@ -165,7 +178,9 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2),
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
                 )
               : const Text('Save'),
         ),
