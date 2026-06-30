@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
-import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import '../../appointments/appointment_screen.dart';
 import 'package:insaafconnect/routes/app_routes.dart'; // ← ADD THIS
 
@@ -58,15 +57,24 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
 
   List<Map<String, dynamic>> get filtered {
     return _lawyers.where((lawyer) {
-      final spec = (lawyer['specialization'] ?? '').toString();
+      final spec = (lawyer['specialization'] ?? '').toString().toLowerCase();
+
+      // "Criminal Law" -> "criminal", "Civil Law" -> "civil", etc.
+      final filterKeyword = selectedFilter
+          .toLowerCase()
+          .replaceAll(' law', '')
+          .trim();
+
       final matchFilter =
-          selectedFilter == 'All' || spec.contains(selectedFilter);
+          selectedFilter == 'All' || spec.contains(filterKeyword);
+
       final q = _searchQuery.toLowerCase();
       final matchSearch =
           q.isEmpty ||
           (lawyer['name'] ?? '').toString().toLowerCase().contains(q) ||
-          spec.toLowerCase().contains(q) ||
+          spec.contains(q) ||
           (lawyer['location'] ?? '').toString().toLowerCase().contains(q);
+
       return matchFilter && matchSearch;
     }).toList();
   }
@@ -251,6 +259,15 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
 //  LAWYER CARD
 // ════════════════════════════════════════════════
 
+bool _isApproved(Map<String, dynamic> lawyer) {
+  final status = lawyer['status'];
+  if (status == null) return true; // endpoint already filters approved-only
+  if (status is bool) return status;
+  if (status is int) return status == 1;
+  return status.toString() == '1' ||
+      status.toString().toLowerCase() == 'approved';
+}
+
 class _LawyerCard extends StatelessWidget {
   final Map<String, dynamic> lawyer;
   const _LawyerCard({required this.lawyer});
@@ -337,7 +354,39 @@ class _LawyerCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
+            _isApproved(lawyer)
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE3F4E8),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.verified,
+                          size: 13,
+                          color: Color(0xFF2E7D4F),
+                        ),
+                        SizedBox(width: 3),
+                        Text(
+                          'Verified',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2E7D4F),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            const SizedBox(height: 8),
             Text(
               (lawyer['name'] ?? 'Unknown').toString(),
               style: const TextStyle(
@@ -524,13 +573,26 @@ class LawyerProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  Text(
-                    (lawyer['name'] ?? 'Unknown Lawyer').toString(),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF3E2C23),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        (lawyer['name'] ?? 'Unknown Lawyer').toString(),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF3E2C23),
+                        ),
+                      ),
+                      if (_isApproved(lawyer)) ...[
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.verified,
+                          size: 18,
+                          color: Color(0xFF2E7D4F),
+                        ),
+                      ],
+                    ],
                   ),
 
                   const SizedBox(height: 4),
