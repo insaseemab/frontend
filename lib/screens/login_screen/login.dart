@@ -35,41 +35,38 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
     if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'admin') {
-      final userName = result['data']['user']['name'];
+      final user = result['data']['user'];
       final token = result['token'];
-      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
-      box.write('userName', userName);
       box.write('token', token);
-      box.write('userId', userId); // ← ADDED
       box.write('role', 'admin');
+      box.write(
+        'user',
+        user,
+      ); // ⬅ save the FULL user object (id, name, email, location, specialization, experience, cases, status)
 
       Get.offAllNamed(AppRoutes.adminDashboard);
     } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'lawyer') {
-      final userName = result['data']['user']['name'];
+      final user = result['data']['user'];
       final token = result['token'];
-      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
-      box.write('userName', userName);
       box.write('token', token);
-      box.write('userId', userId); // ← ADDED
       box.write('role', 'lawyer');
+      box.write('user', user);
 
       Get.offAllNamed(AppRoutes.lawyerDashboard);
     } else if (result['success'] &&
         result['data']['user']['role'].toString().toLowerCase() == 'client') {
-      final userName = result['data']['user']['name'];
+      final user = result['data']['user'];
       final token = result['token'];
-      final userId = result['data']['user']['id']; // ← ADDED
 
       box.write('isLoggedIn', true);
-      box.write('userName', userName);
       box.write('token', token);
-      box.write('userId', userId);
       box.write('role', 'client');
+      box.write('user', user);
 
       Get.offAllNamed(AppRoutes.clientDashboard);
     } else if (result['success']) {

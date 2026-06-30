@@ -6,10 +6,10 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/screens/chat/message.dart';
+import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
-import 'package:insaafconnect/core/services/appointment_services.dart';      
-import 'package:insaafconnect/core/services/cases_services.dart';   
-
+import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/core/services/cases_services.dart';
 
 class LawyerDashboard extends StatefulWidget {
   const LawyerDashboard({super.key});
@@ -27,7 +27,8 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   @override
   void initState() {
     super.initState();
-    userName = box.read('userName') ?? "Ahmed Khan";
+    final user = Map<String, dynamic>.from(box.read('user') ?? {});
+    userName = (user['name'] ?? "User").toString();
   }
 
   @override
@@ -41,7 +42,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-  // ───────── APP BAR ─────────
+      // ───────── APP BAR ─────────
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5EFE6),
         elevation: 0,
@@ -70,6 +71,17 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundColor: Color(0xFF6B4F3F),
+              child: Icon(Icons.person, color: Colors.white, size: 18),
+            ),
+            onPressed: () => Get.to(() => const ProfileScreen()),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       drawer: Drawer(
         backgroundColor: const Color(0xFFF5EFE6),
@@ -169,7 +181,6 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         ),
       ),
 
-      
       // ── PAGE BODY ───────────────────────────────────────
       body: pages[_currentIndex],
 
@@ -212,6 +223,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     );
   }
 }
+
 // ══════════════════════════════════════════════════════════
 // 1. HOME PAGE
 // ══════════════════════════════════════════════════════════
@@ -271,12 +283,13 @@ class _HomePageState extends State<_HomePage> {
       return start.year == today.year &&
           start.month == today.month &&
           start.day == today.day;
-    }).toList()
-      ..sort((a, b) {
-        final aStart = DateTime.tryParse(a['slot_start_time'].toString()) ?? DateTime(0);
-        final bStart = DateTime.tryParse(b['slot_start_time'].toString()) ?? DateTime(0);
-        return aStart.compareTo(bStart);
-      });
+    }).toList()..sort((a, b) {
+      final aStart =
+          DateTime.tryParse(a['slot_start_time'].toString()) ?? DateTime(0);
+      final bStart =
+          DateTime.tryParse(b['slot_start_time'].toString()) ?? DateTime(0);
+      return aStart.compareTo(bStart);
+    });
   }
 
   @override
@@ -339,22 +352,32 @@ class _HomePageState extends State<_HomePage> {
                     children: [
                       const Text(
                         "Active Cases",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       if (activeCases.isEmpty)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text("No active cases", style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            "No active cases",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         )
                       else
-                        ...activeCases.map((c) => _caseCard(
-                              (c['name'] ?? c['title'] ?? 'Untitled Case').toString(),       // ⚠️ ADJUST
-                              (c['client_name'] ?? 'Client #${c['client_id']}').toString(),  // ⚠️ ADJUST
-                              (c['hearing_date'] ?? '—').toString(),                          // ⚠️ ADJUST
-                              (c['case_status'] ?? '—').toString(),                           // ⚠️ ADJUST
-                              _statusColor(c['case_status']?.toString()),
-                            )),
+                        ...activeCases.map(
+                          (c) => _caseCard(
+                            (c['name'] ?? c['title'] ?? 'Untitled Case')
+                                .toString(), // ⚠️ ADJUST
+                            (c['client_name'] ?? 'Client #${c['client_id']}')
+                                .toString(), // ⚠️ ADJUST
+                            (c['hearing_date'] ?? '—').toString(), // ⚠️ ADJUST
+                            (c['case_status'] ?? '—').toString(), // ⚠️ ADJUST
+                            _statusColor(c['case_status']?.toString()),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -368,21 +391,36 @@ class _HomePageState extends State<_HomePage> {
                     children: [
                       const Text(
                         "Today's Schedule",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       if (todaysAppointments.isEmpty)
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text("No appointments today", style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            "No appointments today",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         )
                       else
-                        ...todaysAppointments.map((a) => _scheduleCard(
-                              _formatTime(a['slot_start_time']?.toString()),
-                              (a['case_type'] ?? a['short_description'] ?? 'Appointment').toString(), // ⚠️ ADJUST
-                              (a['client_name'] ?? 'Client #${a['client_id']}').toString(),            // ⚠️ ADJUST
-                              _formatDuration(a['slot_start_time']?.toString(), a['slot_end_time']?.toString()),
-                            )),
+                        ...todaysAppointments.map(
+                          (a) => _scheduleCard(
+                            _formatTime(a['slot_start_time']?.toString()),
+                            (a['case_type'] ??
+                                    a['short_description'] ??
+                                    'Appointment')
+                                .toString(), // ⚠️ ADJUST
+                            (a['client_name'] ?? 'Client #${a['client_id']}')
+                                .toString(), // ⚠️ ADJUST
+                            _formatDuration(
+                              a['slot_start_time']?.toString(),
+                              a['slot_end_time']?.toString(),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -458,7 +496,10 @@ class _HomePageState extends State<_HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -468,20 +509,35 @@ class _HomePageState extends State<_HomePage> {
                 ),
                 child: Text(
                   priority,
-                  style: TextStyle(color: priorityColor, fontSize: 11, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: priorityColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text("Client: $client", style: const TextStyle(color: Colors.grey, fontSize: 12)),
-          Text("Next Hearing: $date", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text(
+            "Client: $client",
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+          ),
+          Text(
+            "Next Hearing: $date",
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+          ),
         ],
       ),
     );
   }
 
-  Widget _scheduleCard(String time, String title, String client, String duration) {
+  Widget _scheduleCard(
+    String time,
+    String title,
+    String client,
+    String duration,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -504,7 +560,11 @@ class _HomePageState extends State<_HomePage> {
               color: const Color(0xFFE6DED3),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.access_time, size: 18, color: Color(0xFF6B4F3F)),
+            child: const Icon(
+              Icons.access_time,
+              size: 18,
+              color: Color(0xFF6B4F3F),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -512,17 +572,27 @@ class _HomePageState extends State<_HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(title, style: const TextStyle(fontSize: 13, color: Colors.black87)),
-                Text(client, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
+                Text(
+                  client,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
               ],
             ),
           ),
-          Text(duration, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text(
+            duration,
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
         ],
       ),
     );
   }
 }
+
 class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
 
@@ -531,7 +601,6 @@ class _MessagesPage extends StatefulWidget {
 }
 
 class _MessagesPageState extends State<_MessagesPage> {
-
   final MessageService service = MessageService();
 
   List conversations = [];
@@ -544,7 +613,6 @@ class _MessagesPageState extends State<_MessagesPage> {
   }
 
   Future<void> loadConversations() async {
-
     final data = await service.fetchMyConversations();
 
     if (mounted) {
@@ -557,17 +625,12 @@ class _MessagesPageState extends State<_MessagesPage> {
 
   @override
   Widget build(BuildContext context) {
-
     if (loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (conversations.isEmpty) {
-      return const Center(
-        child: Text("No conversations found"),
-      );
+      return const Center(child: Text("No conversations found"));
     }
 
     return Padding(
@@ -576,13 +639,9 @@ class _MessagesPageState extends State<_MessagesPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           const Text(
             "Messages",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 4),
@@ -599,48 +658,34 @@ class _MessagesPageState extends State<_MessagesPage> {
               itemCount: conversations.length,
 
               itemBuilder: (context, index) {
-
                 final c = conversations[index];
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 10),
 
                   child: ListTile(
-
                     leading: CircleAvatar(
-                      backgroundColor:
-                          const Color(0xFF6B4F3F),
+                      backgroundColor: const Color(0xFF6B4F3F),
 
                       child: Text(
                         "C",
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
 
-                    title: Text(
-                      "Client #${c['client_id']}",
-                    ),
+                    title: Text("Client #${c['client_id']}"),
 
-                    subtitle: Text(
-                      "Conversation ID ${c['id']}",
-                    ),
+                    subtitle: Text("Conversation ID ${c['id']}"),
 
                     onTap: () {
-
                       Get.to(
                         () => const MessageScreen(),
                         arguments: {
+                          "conversation_id": c["id"],
 
-                          "conversation_id":
-                              c["id"],
+                          "receiver_id": c["client_id"],
 
-                          "receiver_id":
-                              c["client_id"],
-
-                          "other_name":
-                              "Client #${c['client_id']}",
+                          "other_name": "Client #${c['client_id']}",
                         },
                       );
                     },

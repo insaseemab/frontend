@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
+import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
 
@@ -36,34 +37,45 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
-        elevation: 0,
-        title: Row(
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Text(
-              _titles[currentIndex],
-              style: const TextStyle(
-                color: Colors.brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ],
+  backgroundColor: const Color(0xFFF5EFE6),
+  elevation: 0,
+  title: Row(
+    children: [
+      Container(
+        height: 40,
+        width: 40,
+        decoration: BoxDecoration(
+          color: Colors.grey,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
         ),
       ),
+      const SizedBox(width: 10),
+      Text(
+        _titles[currentIndex],
+        style: const TextStyle(
+          color: Colors.brown,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+    ],
+  ),
+  actions: [
+    IconButton(
+      icon: const CircleAvatar(
+        radius: 16,
+        backgroundColor: Color(0xFF6B4F3F),
+        child: Icon(Icons.person, color: Colors.white, size: 18),
+      ),
+      onPressed: () => Get.to(() => const ProfileScreen()),
+    ),
+    const SizedBox(width: 8),
+  ],
+),
       drawer: _buildDrawer(),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
