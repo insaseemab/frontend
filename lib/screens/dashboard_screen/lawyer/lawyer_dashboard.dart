@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/screens/chat/message.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
+import 'package:insaafconnect/core/services/appointment_services.dart';      
+import 'package:insaafconnect/core/services/cases_services.dart';   
 
 
 class LawyerDashboard extends StatefulWidget {
@@ -210,117 +212,222 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     );
   }
 }
-
 // ══════════════════════════════════════════════════════════
 // 1. HOME PAGE
 // ══════════════════════════════════════════════════════════
-class _HomePage extends StatelessWidget {
+class _HomePage extends StatefulWidget {
   final String userName;
   const _HomePage({required this.userName});
 
   @override
+  State<_HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<_HomePage> {
+  final box = GetStorage();
+
+  List<dynamic> cases = [];
+  List<dynamic> appointments = [];
+  bool loading = true;
+  String? errorMsg;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDashboardData();
+  }
+
+  Future<void> loadDashboardData() async {
+    try {
+      final token = box.read<String>('token') ?? '';
+      final results = await Future.wait([
+        CasesService.fetchMyCases(token),
+        ApiService.getMyAppointments(),
+      ]);
+
+      if (!mounted) return;
+      setState(() {
+        cases = results[0];
+        appointments = results[1];
+        loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        errorMsg = "Failed to load dashboard data";
+        loading = false;
+      });
+    }
+  }
+
+  // Appointments scheduled for today, sorted by start time
+  List<dynamic> get _todaysAppointments {
+    final today = DateTime.now();
+    return appointments.where((a) {
+      final startRaw = a['slot_start_time']; // ⚠️ ADJUST key if different
+      if (startRaw == null) return false;
+      final start = DateTime.tryParse(startRaw.toString());
+      if (start == null) return false;
+      return start.year == today.year &&
+          start.month == today.month &&
+          start.day == today.day;
+    }).toList()
+      ..sort((a, b) {
+        final aStart = DateTime.tryParse(a['slot_start_time'].toString()) ?? DateTime(0);
+        final bStart = DateTime.tryParse(b['slot_start_time'].toString()) ?? DateTime(0);
+        return aStart.compareTo(bStart);
+      });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Welcome
-          Text(
-            "Welcome, Adv. $userName",
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            "You have 3 appointments scheduled for today",
-            style: TextStyle(color: Colors.grey),
-          ),
+    if (loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-          const SizedBox(height: 24),
+    if (errorMsg != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(errorMsg!, style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                setState(() => loading = true);
+                loadDashboardData();
+              },
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      );
+    }
 
-          // ── Active Cases + Today's Schedule side by side ──
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // LEFT — Active Cases
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Active Cases",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+    final todaysAppointments = _todaysAppointments;
+    final activeCases = cases.take(3).toList(); // show top 3 on dashboard
+
+    return RefreshIndicator(
+      onRefresh: loadDashboardData,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Welcome
+            Text(
+              "Welcome, Adv. ${widget.userName}",
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "You have ${todaysAppointments.length} appointment${todaysAppointments.length == 1 ? '' : 's'} scheduled for today",
+              style: const TextStyle(color: Colors.grey),
+            ),
+
+            const SizedBox(height: 24),
+
+            // ── Active Cases + Today's Schedule side by side ──
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // LEFT — Active Cases
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Active Cases",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _caseCard(
-                      "Property Dispute",
-                      "Ali Raza",
-                      "2026-01-10",
-                      "High",
-                      Colors.red,
-                    ),
-                    _caseCard(
-                      "Contract Review",
-                      "Fatima Khan",
-                      "2026-01-15",
-                      "Medium",
-                      Colors.orange,
-                    ),
-                    _caseCard(
-                      "Legal Consultation",
-                      "Hassan Ahmed",
-                      "2026-01-20",
-                      "Low",
-                      Colors.green,
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      if (activeCases.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text("No active cases", style: TextStyle(color: Colors.grey)),
+                        )
+                      else
+                        ...activeCases.map((c) => _caseCard(
+                              (c['name'] ?? c['title'] ?? 'Untitled Case').toString(),       // ⚠️ ADJUST
+                              (c['client_name'] ?? 'Client #${c['client_id']}').toString(),  // ⚠️ ADJUST
+                              (c['hearing_date'] ?? '—').toString(),                          // ⚠️ ADJUST
+                              (c['case_status'] ?? '—').toString(),                           // ⚠️ ADJUST
+                              _statusColor(c['case_status']?.toString()),
+                            )),
+                    ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(width: 16),
+                const SizedBox(width: 16),
 
-              // RIGHT — Today's Schedule
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Today's Schedule",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                // RIGHT — Today's Schedule
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Today's Schedule",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _scheduleCard(
-                      "10:00 AM",
-                      "Court Hearing",
-                      "Ali Raza",
-                      "2 hours",
-                    ),
-                    _scheduleCard(
-                      "2:00 PM",
-                      "Client Meeting",
-                      "Fatima Khan",
-                      "1 hour",
-                    ),
-                    _scheduleCard(
-                      "4:00 PM",
-                      "Document Review",
-                      "Hassan Ahmed",
-                      "1 hour",
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      if (todaysAppointments.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          child: Text("No appointments today", style: TextStyle(color: Colors.grey)),
+                        )
+                      else
+                        ...todaysAppointments.map((a) => _scheduleCard(
+                              _formatTime(a['slot_start_time']?.toString()),
+                              (a['case_type'] ?? a['short_description'] ?? 'Appointment').toString(), // ⚠️ ADJUST
+                              (a['client_name'] ?? 'Client #${a['client_id']}').toString(),            // ⚠️ ADJUST
+                              _formatDuration(a['slot_start_time']?.toString(), a['slot_end_time']?.toString()),
+                            )),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  String _formatTime(String? iso) {
+    if (iso == null) return '—';
+    final dt = DateTime.tryParse(iso);
+    if (dt == null) return '—';
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return "$hour:$minute $period";
+  }
+
+  String _formatDuration(String? startIso, String? endIso) {
+    if (startIso == null || endIso == null) return '—';
+    final start = DateTime.tryParse(startIso);
+    final end = DateTime.tryParse(endIso);
+    if (start == null || end == null) return '—';
+    final diff = end.difference(start);
+    if (diff.inMinutes < 60) return "${diff.inMinutes} min";
+    final hours = diff.inMinutes / 60;
+    return hours == hours.roundToDouble()
+        ? "${hours.toInt()} hour${hours == 1 ? '' : 's'}"
+        : "${diff.inMinutes} min";
+  }
+
+  Color _statusColor(String? status) {
+    switch (status?.toLowerCase()) {
+      case 'urgent':
+      case 'high':
+        return Colors.red;
+      case 'pending':
+      case 'medium':
+        return Colors.orange;
+      default:
+        return Colors.green;
+    }
   }
 
   Widget _caseCard(
@@ -351,10 +458,7 @@ class _HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -364,35 +468,20 @@ class _HomePage extends StatelessWidget {
                 ),
                 child: Text(
                   priority,
-                  style: TextStyle(
-                    color: priorityColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: priorityColor, fontSize: 11, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
-            "Client: $client",
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-          Text(
-            "Next Hearing: $date",
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
-          ),
+          Text("Client: $client", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text("Next Hearing: $date", style: const TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );
   }
 
-  Widget _scheduleCard(
-    String time,
-    String title,
-    String client,
-    String duration,
-  ) {
+  Widget _scheduleCard(String time, String title, String client, String duration) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -415,11 +504,7 @@ class _HomePage extends StatelessWidget {
               color: const Color(0xFFE6DED3),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
-              Icons.access_time,
-              size: 18,
-              color: Color(0xFF6B4F3F),
-            ),
+            child: const Icon(Icons.access_time, size: 18, color: Color(0xFF6B4F3F)),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -427,331 +512,17 @@ class _HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(time, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 13, color: Colors.black87),
-                ),
-                Text(
-                  client,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
+                Text(title, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                Text(client, style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),
-          Text(
-            duration,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          Text(duration, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
     );
   }
 }
-
-// ══════════════════════════════════════════════════════════
-// 2. ACTIVE CASES PAGE
-// ══════════════════════════════════════════════════════════
-class _ActiveCasesPage extends StatelessWidget {
-  const _ActiveCasesPage();
-
-  @override
-  Widget build(BuildContext context) {
-    final cases = [
-      {
-        "title": "Property Dispute",
-        "client": "Ali Raza",
-        "date": "2026-01-10",
-        "priority": "High",
-        "color": Colors.red,
-      },
-      {
-        "title": "Contract Review",
-        "client": "Fatima Khan",
-        "date": "2026-01-15",
-        "priority": "Medium",
-        "color": Colors.orange,
-      },
-      {
-        "title": "Legal Consultation",
-        "client": "Hassan Ahmed",
-        "date": "2026-01-20",
-        "priority": "Low",
-        "color": Colors.green,
-      },
-      {
-        "title": "Family Law Case",
-        "client": "Sara Malik",
-        "date": "2026-01-25",
-        "priority": "High",
-        "color": Colors.red,
-      },
-      {
-        "title": "Corporate Dispute",
-        "client": "Tariq Khan",
-        "date": "2026-02-01",
-        "priority": "Medium",
-        "color": Colors.orange,
-      },
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Active Cases",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            "${cases.length} cases in progress",
-            style: const TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: cases.length,
-              itemBuilder: (context, i) {
-                final c = cases[i];
-                final color = c['color'] as Color;
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 4,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              c['title'] as String,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              "Client: ${c['client']}",
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 13,
-                              ),
-                            ),
-                            Text(
-                              "Next Hearing: ${c['date']}",
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          c['priority'] as String,
-                          style: TextStyle(
-                            color: color,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// 3. APPOINTMENTS PAGE
-// ══════════════════════════════════════════════════════════
-class _AppointmentsPage extends StatelessWidget {
-  const _AppointmentsPage();
-
-  @override
-  Widget build(BuildContext context) {
-    final today = [
-      {
-        "time": "10:00 AM",
-        "title": "Court Hearing",
-        "client": "Ali Raza",
-        "duration": "2 hours",
-      },
-      {
-        "time": "2:00 PM",
-        "title": "Client Meeting",
-        "client": "Fatima Khan",
-        "duration": "1 hour",
-      },
-      {
-        "time": "4:00 PM",
-        "title": "Document Review",
-        "client": "Hassan Ahmed",
-        "duration": "1 hour",
-      },
-    ];
-    final tomorrow = [
-      {
-        "time": "11:00 AM",
-        "title": "Legal Consultation",
-        "client": "Sara Malik",
-        "duration": "45 min",
-      },
-      {
-        "time": "3:00 PM",
-        "title": "Case Briefing",
-        "client": "Tariq Khan",
-        "duration": "1 hour",
-      },
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Appointments",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            "Upcoming scheduled appointments",
-            style: TextStyle(color: Colors.grey),
-          ),
-          const SizedBox(height: 20),
-
-          _sectionLabel("Today"),
-          const SizedBox(height: 10),
-          ...today.map((a) => _appointmentCard(a)),
-
-          const SizedBox(height: 16),
-          _sectionLabel("Tomorrow"),
-          const SizedBox(height: 10),
-          ...tomorrow.map((a) => _appointmentCard(a)),
-        ],
-      ),
-    );
-  }
-
-  Widget _sectionLabel(String label) {
-    return Text(
-      label,
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 14,
-        color: Color(0xFF6B4F3F),
-      ),
-    );
-  }
-
-  Widget _appointmentCard(Map<String, String> a) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE6DED3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.access_time,
-              color: Color(0xFF6B4F3F),
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  a['title']!,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-                Text(
-                  a['client']!,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                a['time']!,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Text(
-                a['duration']!,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ══════════════════════════════════════════════════════════
-// 4. MESSAGES PAGE
-// ══════════════════════════════════════════════════════════
 class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
 
