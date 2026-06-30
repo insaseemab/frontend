@@ -696,62 +696,6 @@ class LawyerProfileScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-
-            // ── Row 2: View Appointments + View Messages ──
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Get.to(() => const AppointmentsPage(role: AppointmentRole.lawyer));
-                    },
-                    icon: const Icon(Icons.calendar_today_outlined, size: 18),
-                    label: const Text(
-                      'View Appointments',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5C3D2E),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openChat,
-                    icon: const Icon(Icons.forum_outlined, size: 18),
-                    label: const Text(
-                      'View Messages',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF5C3D2E),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(
-                        color: Color(0xFF5C3D2E),
-                        width: 1.5,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

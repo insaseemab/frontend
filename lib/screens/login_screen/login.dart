@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
-
+  bool _obscurePassword = true;
   final box = GetStorage();
 
   Future<void> login() async {
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
       box.write('userId', userId); // ← ADDED
-      box.write('role', 'admin'); 
+      box.write('role', 'admin');
 
       Get.offAllNamed(AppRoutes.adminDashboard);
     } else if (result['success'] &&
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('userName', userName);
       box.write('token', token);
       box.write('userId', userId); // ← ADDED
-      box.write('role', 'lawyer'); 
+      box.write('role', 'lawyer');
 
       Get.offAllNamed(AppRoutes.lawyerDashboard);
     } else if (result['success'] &&
@@ -68,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
       box.write('isLoggedIn', true);
       box.write('userName', userName);
       box.write('token', token);
-      box.write('userId', userId); 
-      box.write('role', 'client'); 
+      box.write('userId', userId);
+      box.write('role', 'client');
 
       Get.offAllNamed(AppRoutes.clientDashboard);
     } else if (result['success']) {
@@ -141,16 +141,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                TextField(
+                TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    hintText: "Enter your password",
+                    hintText: "Password",
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
                     ),
                   ),
                 ),
