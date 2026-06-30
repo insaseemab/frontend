@@ -18,9 +18,17 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
   Uint8List? screenshotBytes;
   String? screenshotName;
+  bool _isSubmitting = false;
 
   Future pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    // Compress + downscale on pick so the base64 payload sent to the
+    // backend stays well under typical body-size limits (this is what
+    // was causing the server to return an HTML 413 error page).
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1080,
+      imageQuality: 60,
+    );
     if (picked != null) {
       final bytes = await picked.readAsBytes();
       setState(() {
@@ -31,11 +39,14 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   }
 
   Future submitPayment() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+
     try {
       await ApiService.payAppointment(
         widget.appointment['id'],
         selectedMethod,
-        screenshotBytes, // pass bytes instead of File
+        screenshotBytes,
       );
 
       Get.back();
@@ -46,9 +57,9 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      print(e);
-
       Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -63,7 +74,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          const Text(
             "Payment Method",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
@@ -201,11 +212,23 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: submitPayment,
+              onPressed: _isSubmitting ? null : submitPayment,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5C3D2E),
               ),
-              child: const Text("Submit Payment"),
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "Submit Payment",
+                      style: TextStyle(color: Colors.white),
+                    ),
             ),
           ),
         ],

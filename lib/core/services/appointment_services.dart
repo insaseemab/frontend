@@ -155,14 +155,25 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  // ── Internal: throw on non-2xx ──
+  // ── Internal: throw a meaningful error on non-2xx, even if the
+  // ── server responded with HTML instead of JSON (e.g. a 404/413/500
+  // ── error page) — this is what was causing the FormatException crash.
   static void _checkStatus(http.Response res) {
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final body = jsonDecode(res.body);
-      throw ApiException(
-        statusCode: res.statusCode,
-        message: body['error'] ?? 'Unknown error',
-      );
+      String message = 'Unknown error';
+      try {
+        final body = jsonDecode(res.body);
+        message = body['error'] ?? message;
+      } catch (_) {
+        if (res.statusCode == 413) {
+          message = 'The data sent is too large. Please try a smaller file.';
+        } else if (res.statusCode == 404) {
+          message = 'Requested resource was not found.';
+        } else {
+          message = 'Server error (${res.statusCode}). Please try again.';
+        }
+      }
+      throw ApiException(statusCode: res.statusCode, message: message);
     }
   }
 
@@ -193,22 +204,6 @@ class ApiService {
     _checkStatus(res);
   }
 
-  // static Future<List> getAppointmentsForLawyer(
-  //     int lawyerId) async {
-
-  //   final res = await http.get(
-  //     Uri.parse('$baseUrl/appointments'),
-  //     headers: _authHeaders(),
-  //   );
-
-  //   _checkStatus(res);
-
-  //   final all = jsonDecode(res.body) as List;
-
-  //   return all.where(
-  //     (a) => a['lawyer_id'] == lawyerId,
-  //   ).toList();
-  // }
   /// GET /appointments/mine — role-based (client/lawyer/admin)
   static Future<List<dynamic>> getMyAppointments() async {
     final res = await http.get(
@@ -219,17 +214,15 @@ class ApiService {
     return jsonDecode(res.body) as List<dynamic>;
   }
 
-  // REPLACE the entire payAppointment() function
+  /// PATCH /appointments/:id/pay
   static Future<void> payAppointment(
     int appointmentId,
     String paymentMethod,
-    Uint8List? screenshotBytes, // ← changed from File?
+    Uint8List? screenshotBytes,
   ) async {
     String? receiptBase64;
     if (screenshotBytes != null) {
-      receiptBase64 = base64Encode(
-        screenshotBytes,
-      ); // ← no need to readAsBytes()
+      receiptBase64 = base64Encode(screenshotBytes);
     }
 
     final body = jsonEncode({
@@ -244,11 +237,22 @@ class ApiService {
     );
 
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final decoded = jsonDecode(res.body);
-      throw ApiException(
-        statusCode: res.statusCode,
-        message: decoded['error'] ?? 'Payment failed',
-      );
+      String message = 'Payment failed';
+      try {
+        final decoded = jsonDecode(res.body);
+        message = decoded['error'] ?? message;
+      } catch (_) {
+        // Server returned non-JSON (most likely an HTML error page —
+        // commonly a 413 Payload Too Large if the screenshot is large,
+        // since it's base64-encoded inline in the JSON body).
+        if (res.statusCode == 413) {
+          message =
+              'Screenshot is too large to upload. Please choose a smaller image.';
+        } else {
+          message = 'Server error (${res.statusCode}). Please try again.';
+        }
+      }
+      throw ApiException(statusCode: res.statusCode, message: message);
     }
   }
 
@@ -260,11 +264,7 @@ class ApiService {
     _checkStatus(res);
   }
 
-  // ════════════════════════════════════════════════
-//  ADD THIS METHOD to ApiService in appointment_services.dart
-//  (matches: POST /appointments/:id/convert-to-case, no body)
-// ════════════════════════════════════════════════
-
+  /// POST /appointments/:id/convert-to-case
   static Future<int> convertToCase({required int id}) async {
     final res = await http.post(
       Uri.parse('$baseUrl/appointments/$id/convert-to-case'),
@@ -283,5 +283,5 @@ class ApiException implements Exception {
   const ApiException({required this.statusCode, required this.message});
 
   @override
-  String toString() => 'ApiException($statusCode): $message';
+  String toString() => message;
 }

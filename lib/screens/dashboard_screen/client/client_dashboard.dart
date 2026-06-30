@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/chat/conversation.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
+import 'package:insaafconnect/core/services/cases_services.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
 import 'package:get/get.dart';
@@ -27,7 +29,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const CalendarScreen(),
     const ConversationsScreen(),
     const AppointmentsPage(role: AppointmentRole.client),
-    const ManageCasesPage()
+    const ManageCasesPage(),
   ];
 
   @override
@@ -147,7 +149,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ), // ← fix icon
               title: const Text("Appointments"),
               onTap: () {
-                Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
+                Get.to(
+                  () => const AppointmentsPage(role: AppointmentRole.client),
+                );
                 setState(() => currentIndex = 4); // ← this now works
               },
             ),
@@ -240,101 +244,215 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
 //  HOME SCREEN  (Tab 1 — Dashboard content)
 // ════════════════════════════════════════════════
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = true;
+  String? errorMessage;
+  List<dynamic> cases = [];
+
+  final box = GetStorage();
+  late final String userName;
+
+  @override
+  void initState() {
+    super.initState();
+    userName = box.read('userName') ?? "User";
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      final String token = box.read('token') ?? '';
+      final result = await CasesService.fetchMyCases(token);
+
+      setState(() {
+        cases = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  String _caseTitle(Map c) =>
+      (c['name'] ?? c['case_type'] ?? 'Untitled Case').toString();
+
+  String _lawyerName(Map c) =>
+      (c['lawyer_name'] ??
+              c['lawyer'] ??
+              c['lawyer_id']?.toString() ??
+              'Lawyer')
+          .toString();
+
+  String _caseDate(Map c) =>
+      (c['hearing_date'] ?? c['case_start_date'] ?? '').toString();
+
+  String _caseStatus(Map c) => (c['case_status'] ?? 'Pending').toString();
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'approved':
+        return const Color(0xFF2E7D32);
+      case 'in progress':
+      case 'in_progress':
+        return const Color(0xFFB5651D);
+      case 'rejected':
+        return const Color(0xFFC62828);
+      default:
+        return const Color(0xFF6B6B6B);
+    }
+  }
+
+  Color _statusBg(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'approved':
+        return const Color(0xFFE8F5E9);
+      case 'in progress':
+      case 'in_progress':
+        return const Color(0xFFF5E6D3);
+      case 'rejected':
+        return const Color(0xFFFDECEA);
+      default:
+        return const Color(0xFFEEEEEE);
+    }
+  }
+
+  String _formatStatusLabel(String status) {
+    if (status.isEmpty) return 'Pending';
+    return status[0].toUpperCase() + status.substring(1);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Welcome Header ──
-          const Text(
-            'Welcome Back, Ali!',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3E2C23),
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            "Here's what's happening with your legal matters",
-            style: TextStyle(fontSize: 14, color: Color(0xFF8C7B6B)),
-          ),
-          const SizedBox(height: 28),
-
-          // ── Recent Cases ──
-          const Text(
-            'Recent Cases',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3E2C23),
-            ),
-          ),
-          const SizedBox(height: 14),
-          _CaseCard(
-            title: 'Property Dispute',
-            lawyer: 'Adv. Ahmed Khan',
-            date: '2026-01-05',
-            status: 'In Progress',
-            statusColor: const Color(0xFFB5651D),
-            statusBg: const Color(0xFFF5E6D3),
-          ),
-          const SizedBox(height: 12),
-          _CaseCard(
-            title: 'Contract Review',
-            lawyer: 'Adv. Sarah Ali',
-            date: '2025-12-20',
-            status: 'Completed',
-            statusColor: const Color(0xFF2E7D32),
-            statusBg: const Color(0xFFE8F5E9),
-          ),
-          const SizedBox(height: 12),
-          _CaseCard(
-            title: 'Legal Consultation',
-            lawyer: 'Adv. Bilal Ahmed',
-            date: '2026-01-12',
-            status: 'Scheduled',
-            statusColor: const Color(0xFF6B6B6B),
-            statusBg: const Color(0xFFEEEEEE),
-          ),
-          const SizedBox(height: 28),
-
-          // ── Upcoming Appointments ──
-          const Text(
-            'Upcoming Appointments',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: _AppointmentCard(
-                  title: 'Court Hearing',
-                  lawyer: 'Adv. Ahmed Khan',
-                  dateTime: '2026-01-10 at 10:00 AM',
-                ),
+    return RefreshIndicator(
+      onRefresh: _loadData,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Welcome Header ──
+            Text(
+              "Welcome Back, $userName!",
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3E2C23),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _AppointmentCard(
-                  title: 'Consultation',
-                  lawyer: 'Adv. Sarah Ali',
-                  dateTime: '2026-01-15 at 2:00 PM',
-                ),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              "Here's what's happening with your legal matters",
+              style: TextStyle(fontSize: 14, color: Color(0xFF8C7B6B)),
+            ),
+            const SizedBox(height: 28),
+
+            // ── Recent Cases ──
+            const Text(
+              'Recent Cases',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3E2C23),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-        ],
+            ),
+            const SizedBox(height: 14),
+
+            if (isLoading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Center(
+                  child: CircularProgressIndicator(color: Colors.brown),
+                ),
+              )
+            else if (errorMessage != null)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFDECEA),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFF5C6CB)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Couldn't load your cases.",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFC62828),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      errorMessage!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFFC62828),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: _loadData,
+                      child: const Text("Retry"),
+                    ),
+                  ],
+                ),
+              )
+            else if (cases.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5EFE6),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFEADDD0)),
+                ),
+                child: const Text(
+                  "You don't have any cases yet.",
+                  style: TextStyle(color: Color(0xFF8C7B6B)),
+                ),
+              )
+            else
+              Column(
+                children: List.generate(cases.length > 3 ? 3 : cases.length, (
+                  index,
+                ) {
+                  final c = Map<String, dynamic>.from(cases[index]);
+                  final status = _caseStatus(c);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _CaseCard(
+                      title: _caseTitle(c),
+                      lawyer: _lawyerName(c),
+                      date: _caseDate(c),
+                      status: _formatStatusLabel(status),
+                      statusColor: _statusColor(status),
+                      statusBg: _statusBg(status),
+                    ),
+                  );
+                }),
+              ),
+
+            const SizedBox(height: 28),
+          ],
+        ),
       ),
     );
   }
