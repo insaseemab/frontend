@@ -235,18 +235,23 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                       style: TextStyle(color: Color(0xFF8C7B6B)),
                     ),
                   )
-                : GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.78,
-                        ),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, i) =>
-                        _LawyerCard(lawyer: filtered[i]),
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      return GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 220, // max width per card
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              mainAxisExtent:
+                                  340, // fixed card height that fits content comfortably
+                            ),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, i) =>
+                            _LawyerCard(lawyer: filtered[i]),
+                      );
+                    },
                   ),
           ),
         ],
