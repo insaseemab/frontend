@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
@@ -14,9 +16,33 @@ class AdminDashboardScreen extends StatefulWidget {
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
+// ── Holds every computed dashboard number in one place ──
+class _DashboardStats {
+  final int casesCount;
+  final int lawyersCount;
+  final int pendingLawyersCount;
+  final int clientsCount; // approximated from unique client_id in appointments
+  final double totalEarnings;
+  final double thisMonthEarnings;
+  final int manualPaymentsCount;
+  final int cardPaymentsCount;
+
+  _DashboardStats({
+    required this.casesCount,
+    required this.lawyersCount,
+    required this.pendingLawyersCount,
+    required this.clientsCount,
+    required this.totalEarnings,
+    required this.thisMonthEarnings,
+    required this.manualPaymentsCount,
+    required this.cardPaymentsCount,
+  });
+}
+
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final box = GetStorage();
   int currentIndex = 0;
+  late Future<_DashboardStats> _statsFuture;
 
   final List<String> _titles = [
     'Insaaf Connect',
@@ -24,6 +50,92 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     'Insaaf Connect',
     'Insaaf Connect',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _statsFuture = _loadStats();
+  }
+
+  void _reload() {
+    setState(() => _statsFuture = _loadStats());
+  }
+
+  // ── Fetches cases, lawyers, and appointments in parallel and derives stats ──
+  Future<_DashboardStats> _loadStats() async {
+    final results = await Future.wait([
+      CaseApiService.fetchAllCases(),
+      LawyerService().fetchLawyers(),
+      ApiService.getAllAppointments(),
+    ]);
+
+    final cases = results[0] as List<CaseModel>;
+    final lawyers = results[1] as List<Map<String, dynamic>>;
+    final appointments = results[2] as List<dynamic>;
+
+    // ── Pending lawyers: status isn't cleanly 0 (rejected) or 1 (approved) ──
+    // TODO: if your backend actually uses a distinct value (e.g. status == 2)
+    // for pending, swap the condition below to match it exactly.
+    int pendingLawyers = 0;
+    for (final l in lawyers) {
+      final raw = l['status'];
+      final s = raw is int ? raw : int.tryParse(raw?.toString() ?? '');
+      if (s != 0 && s != 1) pendingLawyers++;
+    }
+
+    // ── Clients: unique client_id seen across all appointments ──
+    // TODO: replace with a real /clients count endpoint once available.
+    final clientIds = <String>{};
+    double totalEarnings = 0;
+    double thisMonthEarnings = 0;
+    int manualCount = 0;
+    int cardCount = 0;
+    final now = DateTime.now();
+
+    for (final raw in appointments) {
+      final apt = raw as Map<String, dynamic>;
+
+      if (apt['client_id'] != null) {
+        clientIds.add(apt['client_id'].toString());
+      }
+
+      final paymentApproved =
+          apt['payment_status'] == 1 || apt['payment_status'] == true;
+      final amount =
+          double.tryParse(apt['payment_amount']?.toString() ?? '') ?? 0;
+
+      if (paymentApproved && amount > 0) {
+        totalEarnings += amount;
+
+        final slotDate = DateTime.tryParse(
+          apt['slot_start_time']?.toString() ?? '',
+        );
+        if (slotDate != null &&
+            slotDate.year == now.year &&
+            slotDate.month == now.month) {
+          thisMonthEarnings += amount;
+        }
+
+        final mode = (apt['payment_mode'] ?? '').toString().toLowerCase();
+        if (mode.contains('card')) {
+          cardCount++;
+        } else if (mode.isNotEmpty) {
+          manualCount++;
+        }
+      }
+    }
+
+    return _DashboardStats(
+      casesCount: cases.length,
+      lawyersCount: lawyers.length,
+      pendingLawyersCount: pendingLawyers,
+      clientsCount: clientIds.length,
+      totalEarnings: totalEarnings,
+      thisMonthEarnings: thisMonthEarnings,
+      manualPaymentsCount: manualCount,
+      cardPaymentsCount: cardCount,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,45 +149,50 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-  backgroundColor: const Color(0xFFF5EFE6),
-  elevation: 0,
-  title: Row(
-    children: [
-      Container(
-        height: 40,
-        width: 40,
-        decoration: BoxDecoration(
-          color: Colors.grey,
-          borderRadius: BorderRadius.circular(10),
+        backgroundColor: const Color(0xFFF5EFE6),
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              _titles[currentIndex],
+              style: const TextStyle(
+                color: Colors.brown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-        ),
+        actions: [
+          if (currentIndex == 0)
+            IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.brown),
+              onPressed: _reload,
+            ),
+          IconButton(
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundColor: Color(0xFF6B4F3F),
+              child: Icon(Icons.person, color: Colors.white, size: 18),
+            ),
+            onPressed: () => Get.to(() => const ProfileScreen()),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
-      const SizedBox(width: 10),
-      Text(
-        _titles[currentIndex],
-        style: const TextStyle(
-          color: Colors.brown,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-      ),
-    ],
-  ),
-  actions: [
-    IconButton(
-      icon: const CircleAvatar(
-        radius: 16,
-        backgroundColor: Color(0xFF6B4F3F),
-        child: Icon(Icons.person, color: Colors.white, size: 18),
-      ),
-      onPressed: () => Get.to(() => const ProfileScreen()),
-    ),
-    const SizedBox(width: 8),
-  ],
-),
       drawer: _buildDrawer(),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -195,114 +312,187 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   // ── HOME PAGE (body only, no Scaffold) ──────────────────────
   Widget _homePage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Welcome banner ────────────────────────────────
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.brown,
-              borderRadius: BorderRadius.circular(16),
+    return FutureBuilder<_DashboardStats>(
+      future: _statsFuture,
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 80),
+              child: CircularProgressIndicator(color: Colors.brown),
             ),
-            child: const Column(
+          );
+        }
+
+        if (snap.hasError) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 80),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${snap.error}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(onPressed: _reload, child: const Text('Retry')),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final stats = snap.data!;
+
+        return RefreshIndicator(
+          color: Colors.brown,
+          onRefresh: () async => _reload(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Welcome back, Admin",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                // ── Welcome banner ────────────────────────────────
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.brown,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome back, ${box.read('user')?['name'] ?? 'Admin'}",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      const Text(
+                        "Manage your platform easily",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 5),
-                Text(
-                  "Manage your platform easily",
-                  style: TextStyle(color: Colors.white),
+                const SizedBox(height: 20),
+
+                // ── Platform stat cards ──────────────────────────
+                SizedBox(
+                  height: 100,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _statCard(
+                          "Cases",
+                          '${stats.casesCount}',
+                          Icons.folder,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _statCard(
+                          "Clients",
+                          '${stats.clientsCount}',
+                          Icons.people,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 100,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _statCard(
+                          "Lawyers",
+                          '${stats.lawyersCount}',
+                          Icons.gavel,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _statCard(
+                          "Pending lawyers",
+                          '${stats.pendingLawyersCount}',
+                          Icons.pending,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // ── Earnings cards ───────────────────────────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: _earningsCard(
+                        'PKR ${stats.totalEarnings.toStringAsFixed(0)}',
+                        'Total Platform Earnings',
+                        Icons.attach_money,
+                        const Color(0xFFC48A6A),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: _earningsCard(
+                        'PKR ${stats.thisMonthEarnings.toStringAsFixed(0)}',
+                        '${_monthName(DateTime.now().month)} ${DateTime.now().year} Earnings',
+                        Icons.calendar_today_outlined,
+                        const Color(0xFF6B7D6B),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // ── Payment count cards ──────────────────────────
+                Row(
+                  children: [
+                    Expanded(
+                      child: _countCard(
+                        Icons.account_balance_wallet_outlined,
+                        'Manual Payments',
+                        stats.manualPaymentsCount,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: _countCard(
+                        Icons.credit_card_outlined,
+                        'Card Payments',
+                        stats.cardPaymentsCount,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-
-          // ── Platform stat cards ──────────────────────────
-          SizedBox(
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(child: _statCard("Cases", "120", Icons.folder)),
-                const SizedBox(width: 12),
-                Expanded(child: _statCard("Clients", "80", Icons.people)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 100,
-            child: Row(
-              children: [
-                Expanded(child: _statCard("Lawyers", "45", Icons.gavel)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _statCard("Pending lawyers", "11", Icons.pending),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // ── Earnings cards ───────────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: _earningsCard(
-                  'PKR 43,000',
-                  'Total Platform Earnings',
-                  Icons.attach_money,
-                  const Color(0xFFC48A6A),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _earningsCard(
-                  'PKR 8,500',
-                  'May 2026 Earnings',
-                  Icons.calendar_today_outlined,
-                  const Color(0xFF6B7D6B),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // ── Payment count cards ──────────────────────────
-          Row(
-            children: [
-              Expanded(
-                child: _countCard(
-                  Icons.account_balance_wallet_outlined,
-                  'Manual Payments',
-                  4,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: _countCard(
-                  Icons.credit_card_outlined,
-                  'Card Payments',
-                  4,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  String _monthName(int month) {
+    const names = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return names[month - 1];
   }
 
   // ── Stat card ────────────────────────────────────────────────
