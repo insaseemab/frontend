@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/chat/conversation.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
@@ -36,11 +37,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
 
       // ───────── APP BAR ─────────
       appBar: AppBar(
-  backgroundColor: const Color(0xFFF5EFE6),
+  backgroundColor: AppColors.beige,
   elevation: 0,
   title: Row(
     children: [
@@ -48,7 +49,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
         height: 40,
         width: 40,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: AppColors.beige,
           borderRadius: BorderRadius.circular(10),
         ),
         child: ClipRRect(
@@ -60,7 +61,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       const Text(
         "Insaaf Connect",
         style: TextStyle(
-          color: Colors.brown,
+          color: AppColors.darkBrown,
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
@@ -71,8 +72,8 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     IconButton(
       icon: const CircleAvatar(
         radius: 16,
-        backgroundColor: Color(0xFF6B4F3F),
-        child: Icon(Icons.person, color: Colors.white, size: 18),
+        backgroundColor: AppColors.darkBrown,
+        child: Icon(Icons.person, color: AppColors.white, size: 18),
       ),
       onPressed: () => Get.to(() => const ProfileScreen()),
     ),
@@ -80,12 +81,12 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   ],
 ),
       drawer: Drawer(
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: AppColors.beige,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.brown),
+              decoration: const BoxDecoration(color: AppColors.darkBrown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -94,7 +95,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                     height: 55,
                     width: 55,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ClipRRect(
@@ -109,20 +110,23 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                   const Text(
                     "Insaaf Connect",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
+                  Text(
                     "Client",
-                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                    style: TextStyle(
+                      color: AppColors.white.withOpacity(0.7),
+                      fontSize: 13,
+                    ),
                   ),
                 ],
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: Colors.brown),
+              leading: const Icon(Icons.home, color: AppColors.darkBrown),
               title: const Text("Home"),
               onTap: () {
                 Get.back();
@@ -130,7 +134,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.search, color: Colors.brown),
+              leading: const Icon(Icons.search, color: AppColors.darkBrown),
               title: const Text("Lawyer Find"),
               onTap: () {
                 Get.back();
@@ -138,7 +142,10 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.calendar_month, color: Colors.brown),
+              leading: const Icon(
+                Icons.calendar_month,
+                color: AppColors.darkBrown,
+              ),
               title: const Text("My Calendar"),
               onTap: () {
                 Get.back();
@@ -146,7 +153,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.message, color: Colors.brown),
+              leading: const Icon(Icons.message, color: AppColors.darkBrown),
               title: const Text("Messages"),
               onTap: () {
                 Get.back();
@@ -157,7 +164,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ListTile(
               leading: const Icon(
                 Icons.calendar_today,
-                color: Colors.brown,
+                color: AppColors.darkBrown,
               ), // ← fix icon
               title: const Text("Appointments"),
               onTap: () {
@@ -171,7 +178,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ListTile(
               leading: const Icon(
                 Icons.calendar_today,
-                color: Colors.brown,
+                color: AppColors.darkBrown,
               ), // ← fix icon
               title: const Text("Cases"),
               onTap: () {
@@ -181,7 +188,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.brown),
+              leading: const Icon(Icons.logout, color: AppColors.darkBrown),
               title: const Text("Logout"),
               onTap: () {
                 Get.offAll(() => LoginScreen());
@@ -199,7 +206,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ? null
           : Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 border: Border(
                   top: BorderSide(color: Color(0xFFEADDD0), width: 1),
                 ),
@@ -214,9 +221,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               child: BottomNavigationBar(
                 currentIndex: currentIndex,
                 onTap: (index) => setState(() => currentIndex = index),
-                selectedItemColor: Colors.brown,
-                unselectedItemColor: Colors.brown,
-                backgroundColor: const Color(0xFFF5EFE6),
+                selectedItemColor: AppColors.darkBrown,
+                unselectedItemColor: AppColors.darkBrown,
+                backgroundColor: AppColors.beige,
                 type: BottomNavigationBarType.fixed,
                 elevation: 0,
                 selectedLabelStyle: const TextStyle(
@@ -319,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (status.toLowerCase()) {
       case 'completed':
       case 'approved':
-        return const Color(0xFF2E7D32);
+        return AppColors.success;
       case 'in progress':
       case 'in_progress':
         return const Color(0xFFB5651D);
@@ -391,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 30),
                 child: Center(
-                  child: CircularProgressIndicator(color: Colors.brown),
+                  child: CircularProgressIndicator(color: AppColors.darkBrown),
                 ),
               )
             else if (errorMessage != null)
@@ -432,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5EFE6),
+                  color: AppColors.beige,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFFEADDD0)),
                 ),
@@ -496,12 +503,12 @@ class _CaseCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFE6),
+        color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFEADDD0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.brown.withOpacity(0.05),
+            color: AppColors.darkBrown.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -577,7 +584,7 @@ class _AppointmentCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFE6),
+        color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFEADDD0)),
       ),
@@ -587,12 +594,12 @@ class _AppointmentCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
               Icons.calendar_month,
-              color: Colors.brown,
+              color: AppColors.darkBrown,
               size: 20,
             ),
           ),

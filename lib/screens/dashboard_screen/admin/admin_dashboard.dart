@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
@@ -147,9 +148,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         title: Row(
           children: [
@@ -157,7 +158,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: AppColors.beige,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ClipRRect(
@@ -169,7 +170,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             Text(
               _titles[currentIndex],
               style: const TextStyle(
-                color: Colors.brown,
+                color: AppColors.darkBrown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -179,14 +180,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         actions: [
           if (currentIndex == 0)
             IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.brown),
+              icon: const Icon(Icons.refresh, color: AppColors.darkBrown),
               onPressed: _reload,
             ),
           IconButton(
             icon: const CircleAvatar(
               radius: 16,
-              backgroundColor: Color(0xFF6B4F3F),
-              child: Icon(Icons.person, color: Colors.white, size: 18),
+              backgroundColor: AppColors.darkBrown,
+              child: Icon(Icons.person, color: AppColors.white, size: 18),
             ),
             onPressed: () => Get.to(() => const ProfileScreen()),
           ),
@@ -197,9 +198,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
-        selectedItemColor: Colors.brown,
-        unselectedItemColor: Colors.brown,
-        backgroundColor: const Color(0xFFF5EFE6),
+        selectedItemColor: AppColors.darkBrown,
+        unselectedItemColor: AppColors.darkBrown,
+        backgroundColor: AppColors.beige,
         type: BottomNavigationBarType.fixed,
         onTap: (index) => setState(() => currentIndex = index),
         items: const [
@@ -224,12 +225,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   // ── DRAWER ──────────────────────────────────────────────────
   Widget _buildDrawer() {
     return Drawer(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: AppColors.beige,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(color: Colors.brown),
+            decoration: const BoxDecoration(color: AppColors.darkBrown),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -238,7 +239,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   height: 55,
                   width: 55,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ClipRRect(
@@ -253,20 +254,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 const Text(
                   "Insaaf Connect",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+                Text(
                   "Admin Panel",
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                  style: TextStyle(
+                    color: AppColors.white.withOpacity(0.7),
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home, color: Colors.brown),
+            leading: const Icon(Icons.home, color: AppColors.darkBrown),
             title: const Text("Home"),
             onTap: () {
               Get.back();
@@ -274,7 +278,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.verified_user, color: Colors.brown),
+            leading: const Icon(Icons.verified_user, color: AppColors.darkBrown),
             title: const Text("Manage Lawyers"),
             onTap: () {
               Get.back();
@@ -282,7 +286,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.folder, color: Colors.brown),
+            leading: const Icon(Icons.folder, color: AppColors.darkBrown),
             title: const Text("Manage Cases"),
             onTap: () {
               Get.back();
@@ -290,7 +294,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.person, color: Colors.brown),
+            leading: const Icon(Icons.person, color: AppColors.darkBrown),
             title: const Text("Appointments"),
             onTap: () {
               Get.back();
@@ -299,7 +303,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.brown),
+            leading: const Icon(Icons.logout, color: AppColors.darkBrown),
             title: const Text("Logout"),
             onTap: () {
               Get.offAll(() => LoginScreen());
@@ -319,7 +323,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           return const Center(
             child: Padding(
               padding: EdgeInsets.only(top: 80),
-              child: CircularProgressIndicator(color: Colors.brown),
+              child: CircularProgressIndicator(color: AppColors.darkBrown),
             ),
           );
         }
@@ -331,12 +335,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                  const Icon(
+                    Icons.error_outline,
+                    color: AppColors.error,
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     '${snap.error}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey),
+                    style: TextStyle(color: AppColors.labelSecondary),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(onPressed: _reload, child: const Text('Retry')),
@@ -349,7 +357,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         final stats = snap.data!;
 
         return RefreshIndicator(
-          color: Colors.brown,
+          color: AppColors.darkBrown,
           onRefresh: () async => _reload(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -362,7 +370,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.brown,
+                    color: AppColors.darkBrown,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -371,7 +379,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       Text(
                         "Welcome back, ${box.read('user')?['name'] ?? 'Admin'}",
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -379,7 +387,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       const SizedBox(height: 5),
                       const Text(
                         "Manage your platform easily",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppColors.white),
                       ),
                     ],
                   ),
@@ -442,7 +450,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         'PKR ${stats.totalEarnings.toStringAsFixed(0)}',
                         'Total Platform Earnings',
                         Icons.attach_money,
-                        const Color(0xFFC48A6A),
+                        AppColors.earningsOrange,
                       ),
                     ),
                     const SizedBox(width: 14),
@@ -451,7 +459,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         'PKR ${stats.thisMonthEarnings.toStringAsFixed(0)}',
                         '${_monthName(DateTime.now().month)} ${DateTime.now().year} Earnings',
                         Icons.calendar_today_outlined,
-                        const Color(0xFF6B7D6B),
+                        AppColors.earningsGreen,
                       ),
                     ),
                   ],
@@ -500,14 +508,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EFE6),
+        color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
-        boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 6)],
+        boxShadow: [
+          BoxShadow(color: AppColors.darkBrown.withOpacity(0.10), blurRadius: 6),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 24, color: Colors.brown),
+          Icon(icon, size: 24, color: AppColors.darkBrown),
           const SizedBox(height: 6),
           Text(
             value,
@@ -517,7 +527,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
+            style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -533,7 +543,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: Colors.black,
+              color: AppColors.black.withOpacity(0.15),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -548,15 +558,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.18),
+                    color: AppColors.white.withOpacity(0.18),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(ic, size: 16, color: Colors.white),
+                  child: Icon(ic, size: 16, color: AppColors.white),
                 ),
                 Icon(
                   Icons.north_east,
                   size: 14,
-                  color: Colors.white.withOpacity(0.5),
+                  color: AppColors.white.withOpacity(0.5),
                 ),
               ],
             ),
@@ -566,7 +576,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: AppColors.white,
                 letterSpacing: -0.5,
               ),
             ),
@@ -575,7 +585,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               lbl,
               style: TextStyle(
                 fontSize: 11,
-                color: Colors.white.withOpacity(0.75),
+                color: AppColors.white.withOpacity(0.75),
               ),
             ),
           ],
@@ -586,11 +596,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _countCard(IconData ic, String lbl, int n) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: AppColors.white,
       borderRadius: BorderRadius.circular(16),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.06),
+          color: AppColors.black.withOpacity(0.06),
           blurRadius: 10,
           offset: const Offset(0, 4),
         ),
@@ -601,10 +611,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         Container(
           padding: const EdgeInsets.all(9),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5EFE8),
+            color: AppColors.beige,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(ic, size: 18, color: Colors.brown),
+          child: Icon(ic, size: 18, color: AppColors.darkBrown),
         ),
         const SizedBox(width: 14),
         Column(
@@ -620,7 +630,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             Text(
               lbl,
-              style: const TextStyle(fontSize: 11.5, color: Colors.brown),
+              style: const TextStyle(fontSize: 11.5, color: AppColors.darkBrown),
             ),
           ],
         ),
