@@ -43,13 +43,13 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
 
                TextFormField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: "email"),
+                decoration: const InputDecoration(labelText: "Email"),
                 validator: (value) => value!.isEmpty ? "Enter email" : null,
               ),
 
                TextFormField(
                 controller: passwordController,
-                decoration: const InputDecoration(labelText: "password"),
+                decoration: const InputDecoration(labelText: "Password"),
                 keyboardType: TextInputType.visiblePassword,
                 validator: (value) => value!.isEmpty ? "Enter password" : null,
               ),
