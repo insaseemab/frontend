@@ -85,7 +85,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
               // Cases
               TextFormField(
                 controller: casesController,
-                decoration: const InputDecoration(labelText: "Cases"),
+                decoration: const InputDecoration(labelText: "Total Cases"),
                 keyboardType: TextInputType.number,
                 validator: (value) => value!.isEmpty ? "Enter cases" : null,
               ),

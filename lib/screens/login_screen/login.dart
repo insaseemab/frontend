@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
+
   final box = GetStorage();
 
   Future<void> login() async {
@@ -33,48 +34,50 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     setState(() => _isLoading = false);
-    if (result['success'] &&
-        result['data']['user']['role'].toString().toLowerCase() == 'admin') {
-      final user = result['data']['user'];
-      final token = result['token'];
 
-      box.write('isLoggedIn', true);
-      box.write('token', token);
-      box.write('role', 'admin');
-      box.write(
-        'user',
-        user,
-      ); // ⬅ save the FULL user object (id, name, email, location, specialization, experience, cases, status)
-
-      Get.offAllNamed(AppRoutes.adminDashboard);
-    } else if (result['success'] &&
-        result['data']['user']['role'].toString().toLowerCase() == 'lawyer') {
-      final user = result['data']['user'];
-      final token = result['token'];
-
-      box.write('isLoggedIn', true);
-      box.write('token', token);
-      box.write('role', 'lawyer');
-      box.write('user', user);
-
-      Get.offAllNamed(AppRoutes.lawyerDashboard);
-    } else if (result['success'] &&
-        result['data']['user']['role'].toString().toLowerCase() == 'client') {
-      final user = result['data']['user'];
-      final token = result['token'];
-
-      box.write('isLoggedIn', true);
-      box.write('token', token);
-      box.write('role', 'client');
-      box.write('user', user);
-
-      Get.offAllNamed(AppRoutes.clientDashboard);
-    } else if (result['success']) {
-      Get.snackbar('Access Denied', 'Your role is not recognized.');
-    } else {
+    if (!result['success']) {
       final errorMessage =
           result['message'] ?? 'Login failed. Please try again.';
       Get.snackbar('Error', errorMessage, snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    final user = result['data']['user'] as Map<String, dynamic>;
+    final role = user['role'].toString().toLowerCase();
+
+    if (role != 'admin' && role != 'lawyer' && role != 'client') {
+      Get.snackbar('Access Denied', 'Your role is not recognized.');
+      return;
+    }
+
+    final token = result['token'];
+    final userId = user['id'];
+    final userName = user['name'];
+
+    // Save the full user object (id, name, email, location, specialization,
+    // experience, cases, status, etc.) so any screen can pull extra fields.
+    box.write('user', user);
+
+    // ALSO save these as individual top-level keys. Several screens
+    // (e.g. MessageScreen's myUserId, dashboard greetings) read
+    // "userId" / "userName" directly rather than unpacking the "user"
+    // map — keeping both in sync avoids silent nulls downstream.
+    box.write('userId', userId);
+    box.write('userName', userName);
+    box.write('token', token);
+    box.write('role', role);
+    box.write('isLoggedIn', true);
+
+    switch (role) {
+      case 'admin':
+        Get.offAllNamed(AppRoutes.adminDashboard);
+        break;
+      case 'lawyer':
+        Get.offAllNamed(AppRoutes.lawyerDashboard);
+        break;
+      case 'client':
+        Get.offAllNamed(AppRoutes.clientDashboard);
+        break;
     }
   }
 
@@ -125,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 TextField(
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: "your.email@example.com",
                     filled: true,
@@ -138,11 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                TextFormField(
+                TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    hintText: "Password",
+                    hintText: "Enter your password",
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -168,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: login,
+                    onPressed: _isLoading ? null : login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B4F3F),
                       shape: RoundedRectangleBorder(
@@ -176,7 +180,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
                         : const Text(
                             "Login",
                             style: TextStyle(color: Colors.white),

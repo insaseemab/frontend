@@ -43,22 +43,24 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   }
 
   List<dynamic> _filtered(List<dynamic> all) {
-    return all.where((a) {
-      final apt = a as Map<String, dynamic>;
-      final matchStatus =
-          _selectedFilter == 'all' ||
-          (apt['status'] ?? '').toString().toLowerCase() == _selectedFilter;
-      final q = _searchQuery.toLowerCase();
-      final matchSearch =
-          q.isEmpty ||
-          apt['id'].toString().contains(q) ||
-          (apt['case_type'] ?? '').toString().toLowerCase().contains(q) ||
-          (apt['law_type'] ?? '').toString().toLowerCase().contains(q) ||
-          apt['client_id'].toString().contains(q) ||
-          apt['lawyer_id'].toString().contains(q);
-      return matchStatus && matchSearch;
-    }).toList();
-  }
+  return all.where((a) {
+    final apt = a as Map<String, dynamic>;
+    final matchStatus =
+        _selectedFilter == 'all' ||
+        (apt['status'] ?? '').toString().toLowerCase() == _selectedFilter;
+    final q = _searchQuery.toLowerCase();
+    final matchSearch =
+        q.isEmpty ||
+        apt['id'].toString().contains(q) ||
+        (apt['case_type'] ?? '').toString().toLowerCase().contains(q) ||
+        (apt['law_type'] ?? '').toString().toLowerCase().contains(q) ||
+        (apt['client_name'] ?? '').toString().toLowerCase().contains(q) ||
+        (apt['lawyer_name'] ?? '').toString().toLowerCase().contains(q) ||
+        (apt['client_id'] ?? '').toString().contains(q) ||
+        (apt['lawyer_id'] ?? '').toString().contains(q);
+    return matchStatus && matchSearch;
+  }).toList();
+}
 
   // ── View Detail (admin only) ──
   void _showDetail(Map<String, dynamic> apt) {
