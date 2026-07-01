@@ -13,6 +13,7 @@ class CaseModel {
   final int id;
   final String caseType;
   final String clientName;
+  final String lawyerId;
   final String lawyerName;
   final String caseStatus;
   final String paymentStatus;
@@ -27,6 +28,7 @@ class CaseModel {
     required this.id,
     required this.caseType,
     required this.clientName,
+    required this.lawyerId,
     required this.lawyerName,
     required this.caseStatus,
     required this.paymentStatus,
@@ -45,7 +47,8 @@ class CaseModel {
           : int.tryParse(json['id'].toString()) ?? 0,
       caseType: json['case_type']?.toString() ?? 'Unknown',
       clientName: json['name']?.toString() ?? 'N/A',
-      lawyerName: json['lawyer_id']?.toString() ?? 'N/A',
+      lawyerId: json['lawyer_id']?.toString() ?? 'N/A',       // ← fixed
+      lawyerName: json['lawyer_name']?.toString() ?? 'N/A',
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
       hearingDate: json['hearing_date']?.toString() ?? 'N/A',
@@ -263,6 +266,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             id: c.id,
             caseType: c.caseType,
             clientName: c.clientName,
+            lawyerId: c.lawyerId,
             lawyerName: c.lawyerName,
             caseStatus: newStatus,
             paymentStatus: c.paymentStatus,
@@ -510,6 +514,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             flex: 2,
             child: Text(
               'Lawyer ID',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+           Expanded(
+            flex: 2,
+            child: Text(
+              'Lawyer Name',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),

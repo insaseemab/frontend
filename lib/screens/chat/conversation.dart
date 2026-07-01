@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
-
+import 'package:get_storage/get_storage.dart';
 // ════════════════════════════════════════════════
 //  ONE SCREEN FOR BOTH ROLES — CLIENT & LAWYER
 //  Backend's GET /conversations/mine already branches by
@@ -47,17 +47,38 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     super.dispose();
   }
 
-  // ── Reads "the other party" regardless of whether I'm the client or
-  // the lawyer in this conversation row. ──
-  String _otherName(Map<String, dynamic> conv) =>
-      (conv["other_name"] ?? conv["lawyer_name"] ?? conv["client_name"] ?? "User")
-          .toString();
+  String _otherName(Map<String, dynamic> conv) {
+  final role = GetStorage().read("role")?.toString().toLowerCase() ?? '';
 
-  int _otherId(Map<String, dynamic> conv) {
-    final val = conv["other_id"] ?? conv["lawyer_id"] ?? conv["client_id"];
-    if (val == null) return 0;
-    return val is int ? val : int.tryParse(val.toString()) ?? 0;
+  // The backend always returns BOTH client_name and lawyer_name on every
+  // row (it doesn't know who's asking). So we must pick based on OUR
+  // OWN role — a lawyer wants to see the client's name, and vice versa.
+  if (role == 'lawyer') {
+    return (conv["client_name"] ?? conv["other_name"] ?? "Client").toString();
+  } else if (role == 'client') {
+    return (conv["lawyer_name"] ?? conv["other_name"] ?? "Lawyer").toString();
   }
+
+  // Fallback if role is somehow missing
+  return (conv["other_name"] ?? conv["lawyer_name"] ?? conv["client_name"] ?? "User")
+      .toString();
+}
+
+int _otherId(Map<String, dynamic> conv) {
+  final role = GetStorage().read("role")?.toString().toLowerCase() ?? '';
+
+  dynamic val;
+  if (role == 'lawyer') {
+    val = conv["client_id"] ?? conv["other_id"];
+  } else if (role == 'client') {
+    val = conv["lawyer_id"] ?? conv["other_id"];
+  } else {
+    val = conv["other_id"] ?? conv["lawyer_id"] ?? conv["client_id"];
+  }
+
+  if (val == null) return 0;
+  return val is int ? val : int.tryParse(val.toString()) ?? 0;
+}
 
   void _onSearchChanged() {
     final query = _searchController.text.toLowerCase();

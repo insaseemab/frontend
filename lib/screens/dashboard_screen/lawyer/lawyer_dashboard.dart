@@ -673,7 +673,7 @@ class _MessagesPageState extends State<_MessagesPage> {
                       ),
                     ),
 
-                    title: Text("Client #${c['client_id']}"),
+                    title: Text("${c['client_name']}"),
 
                     subtitle: Text("Conversation ID ${c['id']}"),
 
@@ -685,7 +685,7 @@ class _MessagesPageState extends State<_MessagesPage> {
 
                           "receiver_id": c["client_id"],
 
-                          "other_name": "Client #${c['client_id']}",
+                          "other_name": "${c['client_name']}",
                         },
                       );
                     },

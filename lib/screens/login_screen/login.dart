@@ -54,14 +54,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final userId = user['id'];
     final userName = user['name'];
 
-    // Save the full user object (id, name, email, location, specialization,
-    // experience, cases, status, etc.) so any screen can pull extra fields.
     box.write('user', user);
 
-    // ALSO save these as individual top-level keys. Several screens
-    // (e.g. MessageScreen's myUserId, dashboard greetings) read
-    // "userId" / "userName" directly rather than unpacking the "user"
-    // map — keeping both in sync avoids silent nulls downstream.
+    
     box.write('userId', userId);
     box.write('userName', userName);
     box.write('token', token);
