@@ -139,7 +139,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   void _showSnack(String msg) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
-  void _showSuccessDialog() {
+ void _showSuccessDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -149,11 +149,44 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           children: [
             Icon(Icons.check_circle, color: Color(0xFF2E7D32)),
             SizedBox(width: 10),
-            Text('Appointment Booked!'),
+            Text('Appointment Sent!'),
           ],
         ),
-        content: Text(
-          'Your appointment with ${widget.lawyer['name']} has been submitted and is pending confirmation.',
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Your appointment with ${widget.lawyer['name']} has been submitted and is pending confirmation.',
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F5F0),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'What happens next?',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  _StepText('1. Lawyer reviews your request'),
+                  _StepText('2. You get notified of acceptance'),
+                  _StepText('3. Lawyer shares payment details'),
+                  _StepText('4. You complete the payment'),
+                  _StepText('5. Appointment gets confirmed'),
+                ],
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -411,14 +444,6 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1ECE5),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Color(0xFF3E2C23),
-            size: 20,
-          ),
-          onPressed: () => Get.back(),
-        ),
         title: const Text(
           'My Appointments',
           style: TextStyle(
@@ -953,6 +978,7 @@ class _ModeSelector extends StatelessWidget {
     required this.icons,
     required this.onSelected,
   });
+  
 
   @override
   Widget build(BuildContext context) {
@@ -997,6 +1023,21 @@ class _ModeSelector extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+}
+class _StepText extends StatelessWidget {
+  final String text;
+  const _StepText(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 13, color: Colors.black87),
+      ),
     );
   }
 }
