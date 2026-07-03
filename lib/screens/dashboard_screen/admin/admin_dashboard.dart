@@ -278,7 +278,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.verified_user, color: AppColors.darkBrown),
+            leading: const Icon(
+              Icons.verified_user,
+              color: AppColors.darkBrown,
+            ),
             title: const Text("Manage Lawyers"),
             onTap: () {
               Get.back();
@@ -300,6 +303,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Get.back();
               setState(() => currentIndex = 3);
             },
+          ),
+          ListTile(
+            leading: const Icon(Icons.calendar_month),
+            title: const Text('My Calendar'),
+            onTap: () => Get.toNamed('/calendar'),
           ),
           const Divider(),
           ListTile(
@@ -347,7 +355,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     style: TextStyle(color: AppColors.labelSecondary),
                   ),
                   const SizedBox(height: 12),
-                  ElevatedButton(onPressed: _reload, child: const Text('Retry')),
+                  ElevatedButton(
+                    onPressed: _reload,
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             ),
@@ -497,8 +508,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   String _monthName(int month) {
     const names = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return names[month - 1];
   }
@@ -511,7 +532,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: AppColors.darkBrown.withOpacity(0.10), blurRadius: 6),
+          BoxShadow(
+            color: AppColors.darkBrown.withOpacity(0.10),
+            blurRadius: 6,
+          ),
         ],
       ),
       child: Column(
@@ -630,7 +654,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             Text(
               lbl,
-              style: const TextStyle(fontSize: 11.5, color: AppColors.darkBrown),
+              style: const TextStyle(
+                fontSize: 11.5,
+                color: AppColors.darkBrown,
+              ),
             ),
           ],
         ),

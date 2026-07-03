@@ -36,15 +36,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return raw.map<Map<String, dynamic>>((a) {
       final apt = a as Map<String, dynamic>;
 
-      // Role-aware name: client sees lawyer's name, lawyer sees client's name
+      // Role-aware name: client sees lawyer's name, lawyer/admin see client's name
       final otherPartyName = role == 'lawyer'
           ? (apt['client_name'] ?? 'Client')
-          : (apt['lawyer_name'] ?? 'Lawyer');
+          : role == 'admin'
+              ? '${apt['client_name'] ?? 'Client'} → ${apt['lawyer_name'] ?? 'Lawyer'}'
+              : (apt['lawyer_name'] ?? 'Lawyer');
 
-      final startRaw = apt['slot_start_time']?.toString();
+      // Combine slot_date + slot_start_time into a real DateTime.
+      // slot_date: "2026-07-15"  slot_start_time: "13:32:00"
+      final dateRaw = apt['slot_date']?.toString();
+      final timeRaw = apt['slot_start_time']?.toString();
       DateTime? start;
       try {
-        if (startRaw != null) start = DateTime.parse(startRaw);
+        if (dateRaw != null && timeRaw != null) {
+          start = DateTime.parse('${dateRaw}T$timeRaw');
+        }
       } catch (_) {
         start = null;
       }
@@ -158,7 +165,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
-                // ── Month Header ──
                 Container(
                   color: const Color(0xFFF1ECE5),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -188,8 +194,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ],
                   ),
                 ),
-
-                // ── Day Headers ──
                 Container(
                   color: const Color(0xFFF1ECE5),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -211,15 +215,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-
-                // ── Calendar Grid ──
                 _buildCalendarGrid(daysWithEvents),
-
                 const SizedBox(height: 20),
                 const Divider(color: Color(0xFFEADDD0), thickness: 1, height: 1),
                 const SizedBox(height: 16),
-
-                // ── Events for selected day ──
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -262,7 +261,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget _buildCalendarGrid(List<int> daysWithEvents) {
     final firstDay = DateTime(focusedMonth.year, focusedMonth.month, 1);
     final lastDay = DateTime(focusedMonth.year, focusedMonth.month + 1, 0);
-    final startWeekday = firstDay.weekday % 7; // 0=Sun
+    final startWeekday = firstDay.weekday % 7;
     final totalCells = startWeekday + lastDay.day;
     final rows = (totalCells / 7).ceil();
 

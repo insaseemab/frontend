@@ -18,80 +18,103 @@ import '../screens/dashboard_screen/lawyer/lawyer_dashboard.dart';
 
 class AppPages {
   static final routes = <GetPage>[
-    GetPage(
-      name: AppRoutes.splash,
-      page: () => SplashPage(),
-    ),
-    GetPage(
-      name: AppRoutes.login,
-      page: () => LoginScreen(),
-    ),
-    GetPage(
-      name: AppRoutes.register,
-      page: () => RegisterPage(),
-    ),
+    GetPage(name: AppRoutes.splash, page: () => SplashPage()),
+    GetPage(name: AppRoutes.login, page: () => LoginScreen()),
+    GetPage(name: AppRoutes.register, page: () => RegisterPage()),
 
     // ── Admin ──
     GetPage(
       name: AppRoutes.adminDashboard,
       page: () => const AdminDashboardScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['admin'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
     ),
     GetPage(
       name: AppRoutes.manageLawyers,
       page: () => const Managelawyers(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['admin'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
     ),
     GetPage(
       name: AppRoutes.manageCases,
       page: () => const ManageCasesPage(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['admin'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
     ),
     GetPage(
       name: AppRoutes.addLawyer,
       page: () => const AddLawyerPage(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['admin'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
     ),
     GetPage(
       name: AppRoutes.createCase,
       page: () => const CreateCasePage(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['admin'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
     ),
 
     // ── Client ──
     GetPage(
       name: AppRoutes.clientDashboard,
       page: () => ClientDashboardScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['client'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['client']),
+      ],
     ),
     GetPage(
       name: AppRoutes.lawyerFind,
       page: () => const LawyerFindScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['client'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['client']),
+      ],
     ),
     GetPage(
-      name: AppRoutes.calendar,
+      name: '/calendar',
       page: () => const CalendarScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['client'])],
+      middlewares: [
+        RoleMiddleware(allowedRoles: ['client', 'lawyer', 'admin']),
+      ],
     ),
 
     // ── Chat (shared by client + lawyer) ──
     GetPage(
       name: AppRoutes.messages,
       page: () => const ConversationsScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['client', 'lawyer'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['client', 'lawyer']),
+      ],
     ),
     GetPage(
       name: AppRoutes.message,
       page: () => const MessageScreen(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['client', 'lawyer'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['client', 'lawyer']),
+      ],
     ),
 
     // ── Lawyer ──
     GetPage(
       name: AppRoutes.lawyerDashboard,
       page: () => LawyerDashboard(),
-      middlewares: [AuthMiddleware(), RoleMiddleware(allowedRoles: ['lawyer'])],
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['lawyer']),
+      ],
     ),
   ];
 }
