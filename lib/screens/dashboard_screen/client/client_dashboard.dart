@@ -7,10 +7,10 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/screens/notifications.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
 import 'package:get/get.dart';
-
 // ════════════════════════════════════════════════
 //  CLIENT DASHBOARD SCREEN  (Bottom Nav Shell)
 // ════════════════════════════════════════════════
@@ -69,16 +69,42 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     ],
   ),
   actions: [
-    IconButton(
-      icon: const CircleAvatar(
-        radius: 16,
-        backgroundColor: AppColors.darkBrown,
-        child: Icon(Icons.person, color: AppColors.white, size: 18),
+  if (currentIndex == 0)
+
+  // 🔔 Notification bell
+  Stack(
+    clipBehavior: Clip.none,
+    children: [
+      IconButton(
+        icon: const Icon(Icons.notifications, color: AppColors.darkBrown),
+        onPressed: () => Get.to(() => const NotificationsScreen()),
       ),
-      onPressed: () => Get.to(() => const ProfileScreen()),
+      // static badge dot — replace `true` with your unread check once wired up
+      Positioned(
+        right: 8,
+        top: 8,
+        child: Container(
+          height: 9,
+          width: 9,
+          decoration: const BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    ],
+  ),
+
+  IconButton(
+    icon: const CircleAvatar(
+      radius: 16,
+      backgroundColor: AppColors.darkBrown,
+      child: Icon(Icons.person, color: AppColors.white, size: 18),
     ),
-    const SizedBox(width: 8),
-  ],
+    onPressed: () => Get.to(() => const ProfileScreen()),
+  ),
+  const SizedBox(width: 8),
+],
 ),
       drawer: Drawer(
         backgroundColor: AppColors.beige,

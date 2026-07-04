@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client/calendar.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
@@ -10,6 +11,7 @@ import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/screens/notifications.dart';
 
 class LawyerDashboard extends StatefulWidget {
   const LawyerDashboard({super.key});
@@ -72,16 +74,39 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const CircleAvatar(
-              radius: 16,
-              backgroundColor: Color(0xFF6B4F3F),
-              child: Icon(Icons.person, color: Colors.white, size: 18),
-            ),
-            onPressed: () => Get.to(() => const ProfileScreen()),
+  // 🔔 Notification bell
+  Stack(
+    clipBehavior: Clip.none,
+    children: [
+      IconButton(
+        icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
+        onPressed: () => Get.to(() => const NotificationsScreen()),
+      ),
+      Positioned(
+        right: 8,
+        top: 8,
+        child: Container(
+          height: 9,
+          width: 9,
+          decoration: const BoxDecoration(
+            color: Colors.red,
+            shape: BoxShape.circle,
           ),
-          const SizedBox(width: 8),
-        ],
+        ),
+      ),
+    ],
+  ),
+
+  IconButton(
+    icon: const CircleAvatar(
+      radius: 16,
+      backgroundColor: Color(0xFF6B4F3F),
+      child: Icon(Icons.person, color: Colors.white, size: 18),
+    ),
+    onPressed: () => Get.to(() => const ProfileScreen()),
+  ),
+  const SizedBox(width: 8),
+],
       ),
       drawer: Drawer(
         backgroundColor: const Color(0xFFF5EFE6),

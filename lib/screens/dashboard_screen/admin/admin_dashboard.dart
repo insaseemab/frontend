@@ -9,6 +9,7 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart'
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/screens/notifications.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -183,6 +184,34 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               icon: const Icon(Icons.refresh, color: AppColors.darkBrown),
               onPressed: _reload,
             ),
+
+          // 🔔 Notification bell
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications,
+                  color: AppColors.darkBrown,
+                ),
+                onPressed: () => Get.to(() => const NotificationsScreen()),
+              ),
+              // static badge dot — replace `true` with your unread check once wired up
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  height: 9,
+                  width: 9,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
           IconButton(
             icon: const CircleAvatar(
               radius: 16,
