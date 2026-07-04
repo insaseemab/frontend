@@ -336,7 +336,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ListTile(
             leading: const Icon(Icons.calendar_month),
             title: const Text('My Calendar'),
-            onTap: () => Get.toNamed('/calendar'),
+            onTap: () {
+              Get.back();
+              Get.toNamed('/calendar');
+            },
           ),
           const Divider(),
           ListTile(

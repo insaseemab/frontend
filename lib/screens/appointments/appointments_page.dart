@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
+import 'package:insaafconnect/screens/appointments/admin_book_appointment.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
 // ════════════════════════════════════════════════
@@ -467,20 +469,30 @@ void _showConvertToCase(Map<String, dynamic> apt) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F0EB),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.brown),
+          icon: const Icon(Icons.arrow_back, color: AppColors.darkBrown),
           onPressed: () => Get.back(),
         ),
         title: Text(
           _title,
-          style: const TextStyle(color: Colors.brown, fontWeight: FontWeight.bold, fontSize: 20),
+          style: const TextStyle(color: AppColors.darkBrown, fontWeight: FontWeight.bold, fontSize: 20),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh, color: Colors.brown), onPressed: _load),
+          if (_isAdmin)
+            IconButton(
+              icon: const Icon(Icons.add, color: AppColors.darkBrown),
+              onPressed: () async {
+                final result = await Get.to(() => const AdminBookAppointmentScreen());
+                if (result == true) {
+                  _load();
+                }
+              },
+            ),
+          IconButton(icon: const Icon(Icons.refresh, color: AppColors.darkBrown), onPressed: _load),
         ],
       ),
       body: FutureBuilder<List<dynamic>>(
@@ -523,13 +535,13 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                   child: Row(
                     children: [
-                      _StatCard(label: 'Total', value: '${all.length}', color: Colors.brown),
+                      _StatCard(label: 'Total', value: '${all.length}', color: AppColors.darkBrown),
                       const SizedBox(width: 10),
-                      _StatCard(label: 'Pending', value: '$pending', color: const Color(0xFFB5651D)),
+                      _StatCard(label: 'Pending', value: '$pending', color: AppColors.warning),
                       const SizedBox(width: 10),
-                      _StatCard(label: 'Accepted', value: '$accepted', color: const Color(0xFF2E7D32)),
+                      _StatCard(label: 'Accepted', value: '$accepted', color: AppColors.success),
                       const SizedBox(width: 10),
-                      _StatCard(label: 'Rejected', value: '$rejected', color: const Color(0xFFB71C1C)),
+                      _StatCard(label: 'Rejected', value: '$rejected', color: AppColors.error),
                     ],
                   ),
                 ),
@@ -725,9 +737,9 @@ class _AppointmentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.divider),
         boxShadow: [
-          BoxShadow(color: Colors.brown.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: AppColors.darkBrown.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(

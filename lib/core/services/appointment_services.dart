@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = "http://insaaf.sandbox.pk";
 
   static final _box = GetStorage();
 
@@ -74,9 +74,13 @@ class ApiService {
     required String slotStartTime,
     required String slotEndTime,
     required String appointmentMode,
+    int? clientId,
   }) async {
+    final date = slotStartTime.split(' ')[0];
     final body = jsonEncode({
+      if (clientId != null) 'client_id': clientId,
       'lawyer_id': lawyerId,
+      'date': date,
       'law_type': lawType,
       'case_type': caseType,
       'short_description': shortDescription,
@@ -108,8 +112,10 @@ class ApiService {
     double? paymentAmount,
     String? paymentReceipt,
   }) async {
+    final date = slotStartTime.split(' ')[0];
     final body = jsonEncode({
       'lawyer_id': lawyerId,
+      'date': date,
       'law_type': lawType,
       'case_type': caseType,
       'short_description': shortDescription,
@@ -187,8 +193,10 @@ class ApiService {
     required String slotEndTime,
     required String appointmentMode,
   }) async {
+    final date = slotStartTime.split(' ')[0];
     final body = jsonEncode({
       'lawyer_id': lawyerId,
+      'date': date,
       'law_type': lawType,
       'case_type': caseType,
       'short_description': shortDescription,

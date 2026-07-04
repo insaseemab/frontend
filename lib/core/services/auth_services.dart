@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 
 
 class AuthService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = "http://insaaf.sandbox.pk";
   static final box = GetStorage();
 
   static Future<Map<String, dynamic>> login(
@@ -54,7 +54,10 @@ class AuthService {
       final data = json.decode(response.body);
 
       if (response.statusCode == 201) {
-        return {'success': true};
+        return {
+          'success': true,
+          'userId': data['userId'],
+        };
       } else {
         return {
           'success': false,

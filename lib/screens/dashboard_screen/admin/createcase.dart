@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/core/services/auth_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 
@@ -16,9 +18,10 @@ class _CreateCasePageState extends State<CreateCasePage> {
   final descriptionController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
+  final emailController = TextEditingController();
 
   String selectedStatus = 'pending';
-  int paymentStatus = 0; // ← int, 0=unpaid 1=paid
+  int paymentStatus = 0; // int, 0=unpaid 1=paid
   String? selectedClientId;
   String? selectedLawyerId;
   String? selectedDepartment;
@@ -26,6 +29,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
   bool isLoading = false;
   bool isFetchingData = true;
+  bool isNewClient = false;
 
   List<Map<String, String>> clients = [];
   List<Map<String, String>> lawyers = [];
@@ -98,7 +102,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.brown,
+              primary: AppColors.darkBrown,
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
@@ -118,7 +122,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
         descriptionController.text.trim().isEmpty ||
         phoneController.text.trim().isEmpty ||
         addressController.text.trim().isEmpty ||
-        selectedClientId == null ||
+        (isNewClient ? emailController.text.trim().isEmpty : selectedClientId == null) ||
         selectedLawyerId == null ||
         selectedDepartment == null ||
         selectedHearingDate == null) {
@@ -134,9 +138,30 @@ class _CreateCasePageState extends State<CreateCasePage> {
       final box = GetStorage();
       final String token = box.read('token');
 
+      String? finalClientId = selectedClientId;
+
+      if (isNewClient) {
+        final regRes = await AuthService.register({
+          'name': nameController.text.trim(),
+          'email': emailController.text.trim(),
+          'password': 'password123', // default secure password
+          'role': 'client',
+        });
+
+        if (regRes['success'] == true) {
+          finalClientId = regRes['userId']?.toString();
+        } else {
+          throw Exception(regRes['message'] ?? 'Failed to register new client');
+        }
+      }
+
+      if (finalClientId == null) {
+        throw Exception('Client ID is missing');
+      }
+
       await CasesService.createCase(
         descriptionCase: descriptionController.text.trim(),
-        clientId: selectedClientId!,
+        clientId: finalClientId,
         lawyerId: selectedLawyerId!,
         phone: phoneController.text.trim(),
         address: addressController.text.trim(),
@@ -162,7 +187,9 @@ class _CreateCasePageState extends State<CreateCasePage> {
         SnackBar(content: Text('Error: $e')),
       );
     } finally {
-      setState(() => isLoading = false);
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 
@@ -193,6 +220,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
     descriptionController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 
@@ -201,7 +229,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Case'),
-        backgroundColor: Colors.brown,
+        backgroundColor: AppColors.darkBrown,
         foregroundColor: Colors.white,
       ),
       body: isFetchingData
@@ -212,7 +240,46 @@ class _CreateCasePageState extends State<CreateCasePage> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
+                  // Choice selector to toggle between Existing Client and New Client
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('Existing Client'),
+                          selected: !isNewClient,
+                          onSelected: (val) {
+                            setState(() {
+                              isNewClient = false;
+                              selectedClientId = null;
+                              nameController.clear();
+                              phoneController.clear();
+                              emailController.clear();
+                            });
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        ChoiceChip(
+                          label: const Text('New Client'),
+                          selected: isNewClient,
+                          onSelected: (val) {
+                            setState(() {
+                              isNewClient = true;
+                              selectedClientId = null;
+                              nameController.clear();
+                              phoneController.clear();
+                              emailController.clear();
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
                   buildField('Client Name', nameController),
+                  if (isNewClient)
+                    buildField('Client Email', emailController),
                   buildField('Case Type', caseTypeController),
                   buildField(
                     'Description',
@@ -221,32 +288,41 @@ class _CreateCasePageState extends State<CreateCasePage> {
                   ),
 
                   // ── Client Select ──────────────────────────────────
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 14),
-                    child: DropdownButtonFormField<String>(
-                      initialValue: selectedClientId, // ← fixed deprecation
-                      hint: const Text('Select Client'),
-                      isExpanded: true,
-                      items: clients
-                          .map(
-                            (c) => DropdownMenuItem(
-                              value: c['id'],
-                              child: Text(
-                                '${c['name']} (${c['id']})',
-                                overflow: TextOverflow.ellipsis,
+                  if (!isNewClient)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedClientId,
+                        hint: const Text('Select Client'),
+                        isExpanded: true,
+                        items: clients
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c['id'],
+                                child: Text(
+                                  '${c['name']} (${c['id']})',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) => setState(() => selectedClientId = v),
-                      decoration: InputDecoration(
-                        labelText: 'Client',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                            )
+                            .toList(),
+                        onChanged: (v) {
+                          setState(() {
+                            selectedClientId = v;
+                            final selected = clients.firstWhereOrNull((c) => c['id'] == v);
+                            if (selected != null) {
+                              nameController.text = selected['name'] ?? '';
+                            }
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Client',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
                   // ── Lawyer Select ──────────────────────────────────
                   Padding(
@@ -323,7 +399,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                                     .split(' ')[0],
                             suffixIcon: const Icon(
                               Icons.calendar_today,
-                              color: Colors.brown,
+                              color: AppColors.darkBrown,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -390,7 +466,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : createCase,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.brown,
+                        backgroundColor: AppColors.darkBrown,
                         foregroundColor: Colors.white,
                       ),
                       child: isLoading

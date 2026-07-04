@@ -8,8 +8,9 @@ import 'package:get/get.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> lawyer;
+  final DateTime? initialDate;
 
-  const BookAppointmentScreen({super.key, required this.lawyer});
+  const BookAppointmentScreen({super.key, required this.lawyer, this.initialDate});
 
   @override
   State<BookAppointmentScreen> createState() => _BookAppointmentScreenState();
@@ -27,6 +28,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   DateTime? _slotStart;
   DateTime? _slotEnd;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialDate != null) {
+      _slotStart = widget.initialDate;
+      _slotEnd = widget.initialDate!.add(const Duration(hours: 1));
+    }
+  }
 
   final List<String> _lawTypes = [
     'Civil Law',

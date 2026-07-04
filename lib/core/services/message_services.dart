@@ -3,7 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 
 class MessageService {
-  final String baseUrl = "http://localhost:3000";
+  final String baseUrl = "http://insaaf.sandbox.pk";
 
   String get _token => GetStorage().read("token") ?? "";
 

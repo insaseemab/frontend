@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/screens/appointments/admin_book_appointment.dart';
+import 'package:insaafconnect/screens/appointments/appointment_screen.dart';
+import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
+import 'package:get/get.dart';
 
 class CalendarScreen extends StatefulWidget {
-  const CalendarScreen({super.key});
+  final bool isNested;
+  const CalendarScreen({super.key, this.isNested = false});
 
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
@@ -25,7 +31,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _load() {
     setState(() {
-      _future = _fetchAppointments();
+      _future = _fetchAppointments().then((list) {
+        if (list.isNotEmpty && mounted) {
+          final hasEventInCurrentMonth = list.any((a) =>
+              (a['date'] as DateTime).month == focusedMonth.month &&
+              (a['date'] as DateTime).year == focusedMonth.year);
+
+          if (!hasEventInCurrentMonth) {
+            final now = DateTime.now();
+            final futureEvents = list.where((a) => (a['date'] as DateTime).isAfter(now)).toList();
+            final targetEvent = futureEvents.isNotEmpty ? futureEvents.first : list.first;
+            final targetDate = targetEvent['date'] as DateTime;
+            
+            setState(() {
+              selectedDate = targetDate;
+              focusedMonth = DateTime(targetDate.year, targetDate.month, 1);
+            });
+          }
+        }
+        return list;
+      });
     });
   }
 
@@ -43,14 +68,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ? '${apt['client_name'] ?? 'Client'} → ${apt['lawyer_name'] ?? 'Lawyer'}'
               : (apt['lawyer_name'] ?? 'Lawyer');
 
-      // Combine slot_date + slot_start_time into a real DateTime.
-      // slot_date: "2026-07-15"  slot_start_time: "13:32:00"
-      final dateRaw = apt['slot_date']?.toString();
+      final dateRaw = apt['date']?.toString();
       final timeRaw = apt['slot_start_time']?.toString();
       DateTime? start;
       try {
-        if (dateRaw != null && timeRaw != null) {
-          start = DateTime.parse('${dateRaw}T$timeRaw');
+        if (timeRaw != null && timeRaw.contains(RegExp(r'\d{4}-\d{2}-\d{2}'))) {
+          // If slot_start_time is already a full ISO/datetime string, parse it directly
+          start = DateTime.parse(timeRaw.replaceAll(' ', 'T'));
+        } else if (dateRaw != null) {
+          // Extract date part (e.g. "2026-12-28" from "2026-12-28T00:00:00.000Z")
+          final datePart = dateRaw.split(RegExp('[T ]'))[0];
+          if (timeRaw != null && timeRaw.trim().isNotEmpty) {
+            final timePart = timeRaw.contains(':') ? timeRaw.split(' ').last : timeRaw;
+            start = DateTime.parse('${datePart}T$timePart');
+          } else {
+            start = DateTime.parse(datePart);
+          }
         }
       } catch (_) {
         start = null;
@@ -81,22 +114,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Color _statusColor(String status) {
     switch (status) {
       case 'accepted':
-        return const Color(0xFF2E7D32);
+        return AppColors.success;
       case 'rejected':
-        return const Color(0xFFB71C1C);
+        return AppColors.error;
       default:
-        return const Color(0xFFB5651D);
+        return AppColors.warning;
     }
   }
 
   Color _statusBg(String status) {
     switch (status) {
       case 'accepted':
-        return const Color(0xFFE8F5E9);
+        return AppColors.success.withOpacity(0.12);
       case 'rejected':
-        return const Color(0xFFFFEBEE);
+        return AppColors.error.withOpacity(0.12);
       default:
-        return const Color(0xFFF5E6D3);
+        return AppColors.warning.withOpacity(0.12);
     }
   }
 
@@ -116,9 +149,111 @@ class _CalendarScreenState extends State<CalendarScreen> {
         .toList();
   }
 
+  Future<void> _showClientBookingDialog(DateTime date) async {
+    try {
+      final lawyers = await CasesService.fetchLawyers();
+      if (!mounted) return;
+      
+      Map<String, dynamic>? selectedLawyer;
+      
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: const Color(0xFFF1ECE5),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setModalState) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Select a Lawyer',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF3E2C23),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<Map<String, dynamic>>(
+                      hint: const Text('Choose a lawyer'),
+                      value: selectedLawyer,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+                        ),
+                      ),
+                      items: lawyers.map((l) {
+                        return DropdownMenuItem<Map<String, dynamic>>(
+                          value: l,
+                          child: Text(l['name'] ?? 'Unknown Lawyer'),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        setModalState(() {
+                          selectedLawyer = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: selectedLawyer == null
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                                Get.to(() => BookAppointmentScreen(
+                                      lawyer: selectedLawyer!,
+                                      initialDate: date,
+                                    ))?.then((val) {
+                                  if (val == true) {
+                                    _load();
+                                  }
+                                });
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF5C3D2E),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          disabledBackgroundColor: const Color(0xFF5C3D2E).withValues(alpha: 0.5),
+                        ),
+                        child: const Text('Proceed to Book'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load lawyers: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
+    final role = _box.read<String>('role');
+    final content = FutureBuilder<List<Map<String, dynamic>>>(
       future: _future,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
@@ -166,27 +301,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: Column(
               children: [
                 Container(
-                  color: const Color(0xFFF1ECE5),
+                  color: AppColors.beige,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.chevron_left, color: Colors.brown),
+                        icon: Icon(Icons.chevron_left, color: AppColors.darkBrown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month - 1);
                         }),
                       ),
                       Text(
                         '${_monthName(focusedMonth.month)} ${focusedMonth.year}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF3E2C23),
+                          color: AppColors.darkBrown,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.chevron_right, color: Colors.brown),
+                        icon: Icon(Icons.chevron_right, color: AppColors.darkBrown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month + 1);
                         }),
@@ -195,7 +330,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
                 Container(
-                  color: const Color(0xFFF1ECE5),
+                  color: AppColors.beige,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -203,10 +338,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               child: Center(
                                 child: Text(
                                   d,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF8C7B6B),
+                                    color: AppColors.darkBrown.withOpacity(0.65),
                                   ),
                                 ),
                               ),
@@ -237,24 +372,76 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       const SizedBox(height: 12),
                       ...selectedAppointments.map((a) => _AppointmentTile(appointment: a)),
                       if (selectedAppointments.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(
-                            child: Text(
-                              'Tap a date to view appointments',
-                              style: TextStyle(color: Color(0xFFAA9988), fontSize: 14),
-                            ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Text(
+                            'No appointments scheduled for this date.',
+                            style: TextStyle(color: Color(0xFFAA9988), fontSize: 14),
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                    const SizedBox(height: 16),
+                    if (role != 'lawyer')
+                      Center(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            if (role == 'admin') {
+                              final result = await Get.to(() => AdminBookAppointmentScreen(initialDate: selectedDate));
+                              if (result == true) {
+                                _load();
+                              }
+                            } else {
+                              _showClientBookingDialog(selectedDate);
+                            }
+                          },
+                          icon: const Icon(Icons.add, size: 18),
+                          label: Text(
+                            'Book Appointment for ${_monthName(selectedDate.month)} ${selectedDate.day}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF5C3D2E),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 20),
+              ),
+              const SizedBox(height: 20),
               ],
             ),
           ),
         );
       },
+    );
+
+    if (widget.isNested) {
+      return content;
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.beige,
+      appBar: AppBar(
+        backgroundColor: AppColors.beige,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.darkBrown),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          'My Calendar',
+          style: TextStyle(
+            color: AppColors.darkBrown,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+      ),
+      body: content,
     );
   }
 

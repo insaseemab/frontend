@@ -3,6 +3,7 @@ import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/client/calendar.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
@@ -46,7 +47,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
       backgroundColor: Colors.white,
       // ───────── APP BAR ─────────
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         title: Row(
           children: [
@@ -66,7 +67,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             const Text(
               "Insaaf Connect",
               style: TextStyle(
-                color: Colors.brown,
+                color: AppColors.darkBrown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -114,7 +115,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: Colors.brown),
+              decoration: const BoxDecoration(color: AppColors.darkBrown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -151,7 +152,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: Colors.brown),
+              leading: const Icon(Icons.home, color: AppColors.darkBrown),
               title: const Text("Home"),
               onTap: () {
                 Get.back();
@@ -159,7 +160,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.folder, color: Colors.brown),
+              leading: const Icon(Icons.folder, color: AppColors.darkBrown),
               title: const Text("Active Cases"),
               onTap: () {
                 Get.back();
@@ -167,7 +168,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.calendar_today, color: Colors.brown),
+              leading: const Icon(Icons.calendar_today, color: AppColors.darkBrown),
               title: const Text("Appointments"),
               onTap: () {
                 Get.back();
@@ -175,7 +176,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.message, color: Colors.brown),
+              leading: const Icon(Icons.message, color: AppColors.darkBrown),
               title: const Text("Messages"),
               onTap: () {
                 Get.back();
@@ -185,18 +186,18 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
 
             ListTile(
               leading: const Icon(
-                Icons.calendar_month_outlined,
-                color: Colors.brown,
-              ), // ← fix icon
-              title: const Text("Calendar"),
+                Icons.calendar_month,
+                color: AppColors.darkBrown,
+              ),
+              title: const Text("My Calendar"),
               onTap: () {
-                Get.to(() => const CalendarScreen());
-                setState(() => _currentIndex = 4); // ← this now works
+                Get.back();
+                Get.toNamed('/calendar');
               },
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.brown),
+              leading: const Icon(Icons.logout, color: AppColors.darkBrown),
               title: const Text("Logout"),
               onTap: () {
                 Get.offAll(() => LoginScreen());
@@ -213,9 +214,9 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: Colors.brown,
-        unselectedItemColor: Colors.brown,
-        backgroundColor: const Color(0xFFF5EFE6),
+        selectedItemColor: AppColors.darkBrown,
+        unselectedItemColor: AppColors.darkBrown,
+        backgroundColor: AppColors.beige,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         items: const [

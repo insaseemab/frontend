@@ -28,7 +28,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   final List<Widget> pages = [
     const HomeScreen(),
     const LawyerFindScreen(),
-    const CalendarScreen(),
+    const CalendarScreen(isNested: true),
     const ConversationsScreen(),
     const AppointmentsPage(role: AppointmentRole.client),
     const ManageCasesPage(),
