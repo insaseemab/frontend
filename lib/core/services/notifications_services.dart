@@ -4,7 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class NotificationService {
-  final String baseUrl = "http://localhost:3000"; // 👈 put your real base URL here
+  final String baseUrl = "http://localhost:3000"; 
+
   final _box = GetStorage();
 
   String get _token => _box.read('token') ?? '';
