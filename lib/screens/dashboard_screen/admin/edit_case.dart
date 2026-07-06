@@ -29,18 +29,20 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.caseData.clientName);
-caseTypeController = TextEditingController(text: widget.caseData.caseType);
-phoneController = TextEditingController(text: widget.caseData.phone);
-addressController = TextEditingController(text: widget.caseData.address);
-descriptionController =
-    TextEditingController(text: widget.caseData.descriptionCase);
-departController =
-    TextEditingController(text: widget.caseData.departConcern);
-hearingDateController = TextEditingController(
-  text: widget.caseData.hearingDate.contains('T')
-      ? widget.caseData.hearingDate.split('T')[0]
-      : widget.caseData.hearingDate,
-);
+    caseTypeController = TextEditingController(text: widget.caseData.caseType);
+    phoneController = TextEditingController(text: widget.caseData.phone);
+    addressController = TextEditingController(text: widget.caseData.address);
+    descriptionController = TextEditingController(
+      text: widget.caseData.descriptionCase,
+    );
+    departController = TextEditingController(
+      text: widget.caseData.departConcern,
+    );
+    hearingDateController = TextEditingController(
+      text: widget.caseData.hearingDate.contains('T')
+          ? widget.caseData.hearingDate.split('T')[0]
+          : widget.caseData.hearingDate,
+    );
     selectedPaymentStatus =
         widget.caseData.paymentStatus.toLowerCase() == 'paid'
         ? 'paid'
@@ -60,47 +62,49 @@ hearingDateController = TextEditingController(
   }
 
   Future<void> _updateCase() async {
-  try {
-    setState(() => loading = true);
+    try {
+      setState(() => loading = true);
 
-    final String token = GetStorage().read('token') ?? '';
+      final String token = GetStorage().read('token') ?? '';
 
-    await CaseApiService.updateCase(
-      id: widget.caseData.id,
-      name: nameController.text.trim(),
-      caseType: caseTypeController.text.trim(),
-      caseStatus: widget.caseData.caseStatus,
-      descriptionCase: descriptionController.text.trim(),
-      phone: phoneController.text.trim(),
-      address: addressController.text.trim(),
-     caseStartDate: widget.caseData.caseStartDate.contains('T')
-    ? widget.caseData.caseStartDate.split('T')[0]
-    : widget.caseData.caseStartDate,
-departConcern: departController.text.trim(),
-hearingDate: hearingDateController.text.trim(),
-paymentStatus: selectedPaymentStatus == 'paid' ? 1 : 0,   // ← convert string to int
-token: token,
-    );
+      await CaseApiService.updateCase(
+        id: widget.caseData.id,
+        name: nameController.text.trim(),
+        caseType: caseTypeController.text.trim(),
+        caseStatus: widget.caseData.caseStatus,
+        descriptionCase: descriptionController.text.trim(),
+        phone: phoneController.text.trim(),
+        address: addressController.text.trim(),
+        caseStartDate: widget.caseData.caseStartDate.contains('T')
+            ? widget.caseData.caseStartDate.split('T')[0]
+            : widget.caseData.caseStartDate,
+        departConcern: departController.text.trim(),
+        hearingDate: hearingDateController.text.trim(),
+        paymentStatus: selectedPaymentStatus == 'paid'
+            ? 1
+            : 0, // ← convert string to int
+        token: token,
+      );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    Get.back(result: true);
+      Get.back(result: true);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Case updated successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  } catch (e) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: $e')),
-    );
-  } finally {
-    if (mounted) setState(() => loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Case updated successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      if (mounted) setState(() => loading = false);
+    }
   }
-}
 
   Widget _buildField(
     String label,
@@ -146,20 +150,21 @@ token: token,
             _buildField('Hearing Date (YYYY-MM-DD)', hearingDateController),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-  initialValue: selectedPaymentStatus,
-  decoration: const InputDecoration(
-    labelText: 'Payment Status',
-    border: UnderlineInputBorder(),
-    isDense: true,
-  ),
-  items: const [
-    DropdownMenuItem(value: 'paid', child: Text('Paid')),
-    DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
-  ],
-  onChanged: (v) {
-    if (v != null) setState(() => selectedPaymentStatus = v);
-  },
-),   ],
+              initialValue: selectedPaymentStatus,
+              decoration: const InputDecoration(
+                labelText: 'Payment Status',
+                border: UnderlineInputBorder(),
+                isDense: true,
+              ),
+              items: const [
+                DropdownMenuItem(value: 'paid', child: Text('Paid')),
+                DropdownMenuItem(value: 'unpaid', child: Text('Unpaid')),
+              ],
+              onChanged: (v) {
+                if (v != null) setState(() => selectedPaymentStatus = v);
+              },
+            ),
+          ],
         ),
       ),
       actions: [

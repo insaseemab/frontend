@@ -7,7 +7,7 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 
-const String baseUrl = 'http://insaaf.sandbox.pk';
+const String baseUrl = 'http://localhost:3000';
 
 class CaseModel {
   final int id;
@@ -48,7 +48,7 @@ class CaseModel {
       caseType: json['case_type']?.toString() ?? 'Unknown',
       clientName: json['name']?.toString() ?? 'N/A',
       lawyerId: json['lawyer_id']?.toString() ?? 'N/A',       // ← fixed
-      lawyerName: json['lawyer_name']?.toString() ?? 'N/A',
+      lawyerName: json['name']?.toString() ?? 'N/A',
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
       hearingDate: json['hearing_date']?.toString() ?? 'N/A',
@@ -557,6 +557,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         children: [
           Expanded(flex: 1, child: Text('#${c.id}')),
           Expanded(flex: 2, child: Text(c.caseType)),
+          Expanded(flex: 2, child: Text(c.lawyerId)),
           Expanded(flex: 2, child: Text(c.lawyerName)),
           Expanded(
             flex: 2,
