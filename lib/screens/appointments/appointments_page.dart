@@ -468,170 +468,186 @@ void _showConvertToCase(Map<String, dynamic> apt) {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.beige,
-      appBar: AppBar(
-        backgroundColor: AppColors.beige,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.darkBrown),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          _title,
-          style: const TextStyle(color: AppColors.darkBrown, fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        actions: [
-          if (_isAdmin)
-            IconButton(
-              icon: const Icon(Icons.add, color: AppColors.darkBrown),
-              onPressed: () async {
-                final result = await Get.to(() => const AdminBookAppointmentScreen());
-                if (result == true) {
-                  _load();
-                }
-              },
-            ),
-          IconButton(icon: const Icon(Icons.refresh, color: AppColors.darkBrown), onPressed: _load),
-        ],
-      ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _future,
-        builder: (context, snap) {
-          if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xFF5C3D2E)));
-          }
-          if (snap.hasError) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                  const SizedBox(height: 12),
-                  Text('${snap.error}', style: const TextStyle(color: Colors.grey)),
-                  TextButton(
-                    onPressed: _load,
-                    child: const Text('Retry', style: TextStyle(color: Color(0xFF5C3D2E))),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final all = snap.data ?? [];
-          final filtered = _filtered(all);
-
-          final pending = all.where((a) => a['status'] == 'pending').length;
-          final accepted = all.where((a) => a['status'] == 'accepted').length;
-          final rejected = all.where((a) => a['status'] == 'rejected').length;
-
-          return RefreshIndicator(
-            color: const Color(0xFF5C3D2E),
-            onRefresh: () async => _load(),
-            child: Column(
+    return Container(
+      color: AppColors.beige,
+      child: Column(
+        children: [
+          // ── Text-based header (replaces the second AppBar) ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // ── Stats Row (shown for everyone — useful context) ──
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: Row(
-                    children: [
-                      _StatCard(label: 'Total', value: '${all.length}', color: AppColors.darkBrown),
-                      const SizedBox(width: 10),
-                      _StatCard(label: 'Pending', value: '$pending', color: AppColors.warning),
-                      const SizedBox(width: 10),
-                      _StatCard(label: 'Accepted', value: '$accepted', color: AppColors.success),
-                      const SizedBox(width: 10),
-                      _StatCard(label: 'Rejected', value: '$rejected', color: AppColors.error),
-                    ],
+                Text(
+                  _title,
+                  style: const TextStyle(
+                    color: AppColors.darkBrown,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-
-                // ── Search (admin only — lawyer/client lists are small enough not to need it) ──
-                if (_isAdmin)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: TextField(
-                      onChanged: (v) => setState(() => _searchQuery = v),
-                      decoration: InputDecoration(
-                        hintText: 'Search by ID, case type, law type...',
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide.none,
-                        ),
+                Row(
+                  children: [
+                    if (_isAdmin)
+                      IconButton(
+                        icon: const Icon(Icons.add, color: AppColors.darkBrown),
+                        onPressed: () async {
+                          final result = await Get.to(() => const AdminBookAppointmentScreen());
+                          if (result == true) {
+                            _load();
+                          }
+                        },
                       ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh, color: AppColors.darkBrown),
+                      onPressed: _load,
                     ),
-                  )
-                else
-                  const SizedBox(height: 16),
-
-                // ── Filter Chips (everyone) ──
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: ['all', 'pending', 'accepted', 'rejected'].map((f) {
-                        final isSelected = _selectedFilter == f;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ElevatedButton(
-                            onPressed: () => setState(() => _selectedFilter = f),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isSelected ? const Color(0xFF5C3D2E) : Colors.white,
-                              foregroundColor: isSelected ? Colors.white : Colors.black87,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                side: BorderSide(
-                                  color: isSelected ? const Color(0xFF5C3D2E) : Colors.grey.shade300,
-                                ),
-                              ),
-                            ),
-                            child: Text(f[0].toUpperCase() + f.substring(1)),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // ── List ──
-                Expanded(
-                  child: filtered.isEmpty
-                      ? const Center(
-                          child: Text('No appointments found.', style: TextStyle(color: Colors.grey)),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.all(16),
-                          itemCount: filtered.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                          itemBuilder: (_, i) {
-                            final apt = filtered[i] as Map<String, dynamic>;
-                            return _AppointmentCard(
-  appointment: apt,
-  role: widget.role,
-  onViewDetail: () => _showDetail(apt),
-  onEdit: () => _showEdit(apt),
-  onAdminUpdateStatus: () => _showAdminUpdateStatus(apt),
-  onApprovePayment: () => _showApprovePayment(apt),
-  onLawyerReject: () => _lawyerReject(apt),
-  onLawyerAccept: () => _lawyerShowAcceptSheet(apt),
-  onClientCancel: () => _clientCancel(apt),
-  onClientPay: () => _clientShowPayment(apt),
-  onConvertToCase: () => _showConvertToCase(apt), );// ← add this
-
-                          },
-                        ),
+                  ],
                 ),
               ],
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: FutureBuilder<List<dynamic>>(
+              future: _future,
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF5C3D2E)));
+                }
+                if (snap.hasError) {
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                        const SizedBox(height: 12),
+                        Text('${snap.error}', style: const TextStyle(color: Colors.grey)),
+                        TextButton(
+                          onPressed: _load,
+                          child: const Text('Retry', style: TextStyle(color: Color(0xFF5C3D2E))),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final all = snap.data ?? [];
+                final filtered = _filtered(all);
+
+                final pending = all.where((a) => a['status'] == 'pending').length;
+                final accepted = all.where((a) => a['status'] == 'accepted').length;
+                final rejected = all.where((a) => a['status'] == 'rejected').length;
+
+                return RefreshIndicator(
+                  color: const Color(0xFF5C3D2E),
+                  onRefresh: () async => _load(),
+                  child: Column(
+                    children: [
+                      // ── Stats Row (shown for everyone — useful context) ──
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        child: Row(
+                          children: [
+                            _StatCard(label: 'Total', value: '${all.length}', color: AppColors.darkBrown),
+                            const SizedBox(width: 10),
+                            _StatCard(label: 'Pending', value: '$pending', color: AppColors.warning),
+                            const SizedBox(width: 10),
+                            _StatCard(label: 'Accepted', value: '$accepted', color: AppColors.success),
+                            const SizedBox(width: 10),
+                            _StatCard(label: 'Rejected', value: '$rejected', color: AppColors.error),
+                          ],
+                        ),
+                      ),
+
+                      // ── Search (admin only — lawyer/client lists are small enough not to need it) ──
+                      if (_isAdmin)
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: TextField(
+                            onChanged: (v) => setState(() => _searchQuery = v),
+                            decoration: InputDecoration(
+                              hintText: 'Search by ID, case type, law type...',
+                              prefixIcon: const Icon(Icons.search),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox(height: 16),
+
+                      // ── Filter Chips (everyone) ──
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: ['all', 'pending', 'accepted', 'rejected'].map((f) {
+                              final isSelected = _selectedFilter == f;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: ElevatedButton(
+                                  onPressed: () => setState(() => _selectedFilter = f),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isSelected ? const Color(0xFF5C3D2E) : Colors.white,
+                                    foregroundColor: isSelected ? Colors.white : Colors.black87,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                      side: BorderSide(
+                                        color: isSelected ? const Color(0xFF5C3D2E) : Colors.grey.shade300,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(f[0].toUpperCase() + f.substring(1)),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // ── List ──
+                      Expanded(
+                        child: filtered.isEmpty
+                            ? const Center(
+                                child: Text('No appointments found.', style: TextStyle(color: Colors.grey)),
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: filtered.length,
+                                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                                itemBuilder: (_, i) {
+                                  final apt = filtered[i] as Map<String, dynamic>;
+                                  return _AppointmentCard(
+        appointment: apt,
+        role: widget.role,
+        onViewDetail: () => _showDetail(apt),
+        onEdit: () => _showEdit(apt),
+        onAdminUpdateStatus: () => _showAdminUpdateStatus(apt),
+        onApprovePayment: () => _showApprovePayment(apt),
+        onLawyerReject: () => _lawyerReject(apt),
+        onLawyerAccept: () => _lawyerShowAcceptSheet(apt),
+        onClientCancel: () => _clientCancel(apt),
+        onClientPay: () => _clientShowPayment(apt),
+        onConvertToCase: () => _showConvertToCase(apt), );
+
+                                },
+                              ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

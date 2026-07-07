@@ -149,7 +149,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   void _showSnack(String msg) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 
- void _showSuccessDialog() {
+  void _showSuccessDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -409,10 +409,23 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 // ════════════════════════════════════════════════
 //  MY APPOINTMENTS SCREEN
 //  GET /appointments/client/:clientId
+//  NOTE: No Scaffold/AppBar here — this screen is
+//  hosted inside the shared shell's body, which
+//  already provides the single top AppBar +
+//  BottomNavigationBar. This avoids the double
+//  app bar issue.
 // ════════════════════════════════════════════════
 
 class MyAppointmentsScreen extends StatefulWidget {
-  const MyAppointmentsScreen({super.key});
+  /// Set to true when this screen is pushed as its own route (e.g. from
+  /// the drawer). In that case it renders its own Scaffold + AppBar with
+  /// a back button.
+  ///
+  /// Leave false (default) when this screen is embedded inside the shared
+  /// shell's body via the bottom navigation bar — no AppBar/back button.
+  final bool isStandalone;
+
+  const MyAppointmentsScreen({super.key, this.isStandalone = false});
 
   @override
   State<MyAppointmentsScreen> createState() => _MyAppointmentsScreenState();
@@ -428,104 +441,146 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   }
 
   void _load() {
-  setState(() {
-    _future = ApiService.getMyAppointments(); // ← uses token automatically
-  });
-}
+    setState(() {
+      _future = ApiService.getMyAppointments(); // ← uses token automatically
+    });
+  }
 
   Future<void> _delete(int id) async {
     try {
       await ApiService.deleteAppointment(id);
       if (!mounted) return;
       _load();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Appointment cancelled')));
+      Get.snackbar(
+        'Success',
+        'Appointment cancelled',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } on ApiException catch (e) {
       if (!mounted) return;
       Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF1ECE5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF1ECE5),
-        elevation: 0,
-        title: const Text(
-          'My Appointments',
-          style: TextStyle(
-            color: Color(0xFF3E2C23),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-      ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _future,
-        builder: (context, snap) {
-          if (snap.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
-            );
-          }
-          if (snap.hasError) {
-            final msg = snap.error is ApiException
-                ? (snap.error as ApiException).message
-                : 'Failed to load appointments';
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Color(0xFF8C7B6B),
-                    size: 48,
+  Widget _buildBody() {
+    return FutureBuilder<List<dynamic>>(
+      future: _future,
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+          );
+        }
+        if (snap.hasError) {
+          final msg = snap.error is ApiException
+              ? (snap.error as ApiException).message
+              : 'Failed to load appointments';
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  color: Color(0xFF8C7B6B),
+                  size: 48,
+                ),
+                const SizedBox(height: 12),
+                Text(msg, style: const TextStyle(color: Color(0xFF8C7B6B))),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: _load,
+                  child: const Text(
+                    'Retry',
+                    style: TextStyle(color: Color(0xFF5C3D2E)),
                   ),
-                  const SizedBox(height: 12),
-                  Text(msg, style: const TextStyle(color: Color(0xFF8C7B6B))),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: _load,
-                    child: const Text(
-                      'Retry',
-                      style: TextStyle(color: Color(0xFF5C3D2E)),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final appointments = snap.data ?? [];
-          if (appointments.isEmpty) {
-            return const Center(
-              child: Text(
-                'No appointments yet.',
-                style: TextStyle(color: Color(0xFF8C7B6B)),
-              ),
-            );
-          }
-
-          return RefreshIndicator(
-            color: const Color(0xFF5C3D2E),
-            onRefresh: () async => _load(),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: appointments.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) {
-                final apt = appointments[i] as Map<String, dynamic>;
-                return _AppointmentTile(
-                  appointment: apt,
-                  onDelete: () => _delete(apt['id'] as int),
-                );
-              },
+                ),
+              ],
             ),
           );
-        },
+        }
+
+        final appointments = snap.data ?? [];
+        if (appointments.isEmpty) {
+          return const Center(
+            child: Text(
+              'No appointments yet.',
+              style: TextStyle(color: Color(0xFF8C7B6B)),
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          color: const Color(0xFF5C3D2E),
+          onRefresh: () async => _load(),
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: appointments.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, i) {
+              final apt = appointments[i] as Map<String, dynamic>;
+              return _AppointmentTile(
+                appointment: apt,
+                onDelete: () => _delete(apt['id'] as int),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Opened from the drawer as its own route → show a Scaffold + AppBar
+    // with a back button.
+    if (widget.isStandalone) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF1ECE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFF1ECE5),
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFF3E2C23),
+              size: 20,
+            ),
+            onPressed: () => Get.back(),
+          ),
+          title: const Text(
+            'My Appointments',
+            style: TextStyle(
+              color: Color(0xFF3E2C23),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        body: _buildBody(),
+      );
+    }
+
+    // Embedded inside the shared shell's body via bottom nav → no AppBar,
+    // no back button, just a plain title container.
+    return Container(
+      color: const Color(0xFFF1ECE5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: const Text(
+              'My Appointments',
+              style: TextStyle(
+                color: Color(0xFF3E2C23),
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          Expanded(child: _buildBody()),
+        ],
       ),
     );
   }
@@ -988,7 +1043,6 @@ class _ModeSelector extends StatelessWidget {
     required this.icons,
     required this.onSelected,
   });
-  
 
   @override
   Widget build(BuildContext context) {
@@ -1036,6 +1090,7 @@ class _ModeSelector extends StatelessWidget {
     );
   }
 }
+
 class _StepText extends StatelessWidget {
   final String text;
   const _StepText(this.text);
