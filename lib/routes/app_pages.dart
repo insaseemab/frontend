@@ -6,6 +6,8 @@ import 'package:insaafconnect/screens/chat/conversation.dart';
 import '../screens/splash_screen/splash.dart';
 import '../screens/login_screen/login.dart';
 import '../screens/register_screen/register.dart';
+import '../screens/login_screen/forgot_password.dart';
+import '../screens/login_screen/reset_password.dart';
 import '../screens/dashboard_screen/admin/admin_dashboard.dart';
 import '../screens/dashboard_screen/admin/managelawyers.dart';
 import '../screens/dashboard_screen/admin/manage_cases.dart';
@@ -21,6 +23,14 @@ class AppPages {
     GetPage(name: AppRoutes.splash, page: () => SplashPage()),
     GetPage(name: AppRoutes.login, page: () => LoginScreen()),
     GetPage(name: AppRoutes.register, page: () => RegisterPage()),
+    GetPage(
+      name: AppRoutes.forgotPassword,
+      page: () => const ForgotPasswordScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.resetPassword,
+      page: () => const ResetPasswordScreen(),
+    ),
 
     // ── Admin ──
     GetPage(
@@ -116,5 +126,6 @@ class AppPages {
         RoleMiddleware(allowedRoles: ['lawyer']),
       ],
     ),
+    
   ];
 }

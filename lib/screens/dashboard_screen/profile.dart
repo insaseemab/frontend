@@ -2,36 +2,280 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
+import 'package:insaafconnect/core/services/api_services.dart'; // update to match your actual path to api_service.dart
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final box = GetStorage();
-    final Map<String, dynamic> user =
-        Map<String, dynamic>.from(box.read('user') ?? {});
-    final String role = (box.read('role') ?? user['role'] ?? '').toString();
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
 
+class _ProfileScreenState extends State<ProfileScreen> {
+  final box = GetStorage();
+  late Map<String, dynamic> user;
+  late String role;
+
+  static const Color darkBrown = Color(0xFF3E2C23);
+  static const Color mediumBrown = Color(0xFF6B4F3F);
+  static const Color muted = Color(0xFF8C7B6B);
+  static const Color bg = Color(0xFFF5EFE6);
+  static const Color cardBorder = Color(0xFFEADDD0);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() {
+    user = Map<String, dynamic>.from(box.read('user') ?? {});
+    role = (box.read('role') ?? user['role'] ?? '').toString();
+  }
+
+  Future<void> _openEditSheet() async {
+    final nameCtrl = TextEditingController(text: (user['name'] ?? '').toString());
+    final emailCtrl = TextEditingController(text: (user['email'] ?? '').toString());
+    final phoneCtrl = TextEditingController(text: (user['phone'] ?? '').toString());
+    final locationCtrl = TextEditingController(text: (user['location'] ?? '').toString());
+
+    // Lawyer-only fields
+    final specCtrl = TextEditingController(text: (user['specialization'] ?? '').toString());
+    final expCtrl = TextEditingController(text: (user['experience'] ?? '').toString());
+
+    final isLawyer = role.toLowerCase() == 'lawyer';
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Edit Profile',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: nameCtrl,
+                  decoration: const InputDecoration(labelText: 'Full Name'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: emailCtrl,
+                  decoration: const InputDecoration(labelText: 'Email Address'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneCtrl,
+                  decoration: const InputDecoration(labelText: 'Phone Number'),
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: locationCtrl,
+                  decoration: const InputDecoration(labelText: 'Location'),
+                ),
+                if (isLawyer) ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: specCtrl,
+                    decoration: const InputDecoration(labelText: 'Specialization'),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: expCtrl,
+                    decoration: const InputDecoration(labelText: 'Experience'),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mediumBrown,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () async {
+                      final updatedData = {
+                        'name': nameCtrl.text.trim(),
+                        'email': emailCtrl.text.trim(),
+                        'phone': phoneCtrl.text.trim(),
+                        'location': locationCtrl.text.trim(),
+                        if (isLawyer) 'specialization': specCtrl.text.trim(),
+                        if (isLawyer) 'experience': expCtrl.text.trim(),
+                      };
+                      await _saveProfile(updatedData);
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                    child: const Text('Save Changes',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _openChangePasswordSheet() async {
+    final currentCtrl = TextEditingController();
+    final newCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Change Password',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: currentCtrl,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Current Password'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: newCtrl,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'New Password'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmCtrl,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: mediumBrown,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (newCtrl.text.trim() != confirmCtrl.text.trim()) {
+                        Get.snackbar('Error', 'New passwords do not match');
+                        return;
+                      }
+                      if (newCtrl.text.trim().isEmpty || currentCtrl.text.trim().isEmpty) {
+                        Get.snackbar('Error', 'Please fill in all fields');
+                        return;
+                      }
+                      await _changePassword(
+                        currentCtrl.text.trim(),
+                        newCtrl.text.trim(),
+                      );
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                    child: const Text('Update Password',
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _changePassword(String currentPassword, String newPassword) async {
+    try {
+      final userId = user['id'] as int;
+      await ApiService.changePassword(
+        id: userId,
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+      Get.snackbar('Success', 'Password updated successfully');
+    } on ApiException catch (e) {
+      Get.snackbar('Error', e.message);
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  Future<void> _saveProfile(Map<String, dynamic> updatedData) async {
+    try {
+      final userId = user['id'] as int;
+      final response = await ApiService.updateProfile(
+        id: userId,
+        data: updatedData,
+      );
+
+      final newUser = {...user, ...response};
+      await box.write('user', newUser);
+      setState(() {
+        user = newUser;
+      });
+      Get.snackbar('Success', 'Profile updated successfully');
+    } on ApiException catch (e) {
+      Get.snackbar('Error', e.message);
+    } catch (e) {
+      Get.snackbar('Error', 'Something went wrong: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final String name = (user['name'] ?? 'Unknown').toString();
     final String email = (user['email'] ?? 'Not provided').toString();
+    final String phone = (user['phone'] ?? 'Not provided').toString();
     final String location = (user['location'] ?? 'Not provided').toString();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EFE6),
+        backgroundColor: bg,
         elevation: 0,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Profile',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3E2C23)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown),
             ),
             Text(
               'Manage your account',
-              style: TextStyle(fontSize: 12, color: Color(0xFF8C7B6B), fontWeight: FontWeight.normal),
+              style: TextStyle(fontSize: 12, color: muted, fontWeight: FontWeight.normal),
             ),
           ],
         ),
@@ -47,16 +291,17 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFEADDD0)),
+                border: Border.all(color: cardBorder),
               ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: const Color(0xFF6B4F3F),
+                    backgroundColor: mediumBrown,
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -64,13 +309,25 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(name,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(height: 2),
                         Text(
                           role.isNotEmpty ? role[0].toUpperCase() + role.substring(1) : '',
                           style: const TextStyle(color: Colors.grey, fontSize: 13),
                         ),
                       ],
+                    ),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _openEditSheet,
+                    icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
+                    label: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: mediumBrown,
+                      side: BorderSide.none,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                 ],
@@ -86,38 +343,69 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFEADDD0)),
+                border: Border.all(color: cardBorder),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('Personal Information',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: darkBrown)),
                   const SizedBox(height: 14),
-                  _infoRow(Icons.person_outline, 'Full Name', name),
+                  _infoField(Icons.person_outline, 'Full Name', name),
                   const SizedBox(height: 12),
-                  _infoRow(Icons.email_outlined, 'Email Address', email),
+                  _infoField(Icons.email_outlined, 'Email Address', email),
                   const SizedBox(height: 12),
-                  _infoRow(Icons.location_on_outlined, 'Location', location),
+                  _infoField(Icons.phone_outlined, 'Phone Number', phone),
+                  const SizedBox(height: 12),
+                  _infoField(Icons.location_on_outlined, 'Location', location),
 
-                  // ── Lawyer-only fields (these columns only exist for role = lawyer) ──
+                  // ── Lawyer-only fields ──
                   if (role.toLowerCase() == 'lawyer') ...[
                     const SizedBox(height: 12),
-                    _infoRow(Icons.gavel, 'Specialization',
+                    _infoField(Icons.gavel, 'Specialization',
                         (user['specialization'] ?? 'Not provided').toString()),
                     const SizedBox(height: 12),
-                    _infoRow(Icons.work_outline, 'Experience',
+                    _infoField(Icons.work_outline, 'Experience',
                         (user['experience'] ?? 'Not provided').toString()),
                     const SizedBox(height: 12),
-                    _infoRow(Icons.folder_outlined, 'Cases Handled',
+                    _infoField(Icons.folder_outlined, 'Cases Handled',
                         (user['cases'] ?? 'Not provided').toString()),
                   ],
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
+            // ── Change Password ──
+            InkWell(
+              onTap: _openChangePasswordSheet,
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: cardBorder),
+                ),
+                child: const Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.edit_outlined, size: 16, color: mediumBrown),
+                      SizedBox(width: 8),
+                      Text('Change Password',
+                          style: TextStyle(color: mediumBrown, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // ── Logout ──
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -125,11 +413,11 @@ class ProfileScreen extends StatelessWidget {
                   box.erase();
                   Get.offAll(() => LoginScreen());
                 },
-                icon: const Icon(Icons.logout, color: Color(0xFF6B4F3F)),
-                label: const Text('Logout', style: TextStyle(color: Color(0xFF6B4F3F))),
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text('Logout', style: TextStyle(color: Colors.red)),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: Color(0xFF6B4F3F)),
+                  side: const BorderSide(color: Colors.red),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
@@ -140,23 +428,33 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: const Color(0xFF8C7B6B)),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF8C7B6B))),
-              const SizedBox(height: 2),
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            ],
+  // Field rendered as its own light card, like the mockup
+  Widget _infoField(IconData icon, String label, String value) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18, color: muted),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: const TextStyle(fontSize: 11, color: muted)),
+                const SizedBox(height: 2),
+                Text(value,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: darkBrown)),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -19,12 +19,49 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _obscureConfirm = true;
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _tokenController.text = _extractTokenFromUrl();
+  }
+
+  /// Extracts the `token` query parameter from the current browser URL.
+  /// Works for both normal query strings and hash-based routing
+  /// (e.g. http://localhost:62336/#/reset-password?token=xxxx).
+  String _extractTokenFromUrl() {
+    final uri = Uri.base;
+
+    // Case: normal query string (non-hash routing)
+    if (uri.queryParameters.containsKey('token')) {
+      return uri.queryParameters['token'] ?? '';
+    }
+
+    // Case: hash routing -> fragment looks like "/reset-password?token=xxxx"
+    final fragment = uri.fragment;
+    if (fragment.contains('?')) {
+      final queryPart = fragment.split('?').last;
+      final params = Uri.splitQueryString(queryPart);
+      return params['token'] ?? '';
+    }
+
+    return '';
+  }
+
   Future<void> _submit() async {
     final token = _tokenController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    if (token.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (token.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Reset token is missing or invalid. Please use the link from your email again.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
       Get.snackbar("Error", "All fields are required");
       return;
     }
@@ -110,10 +147,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                 TextField(
                   controller: _tokenController,
+                  readOnly: true,
+                  style: const TextStyle(color: Colors.black87),
                   decoration: InputDecoration(
                     hintText: "Reset token",
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: const Color(0xFFECE7DF),
                     prefixIcon: const Icon(Icons.vpn_key_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),

@@ -41,6 +41,7 @@ class AuthService {
       };
     }
   }
+  
 
   static Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {

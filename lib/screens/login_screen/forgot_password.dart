@@ -44,7 +44,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     // Since the reset link carries a token, take the user to a screen
     // where they can paste/enter it (or deep-link handling can auto-fill this).
-    Get.to(() => const ResetPasswordScreen());
+    // Get.toNamed('/reset-password');
   }
 
   @override
