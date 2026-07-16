@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
-import 'package:insaafconnect/core/services/api_services.dart'; // update to match your actual path to api_service.dart
+import 'package:insaafconnect/core/services/api_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,11 +17,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Map<String, dynamic> user;
   late String role;
 
-  static const Color darkBrown = Color(0xFF3E2C23);
-  static const Color mediumBrown = Color(0xFF6B4F3F);
-  static const Color muted = Color(0xFF8C7B6B);
-  static const Color bg = Color(0xFFF5EFE6);
-  static const Color cardBorder = Color(0xFFEADDD0);
+  final Color darkBrown = AppColors.darkBrown;
+  final Color mediumBrown = AppColors.mediumBrown;
+  final Color muted = AppColors.labelSecondary;
+  final Color bg = AppColors.beige;
+  final Color cardBorder = AppColors.divider;
 
   @override
   void initState() {
@@ -64,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Edit Profile',
+                Text('Edit Profile',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
                 const SizedBox(height: 16),
                 TextField(
@@ -159,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Change Password',
+                Text('Change Password',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
                 const SizedBox(height: 16),
                 TextField(
@@ -260,13 +261,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final String email = (user['email'] ?? 'Not provided').toString();
     final String phone = (user['phone'] ?? 'Not provided').toString();
     final String location = (user['location'] ?? 'Not provided').toString();
-
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         backgroundColor: bg,
         elevation: 0,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -389,7 +389,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: cardBorder),
                 ),
-                child: const Center(
+                child: Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -446,10 +446,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 11, color: muted)),
+                Text(label, style: TextStyle(fontSize: 11, color: muted)),
                 const SizedBox(height: 2),
                 Text(value,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: darkBrown)),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: darkBrown)),
               ],
             ),
           ),
