@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = "http://insaaf.sandbox.pk";
 
   static final _box = GetStorage();
 
@@ -287,24 +287,42 @@ class ApiService {
   //  PROFILE / USER ENDPOINTS
   // ════════════════════════════════════════════════
 
-  /// PUT /users/:id  — update the logged-in user's profile
-  /// Adjust the route below if your backend uses a different path
-  /// (e.g. /auth/profile or /profile).
+  /// PUT /edit-profile & /update-profile — update profile
   static Future<Map<String, dynamic>> updateProfile({
     required int id,
     required Map<String, dynamic> data,
   }) async {
-    final res = await http.put(
-      Uri.parse('$baseUrl/users/$id'),
+    // 1. Update basic profile for all roles
+    final basicRes = await http.put(
+      Uri.parse('$baseUrl/edit-profile'),
       headers: _authHeaders(),
-      body: jsonEncode(data),
+      body: jsonEncode({
+        'name': data['name'],
+        'email': data['email'],
+        'phone': data['phone'],
+        'location': data['location'],
+      }),
     );
-    _checkStatus(res);
-    return jsonDecode(res.body) as Map<String, dynamic>;
+    _checkStatus(basicRes);
+
+    // 2. Update lawyer specific profile if fields exist
+    if (data.containsKey('specialization') || data.containsKey('experience')) {
+      final lawyerRes = await http.put(
+        Uri.parse('$baseUrl/update-profile'),
+        headers: _authHeaders(),
+        body: jsonEncode({
+          'specialization': data['specialization'],
+          'experience': data['experience'],
+          'location': data['location'],
+        }),
+      );
+      _checkStatus(lawyerRes);
+    }
+
+    return data;
   }
 
-  /// PATCH /users/:id/password  — change the logged-in user's password
-  /// Adjust the route below if your backend uses a different path.
+  /// PUT /change-password — change password
   static Future<void> changePassword({
     required int id,
     required String currentPassword,
@@ -313,10 +331,11 @@ class ApiService {
     final body = jsonEncode({
       'current_password': currentPassword,
       'new_password': newPassword,
+      'confirm_password': newPassword,
     });
 
-    final res = await http.patch(
-      Uri.parse('$baseUrl/users/$id/password'),
+    final res = await http.put(
+      Uri.parse('$baseUrl/change-password'),
       headers: _authHeaders(),
       body: body,
     );

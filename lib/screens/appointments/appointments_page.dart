@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
@@ -365,8 +367,67 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           children: [
             if (apt['payment_mode'] != null)
               _DetailChip(label: 'Mode', value: apt['payment_mode'].toString()),
-            if (apt['payment_receipt'] != null)
-              _DetailChip(label: 'Receipt', value: apt['payment_receipt'].toString()),
+            if (apt['payment_receipt'] != null) ...[
+              const SizedBox(height: 8),
+              const Text('Receipt Proof:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AppBar(
+                            title: const Text('Payment Receipt'),
+                            backgroundColor: const Color(0xFF5C3D2E),
+                            foregroundColor: Colors.white,
+                            automaticallyImplyLeading: false,
+                            actions: [
+                              IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ],
+                          ),
+                          InteractiveViewer(
+                            child: Image.memory(
+                              decodeReceiptImage(apt['payment_receipt'].toString()),
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Text('Invalid or corrupted image data'),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.memory(
+                      decodeReceiptImage(apt['payment_receipt'].toString()),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(child: Icon(Icons.broken_image, color: Colors.red));
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             if (apt['payment_amount'] != null)
               _DetailChip(label: 'Amount', value: 'Rs. ${apt['payment_amount']}'),
             const SizedBox(height: 6),
@@ -975,8 +1036,67 @@ class _AppointmentCard extends StatelessWidget {
                   if (appointment['payment_mode'] != null)
                     _InfoRow(icon: Icons.payment, text: 'Mode: ${appointment['payment_mode']}'),
                   if (appointment['payment_receipt'] != null) ...[
-                    const SizedBox(height: 4),
-                    _InfoRow(icon: Icons.receipt_outlined, text: 'Receipt: ${appointment['payment_receipt']}'),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppBar(
+                                  title: const Text('Payment Receipt'),
+                                  backgroundColor: const Color(0xFF5C3D2E),
+                                  foregroundColor: Colors.white,
+                                  automaticallyImplyLeading: false,
+                                  actions: [
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                                InteractiveViewer(
+                                  child: Image.memory(
+                                    decodeReceiptImage(appointment['payment_receipt'].toString()),
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Padding(
+                                        padding: EdgeInsets.all(20),
+                                        child: Text('Invalid or corrupted image data'),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF5C3D2E).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFF5C3D2E).withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.image, size: 16, color: Color(0xFF5C3D2E)),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'View Uploaded Payment Receipt',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF5C3D2E),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ],
               ),
@@ -1664,4 +1784,11 @@ class _SummaryRow extends StatelessWidget {
       ),
     );
   }
+}
+
+Uint8List decodeReceiptImage(String receiptStr) {
+  if (receiptStr.contains('base64,')) {
+    receiptStr = receiptStr.split('base64,').last;
+  }
+  return base64Decode(receiptStr.trim());
 }

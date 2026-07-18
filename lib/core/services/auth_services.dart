@@ -5,7 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data'; 
 
 class AuthService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = "http://insaaf.sandbox.pk";
   static final box = GetStorage();
 
   static Future<Map<String, dynamic>> login(
