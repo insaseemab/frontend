@@ -7,6 +7,7 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/notifications.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
@@ -29,258 +30,227 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const HomeScreen(),
     const LawyerFindScreen(),
     const CalendarScreen(isNested: true),
-    const ConversationsScreen(),
     const AppointmentsPage(role: AppointmentRole.client),
-    const ManageCasesPage(),
+    const ConversationScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-
-      // ───────── APP BAR ─────────
       appBar: AppBar(
-  backgroundColor: AppColors.beige,
-  elevation: 0,
-  title: Row(
-    children: [
-      Container(
-        height: 40,
-        width: 40,
-        decoration: BoxDecoration(
-          color: AppColors.beige,
-          borderRadius: BorderRadius.circular(10),
+        backgroundColor: AppColors.beige,
+        elevation: 0,
+        title: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              "Insaaf Connect",
+              style: TextStyle(
+                color: AppColors.darkBrown,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.asset('assets/images/logo.png', fit: BoxFit.cover),
-        ),
-      ),
-      const SizedBox(width: 10),
-      const Text(
-        "Insaaf Connect",
-        style: TextStyle(
-          color: AppColors.darkBrown,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-      ),
-    ],
-  ),
-  actions: [
-  if (currentIndex == 0)
-
-  // 🔔 Notification bell
-  Stack(
-    clipBehavior: Clip.none,
-    children: [
-      IconButton(
-        icon: const Icon(Icons.notifications, color: AppColors.darkBrown),
-        onPressed: () => Get.to(() => const NotificationsScreen()),
-      ),
-      // static badge dot — replace `true` with your unread check once wired up
-      Positioned(
-        right: 8,
-        top: 8,
-        child: Container(
-          height: 9,
-          width: 9,
-          decoration: const BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.circle,
+        actions: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: AppColors.darkBrown),
+                onPressed: () => Get.to(() => const NotificationsScreen()),
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  height: 9,
+                  width: 9,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+          IconButton(
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundColor: AppColors.darkBrown,
+              child: Icon(Icons.person, color: AppColors.white, size: 18),
+            ),
+            onPressed: () => Get.to(() => const ProfileScreen()),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
-    ],
-  ),
-
-  IconButton(
-    icon: const CircleAvatar(
-      radius: 16,
-      backgroundColor: AppColors.darkBrown,
-      child: Icon(Icons.person, color: AppColors.white, size: 18),
-    ),
-    onPressed: () => Get.to(() => const ProfileScreen()),
-  ),
-  const SizedBox(width: 8),
-],
-),
       drawer: Drawer(
         backgroundColor: AppColors.beige,
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: AppColors.darkBrown),
+            const DrawerHeader(
+              decoration: BoxDecoration(color: AppColors.darkBrown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     "Insaaf Connect",
                     style: TextStyle(
                       color: AppColors.white,
-                      fontSize: 18,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "Client",
+                    "Legal Portal",
                     style: TextStyle(
-                      color: AppColors.white.withOpacity(0.7),
-                      fontSize: 13,
+                      color: AppColors.white,
+                      fontSize: 14,
                     ),
                   ),
+                  SizedBox(height: 10),
                 ],
               ),
             ),
             ListTile(
               leading: const Icon(Icons.home, color: AppColors.darkBrown),
-              title: const Text("Home"),
+              title: const Text(
+                "Home",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onTap: () {
-                Get.back();
+                Navigator.pop(context);
                 setState(() => currentIndex = 0);
               },
             ),
             ListTile(
               leading: const Icon(Icons.search, color: AppColors.darkBrown),
-              title: const Text("Lawyer Find"),
+              title: const Text(
+                "Find Lawyer",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onTap: () {
-                Get.back();
+                Navigator.pop(context);
                 setState(() => currentIndex = 1);
               },
             ),
             ListTile(
-              leading: const Icon(
-                Icons.calendar_month,
-                color: AppColors.darkBrown,
+              leading: const Icon(Icons.calendar_month, color: AppColors.darkBrown),
+              title: const Text(
+                "My Calendar",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              title: const Text("My Calendar"),
               onTap: () {
-                Get.back();
+                Navigator.pop(context);
                 setState(() => currentIndex = 2);
               },
             ),
             ListTile(
               leading: const Icon(Icons.message, color: AppColors.darkBrown),
-              title: const Text("Messages"),
+              title: const Text(
+                "Messages",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onTap: () {
-                Get.back();
-                setState(() => currentIndex = 3);
+                Navigator.pop(context);
+                setState(() => currentIndex = 4);
               },
             ),
-
-            ListTile(
-              leading: const Icon(
-                Icons.calendar_today,
-                color: AppColors.darkBrown,
-              ), // ← fix icon
-              title: const Text("Appointments"),
-              onTap: () {
-                Get.to(
-                  () => const AppointmentsPage(role: AppointmentRole.client),
-                );
-                setState(() => currentIndex = 4); // ← this now works
-              },
-            ),
-
-            ListTile(
-              leading: const Icon(
-                Icons.calendar_today,
-                color: AppColors.darkBrown,
-              ), // ← fix icon
-              title: const Text("Cases"),
-              onTap: () {
-                Get.to(() => const ManageCasesPage());
-                setState(() => currentIndex = 5); // ← this now works
-              },
-            ),
-            const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: AppColors.darkBrown),
-              title: const Text("Logout"),
+              title: const Text(
+                "Logout",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onTap: () {
+                Navigator.pop(context);
+                final box = GetStorage();
+                box.erase();
                 Get.offAll(() => LoginScreen());
               },
             ),
           ],
         ),
       ),
-
-      // ───────── BODY ─────────
-      body: IndexedStack(index: currentIndex, children: pages),
-
-      // ───────── BOTTOM NAVIGATION ─────────
-      bottomNavigationBar: currentIndex >= 4
-          ? null
-          : Container(
-              decoration: const BoxDecoration(
-                color: AppColors.white,
-                border: Border(
-                  top: BorderSide(color: Color(0xFFEADDD0), width: 1),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x10000000),
-                    blurRadius: 10,
-                    offset: Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (index) => setState(() => currentIndex = index),
-                selectedItemColor: AppColors.darkBrown,
-                unselectedItemColor: AppColors.darkBrown,
-                backgroundColor: AppColors.beige,
-                type: BottomNavigationBarType.fixed,
-                elevation: 0,
-                selectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                ),
-                unselectedLabelStyle: const TextStyle(fontSize: 12),
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    activeIcon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.search_outlined),
-                    activeIcon: Icon(Icons.search),
-                    label: 'Lawyer Find',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.calendar_month_outlined),
-                    activeIcon: Icon(Icons.calendar_month),
-                    label: 'My Calendar',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.message_outlined),
-                    activeIcon: Icon(Icons.message),
-                    label: 'Messages',
-                  ),
-                ],
-              ),
+      body: pages[currentIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
             ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) => setState(() => currentIndex = index),
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: AppColors.darkBrown,
+          unselectedItemColor: AppColors.darkBrown,
+          backgroundColor: AppColors.beige,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Lawyers',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month_outlined),
+              activeIcon: Icon(Icons.calendar_month),
+              label: 'Calendar',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.assignment_outlined),
+              activeIcon: Icon(Icons.assignment),
+              label: 'Appointments',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message_outlined),
+              activeIcon: Icon(Icons.message),
+              label: 'Chat',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -300,6 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   String? errorMessage;
   List<dynamic> cases = [];
+  List<dynamic> appointments = [];
 
   final box = GetStorage();
   late final String userName;
@@ -307,7 +278,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    userName = box.read('userName') ?? "User";
+    final user = Map<String, dynamic>.from(box.read('user') ?? {});
+    userName = (user['name'] ?? box.read('userName') ?? "User").toString();
     _loadData();
   }
 
@@ -319,10 +291,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final String token = box.read('token') ?? '';
-      final result = await CasesService.fetchMyCases(token);
+      final results = await Future.wait([
+        CasesService.fetchMyCases(token),
+        ApiService.getMyAppointments(),
+      ]);
 
       setState(() {
-        cases = result;
+        cases = results[0];
+        appointments = results[1];
         isLoading = false;
       });
     } catch (e) {
@@ -385,7 +361,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.darkBrown));
+    }
+
+    if (errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text("Couldn't load dashboard: $errorMessage", style: const TextStyle(color: Colors.red)),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _loadData,
+              child: const Text("Retry"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final activeCases = cases.where((c) => c['case_status']?.toString().toLowerCase() != 'completed' && c['case_status']?.toString().toLowerCase() != 'closed').toList();
+
+    // Upcoming appointments count
+    final now = DateTime.now();
+    final upcomingAppointments = appointments.where((a) {
+      final startRaw = a['slot_start_time'];
+      if (startRaw == null) return false;
+      final start = DateTime.tryParse(startRaw.toString());
+      if (start == null) return false;
+      return start.isAfter(now);
+    }).toList();
+
+    // Calculate Client Spent
+    double totalSpent = 0;
+    double thisMonthSpent = 0;
+    for (final a in appointments) {
+      if (a['payment_status'] == 1) {
+        final double amt = double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
+        totalSpent += amt;
+        final startRaw = a['slot_start_time'];
+        if (startRaw != null) {
+          final start = DateTime.tryParse(startRaw.toString());
+          if (start != null && start.year == now.year && start.month == now.month) {
+            thisMonthSpent += amt;
+          }
+        }
+      }
+    }
+
     return RefreshIndicator(
+      color: AppColors.darkBrown,
       onRefresh: _loadData,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -393,76 +419,122 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Welcome Header ──
-            Text(
-              "Welcome Back, $userName!",
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3E2C23),
+            // ── Welcome banner ────────────────────────────────
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.darkBrown,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Welcome back, $userName",
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  const Text(
+                    "Track your active cases and legal appointments",
+                    style: TextStyle(color: AppColors.white),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              "Here's what's happening with your legal matters",
-              style: TextStyle(fontSize: 14, color: Color(0xFF8C7B6B)),
-            ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 20),
 
-            // ── Recent Cases ──
+            // ── Stat cards (Cases & Active Cases) ─────────────
+            SizedBox(
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard(
+                      "Total Cases",
+                      '${cases.length}',
+                      Icons.folder,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _statCard(
+                      "Active Cases",
+                      '${activeCases.length}',
+                      Icons.folder_open,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // ── Stat cards (Appointments) ────────────────────
+            SizedBox(
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard(
+                      "Appointments",
+                      '${appointments.length}',
+                      Icons.event,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _statCard(
+                      "Upcoming",
+                      '${upcomingAppointments.length}',
+                      Icons.upcoming,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // ── Spent cards ──────────────────────────────────
+            Row(
+              children: [
+                Expanded(
+                  child: _earningsCard(
+                    'PKR ${totalSpent.toStringAsFixed(0)}',
+                    'Total Consultation Fees',
+                    Icons.payments_outlined,
+                    AppColors.earningsOrange,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: _earningsCard(
+                    'PKR ${thisMonthSpent.toStringAsFixed(0)}',
+                    '${_monthName(DateTime.now().month)} ${DateTime.now().year} Fees',
+                    Icons.calendar_today_outlined,
+                    AppColors.earningsGreen,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // ── Recent Cases ──────────────────────────────────
             const Text(
               'Recent Cases',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF3E2C23),
+                color: AppColors.darkBrown,
               ),
             ),
-            const SizedBox(height: 14),
-
-            if (isLoading)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 30),
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.darkBrown),
-                ),
-              )
-            else if (errorMessage != null)
+            const SizedBox(height: 12),
+            if (cases.isEmpty)
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFDECEA),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFF5C6CB)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Couldn't load your cases.",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFC62828),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      errorMessage!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFC62828),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: _loadData,
-                      child: const Text("Retry"),
-                    ),
-                  ],
-                ),
-              )
-            else if (cases.isEmpty)
-              Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: AppColors.beige,
@@ -476,9 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             else
               Column(
-                children: List.generate(cases.length > 3 ? 3 : cases.length, (
-                  index,
-                ) {
+                children: List.generate(cases.length > 3 ? 3 : cases.length, (index) {
                   final c = Map<String, dynamic>.from(cases[index]);
                   final status = _caseStatus(c);
                   return Padding(
@@ -494,13 +564,119 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }),
               ),
-
-            const SizedBox(height: 28),
           ],
         ),
       ),
     );
   }
+
+  String _monthName(int month) {
+    const names = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return names[month - 1];
+  }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.beige,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.darkBrown.withOpacity(0.10),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 24, color: AppColors.darkBrown),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _earningsCard(String val, String lbl, IconData ic, Color bg) =>
+      Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(ic, size: 16, color: AppColors.white),
+                ),
+                Icon(
+                  Icons.north_east,
+                  size: 14,
+                  color: AppColors.white.withOpacity(0.5),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              val,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.white,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              lbl,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.white.withOpacity(0.75),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 // ════════════════════════════════════════════════
