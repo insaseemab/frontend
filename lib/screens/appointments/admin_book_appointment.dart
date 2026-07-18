@@ -194,7 +194,9 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Appointment booked successfully!')),
+        const SnackBar(content: Text('Appointment booked successfully!'),
+         backgroundColor: Color(0xFF2E7D32),
+         ),
       );
       Get.back(result: true);
     } on ApiException catch (e) {

@@ -184,7 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (result['success'] == true) {
       Get.snackbar(
         "Success",
-        "Account created! Welcome aboard.",
+        "Account created!",
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
         snackPosition: SnackPosition.BOTTOM,
