@@ -161,9 +161,6 @@ class ApiService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  // ── Internal: throw a meaningful error on non-2xx, even if the
-  // ── server responded with HTML instead of JSON (e.g. a 404/413/500
-  // ── error page) — this is what was causing the FormatException crash.
   static void _checkStatus(http.Response res) {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       String message = 'Unknown error';

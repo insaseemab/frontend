@@ -200,6 +200,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               leading: const Icon(Icons.logout, color: AppColors.darkBrown),
               title: const Text("Logout"),
               onTap: () {
+                GetStorage().erase();
                 Get.offAll(() => LoginScreen());
               },
             ),

@@ -346,6 +346,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             leading: const Icon(Icons.logout, color: AppColors.darkBrown),
             title: const Text("Logout"),
             onTap: () {
+              GetStorage().erase();
               Get.offAll(() => LoginScreen());
             },
           ),
