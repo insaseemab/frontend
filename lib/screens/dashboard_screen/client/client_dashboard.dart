@@ -31,7 +31,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const LawyerFindScreen(),
     const CalendarScreen(isNested: true),
     const AppointmentsPage(role: AppointmentRole.client),
-    const ConversationScreen(),
+    const ConversationsScreen(),
   ];
 
   @override

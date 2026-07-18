@@ -818,7 +818,6 @@ class _HomePageState extends State<_HomePage> {
         ),
       );
 }
-}
 
 class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
