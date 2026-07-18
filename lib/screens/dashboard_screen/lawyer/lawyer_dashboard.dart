@@ -344,9 +344,28 @@ class _HomePageState extends State<_HomePage> {
     }
 
     final todaysAppointments = _todaysAppointments;
-    final activeCases = cases.take(3).toList(); // show top 3 on dashboard
+    final activeCases = cases.where((c) => c['case_status']?.toString().toLowerCase() != 'completed' && c['case_status']?.toString().toLowerCase() != 'closed').toList();
+
+    // Calculate Lawyer Earnings
+    double totalEarnings = 0;
+    double thisMonthEarnings = 0;
+    final now = DateTime.now();
+    for (final a in appointments) {
+      if (a['payment_status'] == 1) {
+        final double amt = double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
+        totalEarnings += amt;
+        final startRaw = a['slot_start_time'];
+        if (startRaw != null) {
+          final start = DateTime.tryParse(startRaw.toString());
+          if (start != null && start.year == now.year && start.month == now.month) {
+            thisMonthEarnings += amt;
+          }
+        }
+      }
+    }
 
     return RefreshIndicator(
+      color: AppColors.darkBrown,
       onRefresh: loadDashboardData,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -354,104 +373,177 @@ class _HomePageState extends State<_HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome
-            Text(
-              "Welcome, Adv. ${widget.userName}",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            // ── Welcome banner ────────────────────────────────
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.darkBrown,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Welcome back, Adv. ${widget.userName}",
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  const Text(
+                    "Manage your legal practice and matters easily",
+                    style: TextStyle(color: AppColors.white),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              "You have ${todaysAppointments.length} appointment${todaysAppointments.length == 1 ? '' : 's'} scheduled for today",
-              style: const TextStyle(color: Colors.grey),
+            const SizedBox(height: 20),
+
+            // ── Stat cards (Cases & Active Cases) ─────────────
+            SizedBox(
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard(
+                      "Total Cases",
+                      '${cases.length}',
+                      Icons.folder,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _statCard(
+                      "Active Cases",
+                      '${activeCases.length}',
+                      Icons.folder_open,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 12),
 
-            const SizedBox(height: 24),
+            // ── Stat cards (Appointments) ────────────────────
+            SizedBox(
+              height: 100,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard(
+                      "Appointments",
+                      '${appointments.length}',
+                      Icons.event,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _statCard(
+                      "Today's Appointments",
+                      '${todaysAppointments.length}',
+                      Icons.today,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
 
-            // ── Active Cases + Today's Schedule side by side ──
+            // ── Earnings cards ───────────────────────────────
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // LEFT — Active Cases
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Active Cases",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (activeCases.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            "No active cases",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        )
-                      else
-                        ...activeCases.map(
-                          (c) => _caseCard(
-                            (c['name'] ?? c['title'] ?? 'Untitled Case')
-                                .toString(), // ⚠️ ADJUST
-                            (c['client_name'] ?? 'Client #${c['client_id']}')
-                                .toString(), // ⚠️ ADJUST
-                            (c['hearing_date'] ?? '—').toString(), // ⚠️ ADJUST
-                            (c['case_status'] ?? '—').toString(), // ⚠️ ADJUST
-                            _statusColor(c['case_status']?.toString()),
-                          ),
-                        ),
-                    ],
+                  child: _earningsCard(
+                    'PKR ${totalEarnings.toStringAsFixed(0)}',
+                    'Total Professional Earnings',
+                    Icons.attach_money,
+                    AppColors.earningsOrange,
                   ),
                 ),
-
-                const SizedBox(width: 16),
-
-                // RIGHT — Today's Schedule
+                const SizedBox(width: 14),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Today's Schedule",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (todaysAppointments.isEmpty)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            "No appointments today",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        )
-                      else
-                        ...todaysAppointments.map(
-                          (a) => _scheduleCard(
-                            _formatTime(a['slot_start_time']?.toString()),
-                            (a['case_type'] ??
-                                    a['short_description'] ??
-                                    'Appointment')
-                                .toString(), // ⚠️ ADJUST
-                            (a['client_name'] ?? 'Client #${a['client_id']}')
-                                .toString(), // ⚠️ ADJUST
-                            _formatDuration(
-                              a['slot_start_time']?.toString(),
-                              a['slot_end_time']?.toString(),
-                            ),
-                          ),
-                        ),
-                    ],
+                  child: _earningsCard(
+                    'PKR ${thisMonthEarnings.toStringAsFixed(0)}',
+                    '${_monthName(DateTime.now().month)} ${DateTime.now().year} Earnings',
+                    Icons.calendar_today_outlined,
+                    AppColors.earningsGreen,
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 24),
+
+            // ── Today's Schedule ──────────────────────────────
+            const Text(
+              "Today's Schedule",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColors.darkBrown,
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (todaysAppointments.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "No appointments scheduled for today.",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              )
+            else
+              Column(
+                children: todaysAppointments.map(
+                  (a) => _scheduleCard(
+                    _formatTime(a['slot_start_time']?.toString()),
+                    (a['case_type'] ??
+                            a['short_description'] ??
+                            'Appointment')
+                        .toString(),
+                    (a['client_name'] ?? 'Client #${a['client_id']}')
+                        .toString(),
+                    _formatDuration(
+                      a['slot_start_time']?.toString(),
+                      a['slot_end_time']?.toString(),
+                    ),
+                  ),
+                ).toList(),
+              ),
+            const SizedBox(height: 24),
+
+            // ── Active Cases ──────────────────────────────────
+            const Text(
+              "Active Cases",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColors.darkBrown,
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (activeCases.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  "No active cases.",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              )
+            else
+              Column(
+                children: activeCases.take(3).map(
+                  (c) => _caseCard(
+                    (c['name'] ?? c['title'] ?? 'Untitled Case').toString(),
+                    (c['client_name'] ?? 'Client #${c['client_id']}').toString(),
+                    (c['hearing_date'] ?? '—').toString(),
+                    (c['case_status'] ?? '—').toString(),
+                    _statusColor(c['case_status']?.toString()),
+                  ),
+                ).toList(),
+              ),
           ],
         ),
       ),
@@ -617,6 +709,114 @@ class _HomePageState extends State<_HomePage> {
       ),
     );
   }
+
+  String _monthName(int month) {
+    const names = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return names[month - 1];
+  }
+
+  Widget _statCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.beige,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.darkBrown.withOpacity(0.10),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 24, color: AppColors.darkBrown),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _earningsCard(String val, String lbl, IconData ic, Color bg) =>
+      Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withOpacity(0.18),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(ic, size: 16, color: AppColors.white),
+                ),
+                Icon(
+                  Icons.north_east,
+                  size: 14,
+                  color: AppColors.white.withOpacity(0.5),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              val,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: AppColors.white,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              lbl,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.white.withOpacity(0.75),
+              ),
+            ),
+          ],
+        ),
+      );
 }
 
 class _MessagesPage extends StatefulWidget {

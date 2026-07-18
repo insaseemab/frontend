@@ -30,13 +30,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _loadUser() {
-    user = Map<String, dynamic>.from(box.read('user') ?? {});
+    final rawUser = box.read('user');
+    if (rawUser is Map) {
+      user = Map<String, dynamic>.from(rawUser);
+    } else {
+      user = {};
+    }
+    if (user['name'] == null && box.read('userName') != null) {
+      user['name'] = box.read('userName');
+    }
+    if (user['id'] == null && box.read('userId') != null) {
+      user['id'] = box.read('userId');
+    }
     role = (box.read('role') ?? user['role'] ?? '').toString();
+  }
+
+  int get _userId {
+    final dynamic rawId = user['id'] ?? box.read('userId');
+    if (rawId == null) return 0;
+    return int.tryParse(rawId.toString()) ?? 0;
   }
 
   Future<void> _openEditSheet() async {
     final nameCtrl = TextEditingController(
-      text: (user['name'] ?? '').toString(),
+      text: (user['name'] ?? box.read('userName') ?? '').toString(),
     );
     final emailCtrl = TextEditingController(
       text: (user['email'] ?? '').toString(),
@@ -77,14 +94,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Edit Profile',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: darkBrown,
-                  ),
-                ),
+                Text('Edit Profile',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
                 const SizedBox(height: 16),
                 TextField(
                   controller: nameCtrl,
@@ -111,9 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: specCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Specialization',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Specialization'),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -144,10 +153,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await _saveProfile(updatedData);
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
-                    child: const Text(
-                      'Save Changes',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: const Text('Save Changes',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -182,21 +189,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Change Password',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: darkBrown,
-                  ),
-                ),
+                Text('Change Password',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
                 const SizedBox(height: 16),
                 TextField(
                   controller: currentCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Current Password',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Current Password'),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -208,9 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextField(
                   controller: confirmCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm New Password',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -258,7 +255,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String newPassword,
   ) async {
     try {
-      final userId = user['id'] as int;
+      final userId = _userId;
+      if (userId == 0) {
+        Get.snackbar('Error', 'User ID not found. Please log in again.');
+        return;
+      }
       await ApiService.changePassword(
         id: userId,
         currentPassword: currentPassword,
@@ -274,7 +275,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _saveProfile(Map<String, dynamic> updatedData) async {
     try {
-      final userId = user['id'] as int;
+      final userId = _userId;
+      if (userId == 0) {
+        Get.snackbar('Error', 'User ID not found. Please log in again.');
+        return;
+      }
       final response = await ApiService.updateProfile(
         id: userId,
         data: updatedData,
@@ -282,6 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       final newUser = {...user, ...response};
       await box.write('user', newUser);
+      if (newUser['name'] != null) {
+        await box.write('userName', newUser['name'].toString());
+      }
       setState(() {
         user = newUser;
       });
