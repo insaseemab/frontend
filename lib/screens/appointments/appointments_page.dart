@@ -172,7 +172,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   if (!mounted) return;
                   _load();
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Appointment updated successfully')),
+                    const SnackBar(content: Text('Appointment updated successfully'),
+                    backgroundColor:Color(0xFF2E7D32)),
                   );
                 } on ApiException catch (e) {
                   if (!mounted) return;
