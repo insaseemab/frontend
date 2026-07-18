@@ -4,7 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data';
 
 class ApiService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = "http://insaaf.sandbox.pk";
 
   static final _box = GetStorage();
 

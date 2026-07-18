@@ -35,14 +35,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _openEditSheet() async {
-    final nameCtrl = TextEditingController(text: (user['name'] ?? '').toString());
-    final emailCtrl = TextEditingController(text: (user['email'] ?? '').toString());
-    final phoneCtrl = TextEditingController(text: (user['phone'] ?? '').toString());
-    final locationCtrl = TextEditingController(text: (user['location'] ?? '').toString());
+    final nameCtrl = TextEditingController(
+      text: (user['name'] ?? '').toString(),
+    );
+    final emailCtrl = TextEditingController(
+      text: (user['email'] ?? '').toString(),
+    );
+    final phoneCtrl = TextEditingController(
+      text: (user['phone'] ?? '').toString(),
+    );
+    final locationCtrl = TextEditingController(
+      text: (user['location'] ?? '').toString(),
+    );
 
     // Lawyer-only fields
-    final specCtrl = TextEditingController(text: (user['specialization'] ?? '').toString());
-    final expCtrl = TextEditingController(text: (user['experience'] ?? '').toString());
+    final specCtrl = TextEditingController(
+      text: (user['specialization'] ?? '').toString(),
+    );
+    final expCtrl = TextEditingController(
+      text: (user['experience'] ?? '').toString(),
+    );
 
     final isLawyer = role.toLowerCase() == 'lawyer';
 
@@ -65,8 +77,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Edit Profile',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: darkBrown,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: nameCtrl,
@@ -93,7 +111,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: specCtrl,
-                    decoration: const InputDecoration(labelText: 'Specialization'),
+                    decoration: const InputDecoration(
+                      labelText: 'Specialization',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -124,8 +144,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await _saveProfile(updatedData);
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
-                    child: const Text('Save Changes',
-                        style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Save Changes',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -160,13 +182,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Change Password',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                Text(
+                  'Change Password',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: darkBrown,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: currentCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Current Password'),
+                  decoration: const InputDecoration(
+                    labelText: 'Current Password',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -178,7 +208,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 TextField(
                   controller: confirmCtrl,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm New Password',
+                  ),
                 ),
                 const SizedBox(height: 20),
                 SizedBox(
@@ -196,7 +228,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Get.snackbar('Error', 'New passwords do not match');
                         return;
                       }
-                      if (newCtrl.text.trim().isEmpty || currentCtrl.text.trim().isEmpty) {
+                      if (newCtrl.text.trim().isEmpty ||
+                          currentCtrl.text.trim().isEmpty) {
                         Get.snackbar('Error', 'Please fill in all fields');
                         return;
                       }
@@ -206,8 +239,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
-                    child: const Text('Update Password',
-                        style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Update Password',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -218,7 +253,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Future<void> _changePassword(String currentPassword, String newPassword) async {
+  Future<void> _changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     try {
       final userId = user['id'] as int;
       await ApiService.changePassword(
@@ -271,11 +309,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text(
               'Profile',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: darkBrown,
+              ),
             ),
             Text(
               'Manage your account',
-              style: TextStyle(fontSize: 12, color: muted, fontWeight: FontWeight.normal),
+              style: TextStyle(
+                fontSize: 12,
+                color: muted,
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ],
         ),
@@ -301,7 +347,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -309,25 +358,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        Text(
+                          name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                         const SizedBox(height: 2),
                         Text(
-                          role.isNotEmpty ? role[0].toUpperCase() + role.substring(1) : '',
-                          style: const TextStyle(color: Colors.grey, fontSize: 13),
+                          role.isNotEmpty
+                              ? role[0].toUpperCase() + role.substring(1)
+                              : '',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   OutlinedButton.icon(
                     onPressed: _openEditSheet,
-                    icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.white),
-                    label: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Edit Profile',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: OutlinedButton.styleFrom(
                       backgroundColor: mediumBrown,
                       side: BorderSide.none,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                 ],
@@ -348,8 +419,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Personal Information',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: darkBrown)),
+                  Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: darkBrown,
+                    ),
+                  ),
                   const SizedBox(height: 14),
                   _infoField(Icons.person_outline, 'Full Name', name),
                   const SizedBox(height: 12),
@@ -362,14 +439,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // ── Lawyer-only fields ──
                   if (role.toLowerCase() == 'lawyer') ...[
                     const SizedBox(height: 12),
-                    _infoField(Icons.gavel, 'Specialization',
-                        (user['specialization'] ?? 'Not provided').toString()),
+                    _infoField(
+                      Icons.gavel,
+                      'Specialization',
+                      (user['specialization'] ?? 'Not provided').toString(),
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(Icons.work_outline, 'Experience',
-                        (user['experience'] ?? 'Not provided').toString()),
+                    _infoField(
+                      Icons.work_outline,
+                      'Experience',
+                      (user['experience'] ?? 'Not provided').toString(),
+                    ),
                     const SizedBox(height: 12),
-                    _infoField(Icons.folder_outlined, 'Cases Handled',
-                        (user['cases'] ?? 'Not provided').toString()),
+                    _infoField(
+                      Icons.folder_outlined,
+                      'Cases Handled',
+                      (user['cases'] ?? 'Not provided').toString(),
+                    ),
                   ],
                 ],
               ),
@@ -395,8 +481,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Icon(Icons.edit_outlined, size: 16, color: mediumBrown),
                       SizedBox(width: 8),
-                      Text('Change Password',
-                          style: TextStyle(color: mediumBrown, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Change Password',
+                        style: TextStyle(
+                          color: mediumBrown,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -414,11 +505,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Get.offAll(() => LoginScreen());
                 },
                 icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text('Logout', style: TextStyle(color: Colors.red)),
+                label: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red),
+                ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: Colors.red),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -448,8 +544,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(label, style: TextStyle(fontSize: 11, color: muted)),
                 const SizedBox(height: 2),
-                Text(value,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: darkBrown)),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: darkBrown,
+                  ),
+                ),
               ],
             ),
           ),
