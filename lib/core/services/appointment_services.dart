@@ -6,11 +6,7 @@ import 'api_services.dart';
 class AppointmentService {
   static const String baseUrl = ApiService.baseUrl;
 
-  // ════════════════════════════════════════════════
-  //  APPOINTMENT ENDPOINTS
-  // ════════════════════════════════════════════════
-
-  /// GET /appointments  — all appointments (admin)
+  
   static Future<List<dynamic>> getAllAppointments() async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments'),
@@ -20,7 +16,6 @@ class AppointmentService {
     return jsonDecode(res.body) as List<dynamic>;
   }
 
-  /// GET /appointments/:id
   static Future<Map<String, dynamic>> getAppointmentById(int id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/$id'),
@@ -30,7 +25,6 @@ class AppointmentService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  /// GET /appointments/filter?status=pending|accepted|rejected
   static Future<List<dynamic>> getAppointmentsByStatus(String status) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/filter?status=$status'),
@@ -40,7 +34,6 @@ class AppointmentService {
     return jsonDecode(res.body) as List<dynamic>;
   }
 
-  /// GET /appointments/client/:clientId
   static Future<List<dynamic>> getAppointmentsByClient(int clientId) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/client/$clientId'),
@@ -50,7 +43,6 @@ class AppointmentService {
     return jsonDecode(res.body) as List<dynamic>;
   }
 
-  /// POST /appointments  — requires auth
   static Future<Map<String, dynamic>> createAppointment({
     required int lawyerId,
     required String lawType,
@@ -83,7 +75,6 @@ class AppointmentService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  /// PUT /appointments/:id  — requires auth
   static Future<Map<String, dynamic>> updateAppointment({
     required int id,
     required int lawyerId,
@@ -118,7 +109,6 @@ class AppointmentService {
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
-  /// DELETE /appointments/:id  — requires auth
   static Future<void> deleteAppointment(int id) async {
     final res = await http.delete(
       Uri.parse('$baseUrl/appointments/$id'),
@@ -127,10 +117,10 @@ class AppointmentService {
     ApiService.checkStatus(res);
   }
 
-  /// PATCH /appointments/:id/status/:status  — requires auth
+
   static Future<Map<String, dynamic>> updateAppointmentStatus({
     required int id,
-    required String status, // pending | accepted | rejected
+    required String status,
     double? paymentAmount,
   }) async {
     final body = jsonEncode({
@@ -175,7 +165,6 @@ class AppointmentService {
     ApiService.checkStatus(res);
   }
 
-  /// GET /appointments/mine — role-based (client/lawyer/admin)
   static Future<List<dynamic>> getMyAppointments() async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/mine'),
@@ -185,7 +174,6 @@ class AppointmentService {
     return jsonDecode(res.body) as List<dynamic>;
   }
 
-  /// PATCH /appointments/:id/pay
   static Future<void> payAppointment(
     int appointmentId,
     String paymentMethod,
@@ -213,9 +201,6 @@ class AppointmentService {
         final decoded = jsonDecode(res.body);
         message = decoded['error'] ?? message;
       } catch (_) {
-        // Server returned non-JSON (most likely an HTML error page —
-        // commonly a 413 Payload Too Large if the screenshot is large,
-        // since it's base64-encoded inline in the JSON body).
         if (res.statusCode == 413) {
           message =
               'Screenshot is too large to upload. Please choose a smaller image.';
@@ -235,7 +220,6 @@ class AppointmentService {
     ApiService.checkStatus(res);
   }
 
-  /// POST /appointments/:id/convert-to-case
   static Future<int> convertToCase({required int id}) async {
     final res = await http.post(
       Uri.parse('$baseUrl/appointments/$id/convert-to-case'),

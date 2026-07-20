@@ -5,17 +5,12 @@ import 'package:get_storage/get_storage.dart';
 class LawyerService {
   static const String _baseUrl = 'http://localhost:3000';
 
-  // ─────────────────────────────────────────
-  // GET TOKEN
-  // ─────────────────────────────────────────
+  
   String? _getToken() {
     final box = GetStorage();
     return box.read('token');
   }
 
-  // ─────────────────────────────────────────
-  // 1. GET ALL LAWYERS
-  // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> fetchLawyers() async {
     try {
       final response = await http.get(
@@ -37,9 +32,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 2. GET SINGLE LAWYER BY ID
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> fetchLawyerById(int id) async {
     try {
       final response = await http.get(
@@ -62,9 +54,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 3. CREATE LAWYER
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> createLawyer({
     required String name,
     required String email,
@@ -107,9 +96,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 4. UPDATE LAWYER
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> updateLawyer({
     required int id,
     required String name,
@@ -154,9 +140,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 5. DELETE LAWYER
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> deleteLawyer(int id) async {
     try {
       final response = await http.delete(
@@ -179,9 +162,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 6. SEARCH BY SPECIALIZATION
-  // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> searchLawyersBySpecialization(
     String specialization,
   ) async {
@@ -200,9 +180,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 7. SEARCH BY LOCATION
-  // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> searchLawyersByLocation(
     String location,
   ) async {
@@ -220,9 +197,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 8. GET LAWYERS SORTED BY RATING
-  // ─────────────────────────────────────────
   Future<List<Map<String, dynamic>>> fetchLawyersSortedByRating() async {
     try {
       final allLawyers = await fetchLawyers();
@@ -237,9 +211,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 9. APPROVE LAWYER
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> approveLawyer(int id) async {
     try {
       final response = await http.patch(
@@ -262,9 +233,6 @@ class LawyerService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // 10. DISAPPROVE LAWYER
-  // ─────────────────────────────────────────
   Future<Map<String, dynamic>> disapproveLawyer(int id) async {
     try {
       final response = await http.patch(

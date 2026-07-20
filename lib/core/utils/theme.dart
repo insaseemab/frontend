@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  INSAAF CONNECT — APP THEME
-// ─────────────────────────────────────────────────────────────────────────────
-
 class AppColors {
   AppColors._();
 
-  // ── Core Palette ────────────────────────────────────────────
   static const Color darkBrown = Color(0xFF795548); // matches Colors.brown
   static const Color sageGreen = Color(0xFFB0BA99);
   static const Color mediumBrown = Color(0xFF9D6638);
@@ -17,18 +12,14 @@ class AppColors {
   static const Color white = Colors.white;
   static const Color black = Colors.black;
 
-  // ── Dashboard accent colors (exact match to approved design) ──
   static const Color earningsOrange = Color(0xFFC48A6A);
   static const Color earningsGreen = Color(0xFF6B7D6B);
 
-  // ── Semantic ─────────────────────────────────────────────────
   static const Color success = Color(0xFF2E7D32);
   static const Color error = Color(0xFFB3261E);
   static const Color warning = Color(0xFFF57C00);
   static const Color info = Color(0xFF1565C0);
 
-  // ── Translucent helpers (use .withOpacity on the base colors
-  //    where needed, but these constants cover the most common values)
   static Color cardFill = beige.withOpacity(0.90);
   static Color cardBorder = borderBrown.withOpacity(0.35);
   static Color inputFill = beige.withOpacity(0.70);
@@ -41,21 +32,15 @@ class AppColors {
   static Color divider = darkBrown.withOpacity(0.15);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  GRADIENTS
-// ─────────────────────────────────────────────────────────────────────────────
-
 class AppGradients {
   AppGradients._();
 
-  /// Used on Splash, Login, Register, ForgotPassword, Dashboard background, etc.
   static const LinearGradient background = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [AppColors.sageGreen, AppColors.mediumBrown],
   );
 
-  /// Subtle overlay for cards / containers that need a tinted gradient.
   static LinearGradient cardOverlay = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -66,14 +51,9 @@ class AppGradients {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  TEXT STYLES
-// ─────────────────────────────────────────────────────────────────────────────
-
 class AppTextStyles {
   AppTextStyles._();
 
-  // ── Headings ─────────────────────────────────────────────────
   static const TextStyle heading1 = TextStyle(
     fontSize: 26,
     fontWeight: FontWeight.bold,
@@ -101,7 +81,6 @@ class AppTextStyles {
     color: AppColors.darkBrown,
   );
 
-  // ── Body ─────────────────────────────────────────────────────
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 14,
     color: AppColors.darkBrown,
@@ -120,7 +99,6 @@ class AppTextStyles {
     height: 1.4,
   );
 
-  // ── Labels ───────────────────────────────────────────────────
   static const TextStyle label = TextStyle(
     fontSize: 13.5,
     fontWeight: FontWeight.w600,
@@ -138,7 +116,6 @@ class AppTextStyles {
     color: AppColors.darkBrown.withOpacity(0.60),
   );
 
-  // ── Button ───────────────────────────────────────────────────
   static const TextStyle button = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w600,
@@ -146,7 +123,6 @@ class AppTextStyles {
     letterSpacing: 0.3,
   );
 
-  // ── Section titles (Admin / Notification Settings) ────────────
   static TextStyle sectionTitle = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w700,
@@ -154,7 +130,6 @@ class AppTextStyles {
     letterSpacing: 0.3,
   );
 
-  // ── Splash ───────────────────────────────────────────────────
   static const TextStyle splashTitle = TextStyle(
     fontFamily: 'Poppins',
     fontSize: 56,
@@ -180,10 +155,6 @@ class AppTextStyles {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  DECORATION HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
 class AppDecorations {
   AppDecorations._();
 
@@ -201,36 +172,28 @@ class AppDecorations {
     ],
   );
 
-  /// Input field container — Login, Register, ForgotPassword, ChangePassword.
   static BoxDecoration inputField = BoxDecoration(
     color: AppColors.inputFill,
     borderRadius: BorderRadius.circular(10),
     border: Border.all(color: AppColors.inputBorder),
   );
 
-  /// Pill / chip container (language toggle, filter chips).
   static BoxDecoration pill = BoxDecoration(
     color: AppColors.overlayLight,
     borderRadius: BorderRadius.circular(20),
     border: Border.all(color: AppColors.mediumBrown.withOpacity(0.50)),
   );
 
-  /// Back-button / icon-button container.
   static BoxDecoration iconButton = BoxDecoration(
     color: AppColors.beige.withOpacity(0.40),
     borderRadius: BorderRadius.circular(10),
     border: Border.all(color: AppColors.mediumBrown.withOpacity(0.50)),
   );
 
-  /// Full-screen gradient background (wrap the entire Scaffold body).
   static const BoxDecoration gradientBackground = BoxDecoration(
     gradient: AppGradients.background,
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-//  BUTTON STYLE
-// ─────────────────────────────────────────────────────────────────────────────
 
 class AppButtonStyles {
   AppButtonStyles._();
@@ -247,7 +210,7 @@ class AppButtonStyles {
     ),
   );
 
-  /// Text / ghost button (e.g., "Forgot Password?", "Back to Sign In").
+
   static ButtonStyle ghost = TextButton.styleFrom(
     padding: EdgeInsets.zero,
     minimumSize: Size.zero,
@@ -256,16 +219,12 @@ class AppButtonStyles {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  MATERIAL THEME DATA
-// ─────────────────────────────────────────────────────────────────────────────
 
 ThemeData get appTheme {
   return ThemeData(
     useMaterial3: true,
     fontFamily: 'Poppins',
 
-    // ── Color scheme ──────────────────────────────────────────
     colorScheme: ColorScheme.light(
       primary: AppColors.darkBrown,
       secondary: AppColors.mediumBrown,
@@ -278,7 +237,6 @@ ThemeData get appTheme {
 
     scaffoldBackgroundColor: AppColors.white,
 
-    // ── AppBar ────────────────────────────────────────────────
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.beige,
       elevation: 0,
@@ -296,7 +254,6 @@ ThemeData get appTheme {
       ),
     ),
 
-    // ── Input decoration ──────────────────────────────────────
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.beige.withOpacity(0.55),
@@ -328,15 +285,12 @@ ThemeData get appTheme {
       ),
     ),
 
-    // ── Elevated button ───────────────────────────────────────
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: AppButtonStyles.primary,
     ),
 
-    // ── Text button ───────────────────────────────────────────
     textButtonTheme: TextButtonThemeData(style: AppButtonStyles.ghost),
 
-    // ── Checkbox ──────────────────────────────────────────────
     checkboxTheme: CheckboxThemeData(
       checkColor: WidgetStateProperty.all(AppColors.white),
       fillColor: WidgetStateProperty.resolveWith((states) {
@@ -352,7 +306,6 @@ ThemeData get appTheme {
       visualDensity: VisualDensity.compact,
     ),
 
-    // ── Switch ────────────────────────────────────────────────
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return AppColors.white;
@@ -367,14 +320,12 @@ ThemeData get appTheme {
       trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
     ),
 
-    // ── Divider ───────────────────────────────────────────────
     dividerTheme: DividerThemeData(
       color: AppColors.darkBrown.withOpacity(0.15),
       thickness: 1,
       space: 1,
     ),
 
-    // ── Snackbar ──────────────────────────────────────────────
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.beige.withOpacity(0.97),
       contentTextStyle: AppTextStyles.bodyLarge.copyWith(
@@ -384,19 +335,16 @@ ThemeData get appTheme {
       behavior: SnackBarBehavior.floating,
     ),
 
-    // ── Progress indicator ────────────────────────────────────
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.darkBrown,
       linearMinHeight: 2.5,
     ),
 
-    // ── Icon ──────────────────────────────────────────────────
     iconTheme: IconThemeData(
       color: AppColors.darkBrown.withOpacity(0.75),
       size: 20,
     ),
 
-    // ── Bottom navigation ─────────────────────────────────────
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: AppColors.white,
       indicatorColor: AppColors.navActive,

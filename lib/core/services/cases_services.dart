@@ -28,9 +28,7 @@ class CasesService {
   }
 }
 
-  // ─────────────────────────────────────────
-  // GET ALL LAWYERS (for dropdown)
-  // ─────────────────────────────────────────
+  
   static Future<List<Map<String, dynamic>>> fetchLawyers() async {
     try {
       final response = await http.get(
@@ -49,9 +47,6 @@ class CasesService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // GET ALL CLIENTS (for dropdown)
-  // ─────────────────────────────────────────
   static Future<List<Map<String, dynamic>>> fetchClients() async {
     try {
       final response = await http.get(
@@ -70,9 +65,6 @@ class CasesService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // CREATE new case
-  // ─────────────────────────────────────────
   static Future<void> createCase({
     required String descriptionCase,
     required String clientId,
@@ -85,7 +77,7 @@ class CasesService {
     required String caseStatus,
     required String departConcern,
     required String hearingDate,
-    required int paymentStatus, // ← int
+    required int paymentStatus,
     required String token,
   }) async {
     final response = await http.post(
@@ -106,7 +98,7 @@ class CasesService {
         "case_status": caseStatus,
         "depart_concern": departConcern,
         "hearing_date": hearingDate,
-        "payment_status": paymentStatus, // ← sent as int
+        "payment_status": paymentStatus, 
       }),
     );
 
@@ -115,9 +107,6 @@ class CasesService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // UPDATE case
-  // ─────────────────────────────────────────
   static Future<void> updateCase({
   required int id,
   required String name,
@@ -129,7 +118,7 @@ class CasesService {
   required String caseStartDate,
   required String departConcern,
   required String hearingDate,
-  required int paymentStatus,   // ← changed from String to int
+  required int paymentStatus,   
   required String token,
 }) async {
   final response = await http.put(
@@ -148,7 +137,7 @@ class CasesService {
       "case_start_date": caseStartDate,
       "depart_concern": departConcern,
       "hearing_date": hearingDate,
-      "payment_status": paymentStatus,   // now sent as int
+      "payment_status": paymentStatus,   
     }),
   );
 
@@ -156,9 +145,7 @@ class CasesService {
     throw Exception('Failed to update case: ${response.body}');
   }
 }
-  // ─────────────────────────────────────────
-  // GET MY CASES
-  // ─────────────────────────────────────────
+  
   static Future<List<dynamic>> fetchMyCases(String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/cases/mine'),

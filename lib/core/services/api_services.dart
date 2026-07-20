@@ -11,20 +11,14 @@ class ApiService {
   static void saveToken(String token) => _box.write('token', token);
   static void removeToken() => _box.remove('token');
 
-  /// Shared auth headers — used by ApiService and other services
-  /// (e.g. AppointmentService) that need authenticated requests.
   static Map<String, String> authHeaders() {
     final token = getToken();
-    print('Token: $token');
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 
-  // ── Shared: throw a meaningful error on non-2xx, even if the
-  // ── server responded with HTML instead of JSON (e.g. a 404/413/500
-  // ── error page).
   static void checkStatus(http.Response res) {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       String message = 'Unknown error';
@@ -44,16 +38,10 @@ class ApiService {
     }
   }
 
-  // ════════════════════════════════════════════════
-  //  PROFILE / USER ENDPOINTS
-  // ════════════════════════════════════════════════
-
-  /// PUT /edit-profile & /update-profile — update profile
   static Future<Map<String, dynamic>> updateProfile({
     required int id,
     required Map<String, dynamic> data,
   }) async {
-    // 1. Update basic profile for all roles
     final basicRes = await http.put(
       Uri.parse('$baseUrl/edit-profile'),
       headers: authHeaders(),
@@ -66,7 +54,6 @@ class ApiService {
     );
     checkStatus(basicRes);
 
-    // 2. Update lawyer specific profile if fields exist
     if (data.containsKey('specialization') || data.containsKey('experience')) {
       final lawyerRes = await http.put(
         Uri.parse('$baseUrl/update-profile'),
@@ -83,7 +70,6 @@ class ApiService {
     return data;
   }
 
-  /// PUT /change-password — change password
   static Future<void> changePassword({
     required int id,
     required String currentPassword,
@@ -99,6 +85,51 @@ class ApiService {
       Uri.parse('$baseUrl/change-password'),
       headers: authHeaders(),
       body: body,
+    );
+    checkStatus(res);
+  }
+
+  // ════════════════════════════════════════════════
+  //  STRIPE PAYMENT ENDPOINTS
+  // ════════════════════════════════════════════════
+
+  /// Returns both 'clientSecret' (to show/confirm the card form) and
+  /// 'paymentIntentId' (save this in the widget — needed later for
+  /// the /confirm-payment call).
+  static Future<Map<String, String>> createStripePaymentIntent(
+    int appointmentId,
+    num amount, {
+    String currency = "usd",
+  }) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/api/create-payment-intent'),
+      headers: authHeaders(),
+      body: jsonEncode({
+        'appointmentId': appointmentId,
+        'amount': (amount * 100).round(), // smallest currency unit
+        'currency': currency,
+      }),
+    );
+    checkStatus(res);
+
+    final data = jsonDecode(res.body);
+    return {
+      'clientSecret': data['clientSecret'],
+      'paymentIntentId': data['paymentIntentId'],
+    };
+  }
+
+  static Future<void> confirmAppointmentPayment(
+    int appointmentId,
+    String paymentIntentId,
+  ) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/api/confirm-payment'),
+      headers: authHeaders(),
+      body: jsonEncode({
+        'appointmentId': appointmentId,
+        'paymentIntentId': paymentIntentId,
+      }),
     );
     checkStatus(res);
   }
