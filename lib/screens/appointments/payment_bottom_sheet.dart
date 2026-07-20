@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/services/appointment_services.dart';
 import 'package:get/get.dart';
@@ -14,16 +15,20 @@ class PaymentBottomSheet extends StatefulWidget {
 }
 
 class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
-  String selectedMethod = "Manual";
-
+  String selectedMethod = "Cash";
   Uint8List? screenshotBytes;
   String? screenshotName;
   bool _isSubmitting = false;
 
+  final _cardFormController = CardFormEditController();
+
+  @override
+  void dispose() {
+    _cardFormController.dispose();
+    super.dispose();
+  }
+
   Future pickImage() async {
-    // Compress + downscale on pick so the base64 payload sent to the
-    // backend stays well under typical body-size limits (this is what
-    // was causing the server to return an HTML 413 error page).
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 1080,
@@ -43,11 +48,15 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     setState(() => _isSubmitting = true);
 
     try {
-      await ApiService.payAppointment(
-        widget.appointment['id'],
-        selectedMethod,
-        screenshotBytes,
-      );
+      if (selectedMethod == "Card") {
+        await _submitStripePayment();
+      } else {
+        await AppointmentService.payAppointment(
+          widget.appointment['id'],
+          selectedMethod,
+          screenshotBytes,
+        );
+      }
 
       Get.back();
 
@@ -61,6 +70,36 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
+  }
+
+  Future<void> _submitStripePayment() async {
+    if (!_cardFormController.details.complete) {
+      throw "Please complete the card details";
+    }
+
+    
+    final clientSecret = await AppointmentService.createStripePaymentIntent(
+      widget.appointment['id'],
+      widget.appointment['payment_amount'],
+    );
+
+
+    final paymentIntent = await Stripe.instance.confirmPayment(
+      paymentIntentClientSecret: clientSecret,
+      data: const PaymentMethodParams.card(
+        paymentMethodData: PaymentMethodData(),
+      ),
+    );
+
+    if (paymentIntent.status != PaymentIntentsStatus.Succeeded) {
+      throw "Payment was not completed";
+    }
+
+    
+    await AppointmentService.confirmAppointmentPayment(
+      widget.appointment['id'],
+      paymentIntent.id,
+    );
   }
 
   @override
@@ -111,13 +150,13 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedMethod = "Manual";
+                      selectedMethod = "Cash";
                     });
                   },
                   child: Container(
                     height: 120,
                     decoration: BoxDecoration(
-                      color: selectedMethod == "Manual"
+                      color: selectedMethod == "Cash"
                           ? const Color(0xFF5C3D2E)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -127,15 +166,15 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                       children: [
                         Icon(
                           Icons.upload,
-                          color: selectedMethod == "Manual"
+                          color: selectedMethod == "Cash"
                               ? Colors.white
                               : Colors.black,
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          "Manual Payment",
+                          "Cash Payment",
                           style: TextStyle(
-                            color: selectedMethod == "Manual"
+                            color: selectedMethod == "Cash"
                                 ? Colors.white
                                 : Colors.black,
                           ),
@@ -152,13 +191,13 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      selectedMethod = "Stripe";
+                      selectedMethod = "Card";
                     });
                   },
                   child: Container(
                     height: 120,
                     decoration: BoxDecoration(
-                      color: selectedMethod == "Stripe"
+                      color: selectedMethod == "Card"
                           ? const Color(0xFF5C3D2E)
                           : Colors.white,
                       borderRadius: BorderRadius.circular(15),
@@ -168,15 +207,15 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                       children: [
                         Icon(
                           Icons.payment_outlined,
-                          color: selectedMethod == "Stripe"
+                          color: selectedMethod == "Card"
                               ? Colors.white
                               : Colors.black,
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          "Stripe",
+                          "Card",
                           style: TextStyle(
-                            color: selectedMethod == "Stripe"
+                            color: selectedMethod == "Card"
                                 ? Colors.white
                                 : Colors.black,
                           ),
@@ -191,20 +230,36 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
           const SizedBox(height: 20),
 
-          if (selectedMethod == "Manual")
+          if (selectedMethod == "Cash")
             Column(
               children: [
                 OutlinedButton(
                   onPressed: pickImage,
                   child: const Text("Upload Screenshot"),
                 ),
-
                 if (screenshotName != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(screenshotName!),
                   ),
               ],
+            ),
+
+          if (selectedMethod == "Stripe")
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: CardFormField(
+                controller: _cardFormController,
+                style: CardFormStyle(
+                  backgroundColor: Colors.white,
+                  textColor: Colors.black,
+                  borderRadius: 15,
+                ),
+              ),
             ),
 
           const SizedBox(height: 20),

@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final String token = box.read('token') ?? '';
       final results = await Future.wait([
         CasesService.fetchMyCases(token),
-        ApiService.getMyAppointments(),
+        AppointmentService.getMyAppointments(),
       ]);
 
       setState(() {

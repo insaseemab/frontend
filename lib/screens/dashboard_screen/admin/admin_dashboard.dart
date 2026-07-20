@@ -68,16 +68,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final results = await Future.wait([
       CaseApiService.fetchAllCases(),
       LawyerService().fetchLawyers(),
-      ApiService.getAllAppointments(),
+      AppointmentService.getAllAppointments(),
     ]);
 
     final cases = results[0] as List<CaseModel>;
     final lawyers = results[1] as List<Map<String, dynamic>>;
     final appointments = results[2] as List<dynamic>;
 
-    // ── Pending lawyers: status isn't cleanly 0 (rejected) or 1 (approved) ──
-    // TODO: if your backend actually uses a distinct value (e.g. status == 2)
-    // for pending, swap the condition below to match it exactly.
+    
     int pendingLawyers = 0;
     for (final l in lawyers) {
       final raw = l['status'];

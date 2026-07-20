@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/admin_book_appointment.dart';
 import 'package:insaafconnect/screens/appointments/appointment_screen.dart';
+import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
@@ -55,7 +56,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchAppointments() async {
-    final raw = await ApiService.getMyAppointments();
+    final raw = await AppointmentService.getMyAppointments();
     final role = _box.read<String>('role');
 
     return raw.map<Map<String, dynamic>>((a) {

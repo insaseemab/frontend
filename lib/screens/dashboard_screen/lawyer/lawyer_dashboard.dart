@@ -200,7 +200,6 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               leading: const Icon(Icons.logout, color: AppColors.darkBrown),
               title: const Text("Logout"),
               onTap: () {
-                GetStorage().erase();
                 Get.offAll(() => LoginScreen());
               },
             ),
@@ -281,7 +280,7 @@ class _HomePageState extends State<_HomePage> {
       final token = box.read<String>('token') ?? '';
       final results = await Future.wait([
         CasesService.fetchMyCases(token),
-        ApiService.getMyAppointments(),
+        AppointmentService.getMyAppointments(),
       ]);
 
       if (!mounted) return;

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:get/get.dart';
-// ════════════════════════════════════════════════
-//  BOOK APPOINTMENT SCREEN
-//  POST /appointments
-// ════════════════════════════════════════════════
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> lawyer;
@@ -77,7 +74,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       ),
     );
     if (date == null) return;
-    if (!mounted) return; // guard after async gap
+    if (!mounted) return; 
 
     final time = await showTimePicker(
       context: context,
@@ -124,7 +121,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.createAppointment(
+      await AppointmentService.createAppointment(
         lawyerId: widget.lawyer['id'] as int,
         lawType: _selectedLawType!,
         caseType: _selectedCaseType!,
@@ -406,23 +403,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   );
 }
 
-// ════════════════════════════════════════════════
-//  MY APPOINTMENTS SCREEN
-//  GET /appointments/client/:clientId
-//  NOTE: No Scaffold/AppBar here — this screen is
-//  hosted inside the shared shell's body, which
-//  already provides the single top AppBar +
-//  BottomNavigationBar. This avoids the double
-//  app bar issue.
-// ════════════════════════════════════════════════
-
 class MyAppointmentsScreen extends StatefulWidget {
-  /// Set to true when this screen is pushed as its own route (e.g. from
-  /// the drawer). In that case it renders its own Scaffold + AppBar with
-  /// a back button.
-  ///
-  /// Leave false (default) when this screen is embedded inside the shared
-  /// shell's body via the bottom navigation bar — no AppBar/back button.
+  
   final bool isStandalone;
 
   const MyAppointmentsScreen({super.key, this.isStandalone = false});
@@ -442,13 +424,13 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   void _load() {
     setState(() {
-      _future = ApiService.getMyAppointments(); // ← uses token automatically
+      _future = AppointmentService.getMyAppointments(); // ← uses token automatically
     });
   }
 
   Future<void> _delete(int id) async {
     try {
-      await ApiService.deleteAppointment(id);
+      await AppointmentService.deleteAppointment(id);
       if (!mounted) return;
       _load();
       Get.snackbar(
@@ -560,8 +542,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       );
     }
 
-    // Embedded inside the shared shell's body via bottom nav → no AppBar,
-    // no back button, just a plain title container.
+   
     return Container(
       color: const Color(0xFFF1ECE5),
       child: Column(
