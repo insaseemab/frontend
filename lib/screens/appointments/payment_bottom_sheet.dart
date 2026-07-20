@@ -43,7 +43,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     setState(() => _isSubmitting = true);
 
     try {
-      await ApiService.payAppointment(
+      await AppointmentService.payAppointment(
         widget.appointment['id'],
         selectedMethod,
         screenshotBytes,

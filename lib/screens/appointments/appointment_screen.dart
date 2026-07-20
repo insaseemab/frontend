@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
+import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:get/get.dart';
 // ════════════════════════════════════════════════
 //  BOOK APPOINTMENT SCREEN
@@ -124,7 +125,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.createAppointment(
+      await AppointmentService.createAppointment(
         lawyerId: widget.lawyer['id'] as int,
         lawType: _selectedLawType!,
         caseType: _selectedCaseType!,
@@ -442,13 +443,13 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   void _load() {
     setState(() {
-      _future = ApiService.getMyAppointments(); // ← uses token automatically
+      _future = AppointmentService.getMyAppointments(); // ← uses token automatically
     });
   }
 
   Future<void> _delete(int id) async {
     try {
-      await ApiService.deleteAppointment(id);
+      await AppointmentService.deleteAppointment(id);
       if (!mounted) return;
       _load();
       Get.snackbar(

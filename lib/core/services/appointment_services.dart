@@ -1,25 +1,10 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'api_services.dart';
 
-class ApiService {
-  static const String baseUrl = "http://localhost:3000";
-
-  static final _box = GetStorage();
-
-  static String? getToken() => _box.read<String>('token');
-  static void saveToken(String token) => _box.write('token', token);
-  static void removeToken() => _box.remove('token');
-
-  static Map<String, String> _authHeaders() {
-    final token = getToken();
-    print('Token: $token');
-    return {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-  }
+class AppointmentService {
+  static const String baseUrl = ApiService.baseUrl;
 
   // ════════════════════════════════════════════════
   //  APPOINTMENT ENDPOINTS
@@ -29,9 +14,9 @@ class ApiService {
   static Future<List<dynamic>> getAllAppointments() async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
 
@@ -39,9 +24,9 @@ class ApiService {
   static Future<Map<String, dynamic>> getAppointmentById(int id) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/$id'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
@@ -49,9 +34,9 @@ class ApiService {
   static Future<List<dynamic>> getAppointmentsByStatus(String status) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/filter?status=$status'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
 
@@ -59,9 +44,9 @@ class ApiService {
   static Future<List<dynamic>> getAppointmentsByClient(int clientId) async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/client/$clientId'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
 
@@ -91,10 +76,10 @@ class ApiService {
 
     final res = await http.post(
       Uri.parse('$baseUrl/appointments'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
       body: body,
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
@@ -126,10 +111,10 @@ class ApiService {
 
     final res = await http.put(
       Uri.parse('$baseUrl/appointments/$id'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
       body: body,
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
 
@@ -137,9 +122,9 @@ class ApiService {
   static Future<void> deleteAppointment(int id) async {
     final res = await http.delete(
       Uri.parse('$baseUrl/appointments/$id'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
   }
 
   /// PATCH /appointments/:id/status/:status  — requires auth
@@ -154,33 +139,11 @@ class ApiService {
 
     final res = await http.patch(
       Uri.parse('$baseUrl/appointments/$id/status/$status'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
       body: body,
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
-  }
-
-  // ── Internal: throw a meaningful error on non-2xx, even if the
-  // ── server responded with HTML instead of JSON (e.g. a 404/413/500
-  // ── error page) — this is what was causing the FormatException crash.
-  static void _checkStatus(http.Response res) {
-    if (res.statusCode < 200 || res.statusCode >= 300) {
-      String message = 'Unknown error';
-      try {
-        final body = jsonDecode(res.body);
-        message = body['error'] ?? message;
-      } catch (_) {
-        if (res.statusCode == 413) {
-          message = 'The data sent is too large. Please try a smaller file.';
-        } else if (res.statusCode == 404) {
-          message = 'Requested resource was not found.';
-        } else {
-          message = 'Server error (${res.statusCode}). Please try again.';
-        }
-      }
-      throw ApiException(statusCode: res.statusCode, message: message);
-    }
   }
 
   static Future<void> editAppointment({
@@ -206,19 +169,19 @@ class ApiService {
     });
     final res = await http.put(
       Uri.parse('$baseUrl/appointments/$id'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
       body: body,
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
   }
 
   /// GET /appointments/mine — role-based (client/lawyer/admin)
   static Future<List<dynamic>> getMyAppointments() async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments/mine'),
-      headers: _authHeaders(), // token already handled here
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
 
@@ -240,7 +203,7 @@ class ApiService {
 
     final res = await http.patch(
       Uri.parse('$baseUrl/appointments/$appointmentId/pay'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
       body: body,
     );
 
@@ -267,29 +230,19 @@ class ApiService {
   static Future<void> approvePayment({required int id}) async {
     final res = await http.patch(
       Uri.parse('$baseUrl/appointments/$id/approve-payment'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
   }
 
   /// POST /appointments/:id/convert-to-case
   static Future<int> convertToCase({required int id}) async {
     final res = await http.post(
       Uri.parse('$baseUrl/appointments/$id/convert-to-case'),
-      headers: _authHeaders(),
+      headers: ApiService.authHeaders(),
     );
-    _checkStatus(res);
+    ApiService.checkStatus(res);
     final decoded = jsonDecode(res.body) as Map<String, dynamic>;
     return decoded['caseId'] as int;
   }
-}
-
-class ApiException implements Exception {
-  final int statusCode;
-  final String message;
-
-  const ApiException({required this.statusCode, required this.message});
-
-  @override
-  String toString() => message;
 }

@@ -68,7 +68,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final results = await Future.wait([
       CaseApiService.fetchAllCases(),
       LawyerService().fetchLawyers(),
-      ApiService.getAllAppointments(),
+      AppointmentService.getAllAppointments(),
     ]);
 
     final cases = results[0] as List<CaseModel>;
@@ -346,6 +346,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             leading: const Icon(Icons.logout, color: AppColors.darkBrown),
             title: const Text("Logout"),
             onTap: () {
+              GetStorage().erase();
               Get.offAll(() => LoginScreen());
             },
           ),

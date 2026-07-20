@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
 import 'package:insaafconnect/screens/appointments/admin_book_appointment.dart';
+import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
@@ -39,8 +40,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       // Admin sees everyone's appointments. Lawyer/Client see only their own —
       // the backend's /appointments/mine route already branches by req.user.role.
       _future = _isAdmin
-          ? ApiService.getAllAppointments()
-          : ApiService.getMyAppointments();
+          ? AppointmentService.getAllAppointments()
+          : AppointmentService.getMyAppointments();
     });
   }
 
@@ -157,7 +158,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               onPressed: () async {
                 Get.back();
                 try {
-                  await ApiService.editAppointment(
+                  await AppointmentService.editAppointment(
                     id: apt['id'] as int,
                     lawyerId: int.tryParse(lawyerIdCtrl.text.trim()) ?? 0,
                     lawType: lawTypeCtrl.text.trim(),
@@ -290,7 +291,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               onPressed: () async {
                 Get.back();
                 try {
-                  await ApiService.updateAppointmentStatus(
+                  await AppointmentService.updateAppointmentStatus(
                     id: apt['id'] as int,
                     status: selectedStatus,
                     paymentAmount: paymentCtrl.text.trim().isEmpty
@@ -334,7 +335,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     if (confirmed != true) return;
 
     try {
-      await ApiService.updateAppointmentStatus(id: apt['id'] as int, status: 'rejected');
+      await AppointmentService.updateAppointmentStatus(id: apt['id'] as int, status: 'rejected');
       if (!mounted) return;
       _load();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appointment rejected')));
@@ -395,7 +396,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     if (confirmed != true) return;
 
     try {
-      await ApiService.approvePayment(id: apt['id'] as int);
+      await AppointmentService.approvePayment(id: apt['id'] as int);
       if (!mounted) return;
       _load();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -435,7 +436,7 @@ void _showConvertToCase(Map<String, dynamic> apt) {
     if (confirmed != true) return;
 
     try {
-      await ApiService.deleteAppointment(apt['id'] as int);
+      await AppointmentService.deleteAppointment(apt['id'] as int);
       if (!mounted) return;
       _load();
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Appointment cancelled')));
@@ -1107,7 +1108,7 @@ class _DetailSheetState extends State<_DetailSheet> {
   @override
   void initState() {
     super.initState();
-    _future = ApiService.getAppointmentById(widget.appointmentId);
+    _future = AppointmentService.getAppointmentById(widget.appointmentId);
   }
 
   @override
@@ -1242,7 +1243,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.updateAppointmentStatus(
+      await AppointmentService.updateAppointmentStatus(
         id: widget.appointment['id'] as int,
         status: 'accepted',
         paymentAmount: double.parse(_amountCtrl.text.trim()),
@@ -1529,7 +1530,7 @@ class _ConvertToCaseSheetState extends State<_ConvertToCaseSheet> {
   Future<void> _submit() async {
     setState(() => _isLoading = true);
     try {
-      await ApiService.convertToCase(id: widget.appointment['id'] as int);
+      await AppointmentService.convertToCase(id: widget.appointment['id'] as int);
       if (!mounted) return;
       Get.back();
       Get.snackbar(

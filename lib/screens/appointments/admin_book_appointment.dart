@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
@@ -182,7 +183,7 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
     setState(() => _isLoading = true);
 
     try {
-      await ApiService.createAppointment(
+      await AppointmentService.createAppointment(
         clientId: int.parse(_selectedClientId!),
         lawyerId: int.parse(_selectedLawyerId!),
         lawType: _selectedLawType!,
