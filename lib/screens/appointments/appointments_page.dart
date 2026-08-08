@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
@@ -6,10 +8,6 @@ import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
-// ════════════════════════════════════════════════
-//  ONE PAGE FOR ALL ROLES — ADMIN / LAWYER / CLIENT
-//  Pass `role:` to control data source + which actions show.
-// ════════════════════════════════════════════════
 
 enum AppointmentRole { admin, lawyer, client }
 
@@ -37,8 +35,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   void _load() {
     setState(() {
-      // Admin sees everyone's appointments. Lawyer/Client see only their own —
-      // the backend's /appointments/mine route already branches by req.user.role.
+      
       _future = _isAdmin
           ? AppointmentService.getAllAppointments()
           : AppointmentService.getMyAppointments();
@@ -214,8 +211,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-  // ── Update Status: admin gets full dialog (status + pay amount). ──
-  // ── Lawyer: reject directly, accept via payment-amount sheet.    ──
+ 
   Future<void> _showAdminUpdateStatus(Map<String, dynamic> apt) async {
     String selectedStatus = apt['status'] ?? 'pending';
     final paymentCtrl = TextEditingController(
@@ -361,22 +357,37 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Approve Payment', style: TextStyle(fontWeight: FontWeight.bold)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (apt['payment_mode'] != null)
-              _DetailChip(label: 'Mode', value: apt['payment_mode'].toString()),
-            if (apt['payment_receipt'] != null)
-              _DetailChip(label: 'Receipt', value: apt['payment_receipt'].toString()),
-            if (apt['payment_amount'] != null)
-              _DetailChip(label: 'Amount', value: 'Rs. ${apt['payment_amount']}'),
-            const SizedBox(height: 6),
-            const Text(
-              'Confirm you have verified the client\'s payment and want to approve it?',
-              style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
-              textAlign: TextAlign.center,
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (apt['payment_mode'] != null)
+                  _DetailChip(label: 'Mode', value: apt['payment_mode'].toString()),
+                if (apt['payment_amount'] != null)
+                  _DetailChip(label: 'Amount', value: 'Rs. ${apt['payment_amount']}'),
+                if (apt['payment_receipt'] != null) ...[
+                  const SizedBox(height: 6),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Receipt',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _ReceiptPreview(raw: apt['payment_receipt'].toString()),
+                ],
+                const SizedBox(height: 10),
+                const Text(
+                  'Confirm you have verified the client\'s payment and want to approve it?',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Get.back(result: false), child: const Text('Cancel')),
@@ -977,7 +988,7 @@ class _AppointmentCard extends StatelessWidget {
                     _InfoRow(icon: Icons.payment, text: 'Mode: ${appointment['payment_mode']}'),
                   if (appointment['payment_receipt'] != null) ...[
                     const SizedBox(height: 4),
-                    _InfoRow(icon: Icons.receipt_outlined, text: 'Receipt: ${appointment['payment_receipt']}'),
+                    const _InfoRow(icon: Icons.receipt_outlined, text: 'Receipt attached'),
                   ],
                 ],
               ),
@@ -1514,6 +1525,66 @@ class _DetailChip extends StatelessWidget {
     );
   }
 }
+
+// ════════════════════════════════════════════════
+//  RECEIPT PREVIEW (decodes base64 screenshot instead of
+//  dumping the raw hash string in the Approve Payment dialog)
+// ════════════════════════════════════════════════
+class _ReceiptPreview extends StatelessWidget {
+  final String raw;
+  const _ReceiptPreview({required this.raw});
+
+  Uint8List? get _bytes {
+    try {
+      // Handles both raw base64 and "data:image/png;base64,...." prefixed strings.
+      final cleaned = raw.contains(',') ? raw.split(',').last : raw;
+      return base64Decode(cleaned);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bytes = _bytes;
+
+    // Not decodable as base64 → show a plain fallback instead of the raw hash.
+    if (bytes == null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5EFE6),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Text(
+          'Receipt attached (unable to preview)',
+          style: TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.memory(
+        bytes,
+        height: 220,
+        width: double.infinity,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => Container(
+          height: 100,
+          alignment: Alignment.center,
+          color: const Color(0xFFF5EFE6),
+          child: const Text(
+            'Unable to load receipt image',
+            style: TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ConvertToCaseSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback onConverted;

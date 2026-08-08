@@ -219,6 +219,63 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     }
   }
 
+  void _viewCaseDetail(CaseModel c) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        title: Text('Case #${c.id}'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _detailLine('Case Type', c.caseType),
+                _detailLine('Client', c.clientName),
+                _detailLine('Lawyer', c.lawyerName),
+                _detailLine('Status', c.caseStatus),
+                _detailLine('Payment Status', c.paymentStatus),
+                _detailLine('Hearing Date', c.hearingDate),
+                _detailLine('Start Date', c.caseStartDate),
+                _detailLine('Phone', c.phone),
+                _detailLine('Address', c.address),
+                _detailLine('Department/Concern', c.departConcern),
+                if (c.descriptionCase.isNotEmpty)
+                  _detailLine('Description', c.descriptionCase),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Close')),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailLine(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ),
+          Expanded(
+            child: Text(
+              value.isEmpty ? '-' : value,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _deleteCase(CaseModel c) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -359,15 +416,20 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     icon: const Icon(Icons.refresh, color: Colors.brown),
                     onPressed: _loadCases,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.add, color: Colors.brown),
-                    onPressed: () async {
-                      final result = await Get.toNamed(AppRoutes.createCase);
-                      if (result == true) {
-                        _loadCases();
-                      }
-                    },
-                  ),
+                  // "+" is create-a-new-case — allowed for admin and lawyer.
+                  // Clients don't have a create-case flow, so the button is
+                  // hidden for them instead of navigating into a route they
+                  // aren't authorized for.
+                  if (['admin', 'lawyer'].contains(box.read('role') ?? 'client'))
+                    IconButton(
+                      icon: const Icon(Icons.add, color: Colors.brown),
+                      onPressed: () async {
+                        final result = await Get.toNamed(AppRoutes.createCase);
+                        if (result == true) {
+                          _loadCases();
+                        }
+                      },
+                    ),
                 ],
               ),
             ),
@@ -543,6 +605,88 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     );
   }
 
+  // Role-aware actions:
+  // - admin: full menu (status changes + edit + delete)
+  // - lawyer: view detail + status changes (no delete/edit — those stay admin-only)
+  // - client / anything else: view detail only
+  Widget _buildActionsForRole(CaseModel c) {
+    final String role = box.read('role') ?? 'client';
+
+    if (role == 'admin') {
+      return PopupMenuButton<String>(
+        icon: const Icon(Icons.more_vert, size: 18),
+        onSelected: (value) {
+          if (value == 'delete') {
+            _deleteCase(c);
+          } else if (value == 'edit') {
+            _openEditDialog(c);
+          } else if (value == 'view') {
+            _viewCaseDetail(c);
+          } else {
+            _updateStatus(c, value);
+          }
+        },
+        itemBuilder: (_) => [
+          const PopupMenuItem(value: 'view', child: Text('View Detail')),
+          const PopupMenuDivider(),
+          const PopupMenuItem(value: 'approved', child: Text('Set Approved')),
+          const PopupMenuItem(value: 'pending', child: Text('Set Pending')),
+          const PopupMenuItem(value: 'rejected', child: Text('Set Rejected')),
+          const PopupMenuItem(value: 'hearing', child: Text('Set Hearing')),
+          const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
+          const PopupMenuDivider(),
+          const PopupMenuItem(
+            value: 'edit',
+            child: Text('Edit Case', style: TextStyle(color: Colors.blue)),
+          ),
+          const PopupMenuItem(
+            value: 'delete',
+            child: Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    }
+
+    if (role == 'lawyer') {
+      return PopupMenuButton<String>(
+        icon: const Icon(Icons.more_vert, size: 18),
+        onSelected: (value) {
+          if (value == 'delete') {
+            _deleteCase(c);
+          } else if (value == 'edit') {
+            _openEditDialog(c);
+          } else if (value == 'view') {
+            _viewCaseDetail(c);
+          } else {
+            _updateStatus(c, value);
+          }
+        },
+        itemBuilder: (_) => [
+          const PopupMenuItem(value: 'view', child: Text('View Detail')),
+          const PopupMenuDivider(),
+          const PopupMenuItem(value: 'pending', child: Text('Set Pending')),
+          const PopupMenuItem(value: 'hearing', child: Text('Set Hearing')),
+          const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
+          const PopupMenuDivider(),
+          const PopupMenuItem(
+            value: 'edit',
+            child: Text('Edit Case', style: TextStyle(color: Colors.blue)),
+          ),
+          const PopupMenuItem(
+            value: 'delete',
+            child: Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      );
+    }
+
+    // Client (or unknown role): view-only.
+    return IconButton(
+      icon: const Icon(Icons.visibility_outlined, size: 18),
+      onPressed: () => _viewCaseDetail(c),
+    );
+  }
+
   Widget _buildCaseRow(CaseModel c) {
     final statusColor = _statusColor(c.caseStatus);
 
@@ -577,57 +721,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           ),
           Expanded(
             flex: 1,
-            child: box.read('role') == 'admin'
-                ? PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, size: 18),
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _deleteCase(c);
-                      } else if (value == 'edit') {
-                        _openEditDialog(c);
-                      } else {
-                        _updateStatus(c, value);
-                      }
-                    },
-                    itemBuilder: (_) => [
-                      const PopupMenuItem(
-                        value: 'approved',
-                        child: Text('Set Approved'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'pending',
-                        child: Text('Set Pending'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'rejected',
-                        child: Text('Set Rejected'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'hearing',
-                        child: Text('Set Hearing'),
-                      ),
-                      const PopupMenuItem(
-                        value: 'closed',
-                        child: Text('Set Closed'),
-                      ),
-                      const PopupMenuDivider(),
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Text(
-                          'Edit Case',
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Text(
-                          'Delete',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ],
-                  )
-                : const SizedBox(),
+            child: _buildActionsForRole(c),
           ),
         ],
       ),

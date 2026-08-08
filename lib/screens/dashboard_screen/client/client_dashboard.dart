@@ -25,12 +25,21 @@ class ClientDashboardScreen extends StatefulWidget {
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   int currentIndex = 0;
 
+  // Only 4 items appear in the bottom bar. Appointments (pageIndex 3) is
+  // deliberately excluded here and reached only via the drawer.
+  final List<_NavItem> _navItems = const [
+    _NavItem(0, Icons.home_outlined, Icons.home, 'Home'),
+    _NavItem(1, Icons.search, Icons.search, 'Lawyers'),
+    _NavItem(2, Icons.calendar_month_outlined, Icons.calendar_month, 'Calendar'),
+    _NavItem(4, Icons.message_outlined, Icons.message, 'Chat'),
+  ];
+
   final List<Widget> pages = [
-    const HomeScreen(),
-    const LawyerFindScreen(),
-    const CalendarScreen(isNested: true),
-    const AppointmentsPage(role: AppointmentRole.client),
-    const ConversationsScreen(),
+    const HomeScreen(),                                     // 0
+    const LawyerFindScreen(),                                // 1
+    const CalendarScreen(isNested: true),                    // 2
+    const AppointmentsPage(role: AppointmentRole.client),    // 3 (drawer-only)
+    const ConversationsScreen(),                              // 4
   ];
 
   @override
@@ -138,7 +147,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 0);
               },
             ),
@@ -152,7 +161,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 1);
               },
             ),
@@ -166,8 +175,22 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 2);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.assignment, color: AppColors.darkBrown),
+              title: const Text(
+                "Appointments",
+                style: TextStyle(
+                  color: AppColors.darkBrown,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 3);
               },
             ),
             ListTile(
@@ -180,7 +203,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 setState(() => currentIndex = 4);
               },
             ),
@@ -194,7 +217,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 ),
               ),
               onTap: () {
-                Navigator.pop(context);
+                Get.back();
                 final box = GetStorage();
                 box.erase();
                 Get.offAll(() => LoginScreen());
@@ -215,34 +238,42 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
           ],
         ),
-        child: BottomNavigationBar(
-          currentIndex: currentIndex,
-          onTap: (index) => setState(() => currentIndex = index),
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: AppColors.darkBrown,
-          unselectedItemColor: AppColors.darkBrown,
-          backgroundColor: AppColors.beige,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
+        child: SafeArea(
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              children: _navItems.map((item) {
+                final bool isSelected = currentIndex == item.pageIndex;
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => setState(() => currentIndex = item.pageIndex),
+                    child: Container(
+                      color: AppColors.beige,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isSelected ? item.activeIcon : item.icon,
+                            color: AppColors.darkBrown,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.darkBrown,
+                              fontWeight:
+                                  isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Lawyers',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.assignment_outlined),
-              activeIcon: Icon(Icons.assignment),
-              label: 'Appointments',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.message_outlined),
-              activeIcon: Icon(Icons.message),
-              label: 'Chat',
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -467,7 +498,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12),
 
-            // ── Stat cards (Appointments) ────────────────────
             SizedBox(
               height: 100,
               child: Row(
@@ -516,7 +546,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 24),
 
-            // ── Recent Cases ──────────────────────────────────
             const Text(
               'Recent Cases',
               style: TextStyle(
@@ -672,10 +701,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 }
-
-// ════════════════════════════════════════════════
-//  SHARED WIDGETS
-// ════════════════════════════════════════════════
 
 class _CaseCard extends StatelessWidget {
   final String title;
@@ -835,4 +860,12 @@ class _AppointmentCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _NavItem {
+  final int pageIndex; // real index into `pages`
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItem(this.pageIndex, this.icon, this.activeIcon, this.label);
 }

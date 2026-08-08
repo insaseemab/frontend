@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,8 +11,10 @@ void main() async {
 
   await GetStorage.init();
 
-  Stripe.publishableKey = "pk_test_51TuTJCRsK1y5gUOm6FXLppkvPJmRqSoZD7YiUXDNUJVTO9b6NWj2gxwSIooRUzNTdIASErnOL0iChG3gyZBjK3BR00zuin1naJ";
-  await Stripe.instance.applySettings();
+  if (!kIsWeb) {
+    Stripe.publishableKey = "pk_test_51TuTJCRsK1y5gUOm6FXLppkvPJmRqSoZD7YiUXDNUJVTO9b6NWj2gxwSIooRUzNTdIASErnOL0iChG3gyZBjK3BR00zuin1naJ";
+    await Stripe.instance.applySettings();
+  }
 
   runApp(MyApp());
 }

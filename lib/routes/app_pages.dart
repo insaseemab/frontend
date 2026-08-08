@@ -70,7 +70,7 @@ class AppPages {
       page: () => const CreateCasePage(),
       middlewares: [
         AuthMiddleware(),
-        RoleMiddleware(allowedRoles: ['admin']),
+        RoleMiddleware(allowedRoles: ['admin', 'lawyer']),
       ],
     ),
 
@@ -126,6 +126,5 @@ class AppPages {
         RoleMiddleware(allowedRoles: ['lawyer']),
       ],
     ),
-    
   ];
 }
