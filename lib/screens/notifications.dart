@@ -75,13 +75,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       backgroundColor: const Color(0xFFF1ECE5),  
       appBar: AppBar(
         title: const Text("Notifications"),
+        backgroundColor: const Color(0xFFF1ECE5),
         actions: [
           if (_notifications.isNotEmpty)
             TextButton(
               onPressed: _markAllRead,
-              child: const Text("Mark all read"),
+              child: const Text("Mark all read",
+              style: TextStyle(
+              color: Color(0xFF3E2C23))),
             ),
         ],
       ),
@@ -97,41 +101,57 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ],
               )
             : ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: _notifications.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final n = _notifications[index];
-                  final isRead = n['is_read'] == 1 || n['is_read'] == true;
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+    itemCount: _notifications.length,
+    separatorBuilder: (_, __) => const SizedBox(height: 10),
+    itemBuilder: (context, index) {
+      final n = _notifications[index];
+      final isRead = n['is_read'] == 1 || n['is_read'] == true;
 
-                  return ListTile(
-                   onTap: () async {
-  await _markRead(n['id'], index);
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          onTap: () async {
+            await _markRead(n['id'], index);
 
-  final role = GetStorage().read('role'); // 'admin' | 'lawyer' | 'client'
+            final role = GetStorage().read('role'); // 'admin' | 'lawyer' | 'client'
 
-  if (n['type'] == 'appointment') {
-    if (role == 'lawyer') {
-      Get.to(() => const AppointmentsPage(role: AppointmentRole.lawyer));
-    } else if (role == 'client') {
-      Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
-    } else if (role == 'admin') {
-      Get.to(() => const AppointmentsPage(role: AppointmentRole.admin));
-    }
-  } else if (n['type'] == 'case') {
-    Get.to(() => ManageCasesPage(userRole: role ?? 'client'));
-  }
-},
+            if (n['type'] == 'appointment') {
+              if (role == 'lawyer') {
+                Get.to(() => const AppointmentsPage(role: AppointmentRole.lawyer));
+              } else if (role == 'client') {
+                Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
+              } else if (role == 'admin') {
+                Get.to(() => const AppointmentsPage(role: AppointmentRole.admin));
+              }
+            } else if (n['type'] == 'case') {
+              Get.to(() => ManageCasesPage(userRole: role ?? 'client'));
+            }
+          },
+        
                     tileColor: isRead
                         ? Colors.transparent
-                        : Colors.grey.withOpacity(0.1),
+                        : Colors.white,
                     leading: CircleAvatar(
                       backgroundColor: isRead
-                          ? Colors.grey.shade300
-                          : Colors.blue,
+                          ? Colors.white
+                          : Colors.brown,
                       child: Icon(
                         Icons.notifications,
-                        color: isRead ? Colors.grey.shade600 : Colors.white,
+                        color: isRead ? const Color(0xFFF1ECE5) : Colors.white,
                         size: 18,
                       ),
                     ),
@@ -154,7 +174,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                           )
                         : null,
-                  );
+                  ),
+      );
+      
                 },
               ),
       ),

@@ -17,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Map<String, dynamic> user;
   late String role;
 
-  final Color darkBrown = AppColors.darkBrown;
+  final Color Brown = AppColors.Brown;
   final Color mediumBrown = AppColors.mediumBrown;
   final Color muted = AppColors.labelSecondary;
   final Color bg = AppColors.beige;
@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Edit Profile',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Brown)),
                 const SizedBox(height: 16),
                 TextField(
                   controller: nameCtrl,
@@ -190,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Change Password',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: darkBrown)),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Brown)),
                 const SizedBox(height: 16),
                 TextField(
                   controller: currentCtrl,
@@ -320,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: darkBrown,
+                color: Brown,
               ),
             ),
             Text(
@@ -432,7 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: darkBrown,
+                      color: Brown,
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -557,7 +557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: darkBrown,
+                    color: Brown,
                   ),
                 ),
               ],

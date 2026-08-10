@@ -5,7 +5,7 @@ import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
-final Color _primaryColor = AppColors.darkBrown;
+final Color _primaryColor = AppColors.Brown;
 final Color _bgColor = AppColors.beige;
 final Color _borderColor = AppColors.divider;
 final Color _hintColor = AppColors.hintText;

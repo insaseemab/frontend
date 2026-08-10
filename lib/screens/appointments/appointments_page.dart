@@ -493,7 +493,7 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                 Text(
                   _title,
                   style: const TextStyle(
-                    color: AppColors.darkBrown,
+                    color: AppColors.Brown,
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
@@ -502,7 +502,7 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                   children: [
                     if (_isAdmin)
                       IconButton(
-                        icon: const Icon(Icons.add, color: AppColors.darkBrown),
+                        icon: const Icon(Icons.add, color: AppColors.Brown),
                         onPressed: () async {
                           final result = await Get.to(() => const AdminBookAppointmentScreen());
                           if (result == true) {
@@ -511,7 +511,7 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                         },
                       ),
                     IconButton(
-                      icon: const Icon(Icons.refresh, color: AppColors.darkBrown),
+                      icon: const Icon(Icons.refresh, color: AppColors.Brown),
                       onPressed: _load,
                     ),
                   ],
@@ -560,7 +560,7 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                         padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                         child: Row(
                           children: [
-                            _StatCard(label: 'Total', value: '${all.length}', color: AppColors.darkBrown),
+                            _StatCard(label: 'Total', value: '${all.length}', color: AppColors.Brown),
                             const SizedBox(width: 10),
                             _StatCard(label: 'Pending', value: '$pending', color: AppColors.warning),
                             const SizedBox(width: 10),
@@ -767,7 +767,7 @@ class _AppointmentCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.divider),
         boxShadow: [
-          BoxShadow(color: AppColors.darkBrown.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: AppColors.Brown.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(

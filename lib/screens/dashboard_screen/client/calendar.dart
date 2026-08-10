@@ -177,7 +177,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3E2C23),
+                        color: Colors.brown,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -224,12 +224,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 });
                               },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF5C3D2E),
+                          backgroundColor:  Colors.brown,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          disabledBackgroundColor: const Color(0xFF5C3D2E).withValues(alpha: 0.5),
+                          disabledBackgroundColor: Colors.brown.withValues(alpha: 0.5),
                         ),
                         child: const Text('Proceed to Book'),
                       ),
@@ -261,7 +261,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 60),
             child: Center(
-              child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+              child: CircularProgressIndicator(color: Colors.brown),
             ),
           );
         }
@@ -282,7 +282,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry', style: TextStyle(color: Color(0xFF5C3D2E))),
+                    child: const Text('Retry', style: TextStyle(color: Colors.brown)),
                   ),
                 ],
               ),
@@ -308,7 +308,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.chevron_left, color: AppColors.darkBrown),
+                        icon: Icon(Icons.chevron_left, color: AppColors.Brown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month - 1);
                         }),
@@ -318,11 +318,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.darkBrown,
+                          color: AppColors.Brown,
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.chevron_right, color: AppColors.darkBrown),
+                        icon: Icon(Icons.chevron_right, color: AppColors.Brown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month + 1);
                         }),
@@ -342,7 +342,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: AppColors.darkBrown.withOpacity(0.65),
+                                    color: AppColors.Brown.withOpacity(0.65),
                                   ),
                                 ),
                               ),
@@ -367,7 +367,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF3E2C23),
+                          color: Colors.brown,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -402,7 +402,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF5C3D2E),
+                            backgroundColor:  Colors.brown,
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -430,13 +430,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.darkBrown),
+          icon: Icon(Icons.arrow_back, color: AppColors.Brown),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'My Calendar',
           style: TextStyle(
-            color: AppColors.darkBrown,
+            color: AppColors.Brown,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -562,7 +562,7 @@ class _AppointmentTile extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
-                    color: Color(0xFF3E2C23),
+                    color: Colors.brown,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -581,7 +581,7 @@ class _AppointmentTile extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
-                  color: Color(0xFF3E2C23),
+                  color: Colors.brown,
                 ),
               ),
               const SizedBox(height: 4),

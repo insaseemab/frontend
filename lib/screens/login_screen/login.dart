@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Text(
                   "Welcome Back",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold,
-                color: AppColors.darkBrown
+                color: AppColors.Brown
                   ),
                 ),
 

@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class AppColors {
   AppColors._();
 
-  static const Color darkBrown = Color(0xFF795548); // matches Colors.brown
+  static const Color Brown = Color(0xFF795548); // matches Colors.brown
   static const Color sageGreen = Color(0xFFB0BA99);
   static const Color mediumBrown = Color(0xFF9D6638);
   static const Color beige = Color(0xFFF5EFE6);
@@ -26,10 +26,10 @@ class AppColors {
   static Color inputBorder = borderBrown.withOpacity(0.45);
   static Color overlayLight = beige.withOpacity(0.55);
   static Color navActive = beige.withOpacity(0.80);
-  static Color labelSecondary = darkBrown.withOpacity(0.65);
-  static Color hintText = darkBrown.withOpacity(0.60);
-  static Color iconMuted = darkBrown.withOpacity(0.75);
-  static Color divider = darkBrown.withOpacity(0.15);
+  static Color labelSecondary = Brown.withOpacity(0.65);
+  static Color hintText = Brown.withOpacity(0.60);
+  static Color iconMuted = Brown.withOpacity(0.75);
+  static Color divider = Brown.withOpacity(0.15);
 }
 
 class AppGradients {
@@ -57,63 +57,63 @@ class AppTextStyles {
   static const TextStyle heading1 = TextStyle(
     fontSize: 26,
     fontWeight: FontWeight.bold,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 0.3,
   );
 
   static const TextStyle heading2 = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.bold,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 0.3,
   );
 
   static const TextStyle heading3 = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 0.3,
   );
 
   static const TextStyle heading4 = TextStyle(
     fontSize: 14.5,
     fontWeight: FontWeight.bold,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
   );
 
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 14,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     height: 1.5,
   );
 
   static TextStyle bodyMedium = TextStyle(
     fontSize: 13.5,
-    color: AppColors.darkBrown.withOpacity(0.85),
+    color: AppColors.Brown.withOpacity(0.85),
     height: 1.5,
   );
 
   static TextStyle bodySmall = TextStyle(
     fontSize: 12,
-    color: AppColors.darkBrown.withOpacity(0.65),
+    color: AppColors.Brown.withOpacity(0.65),
     height: 1.4,
   );
 
   static const TextStyle label = TextStyle(
     fontSize: 13.5,
     fontWeight: FontWeight.w600,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 0.2,
   );
 
   static TextStyle labelMuted = TextStyle(
     fontSize: 13,
-    color: AppColors.darkBrown.withOpacity(0.75),
+    color: AppColors.Brown.withOpacity(0.75),
   );
 
   static TextStyle hint = TextStyle(
     fontSize: 14,
-    color: AppColors.darkBrown.withOpacity(0.60),
+    color: AppColors.Brown.withOpacity(0.60),
   );
 
   static const TextStyle button = TextStyle(
@@ -126,7 +126,7 @@ class AppTextStyles {
   static TextStyle sectionTitle = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.w700,
-    color: AppColors.darkBrown.withOpacity(0.80),
+    color: AppColors.Brown.withOpacity(0.80),
     letterSpacing: 0.3,
   );
 
@@ -134,7 +134,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     fontSize: 56,
     fontWeight: FontWeight.w300,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 2,
   );
 
@@ -142,7 +142,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     fontSize: 18,
     fontWeight: FontWeight.w400,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 0.5,
   );
 
@@ -150,7 +150,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     fontSize: 24,
     fontWeight: FontWeight.w400,
-    color: AppColors.darkBrown,
+    color: AppColors.Brown,
     letterSpacing: 1,
   );
 }
@@ -165,7 +165,7 @@ class AppDecorations {
     border: Border.all(color: AppColors.cardBorder),
     boxShadow: [
       BoxShadow(
-        color: AppColors.darkBrown.withOpacity(0.07),
+        color: AppColors.Brown.withOpacity(0.07),
         blurRadius: 10,
         offset: const Offset(0, 3),
       ),
@@ -200,7 +200,7 @@ class AppButtonStyles {
 
   /// Primary elevated button used across all auth screens.
   static ButtonStyle primary = ElevatedButton.styleFrom(
-    backgroundColor: AppColors.darkBrown,
+    backgroundColor: AppColors.Brown,
     foregroundColor: AppColors.white,
     elevation: 0,
     minimumSize: const Size(double.infinity, 50),
@@ -215,7 +215,7 @@ class AppButtonStyles {
     padding: EdgeInsets.zero,
     minimumSize: Size.zero,
     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    foregroundColor: AppColors.darkBrown,
+    foregroundColor: AppColors.Brown,
   );
 }
 
@@ -226,12 +226,12 @@ ThemeData get appTheme {
     fontFamily: 'Poppins',
 
     colorScheme: ColorScheme.light(
-      primary: AppColors.darkBrown,
+      primary: AppColors.Brown,
       secondary: AppColors.mediumBrown,
       surface: AppColors.beige,
       onPrimary: AppColors.white,
       onSecondary: AppColors.white,
-      onSurface: AppColors.darkBrown,
+      onSurface: AppColors.Brown,
       error: AppColors.error,
     ),
 
@@ -241,11 +241,11 @@ ThemeData get appTheme {
       backgroundColor: AppColors.beige,
       elevation: 0,
       centerTitle: false,
-      iconTheme: IconThemeData(color: AppColors.darkBrown),
+      iconTheme: IconThemeData(color: AppColors.Brown),
       titleTextStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: AppColors.darkBrown,
+        color: AppColors.Brown,
         letterSpacing: 0.3,
       ),
       systemOverlayStyle: SystemUiOverlayStyle(
@@ -260,7 +260,7 @@ ThemeData get appTheme {
 
       hintStyle: AppTextStyles.hint,
 
-      labelStyle: TextStyle(color: AppColors.darkBrown.withOpacity(0.8)),
+      labelStyle: TextStyle(color: AppColors.Brown.withOpacity(0.8)),
 
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
 
@@ -271,7 +271,7 @@ ThemeData get appTheme {
 
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: AppColors.darkBrown, width: 2),
+        borderSide: const BorderSide(color: AppColors.Brown, width: 2),
       ),
 
       errorBorder: OutlineInputBorder(
@@ -298,7 +298,7 @@ ThemeData get appTheme {
         return Colors.transparent;
       }),
       side: BorderSide(
-        color: AppColors.darkBrown.withOpacity(0.70),
+        color: AppColors.Brown.withOpacity(0.70),
         width: 1.5,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
@@ -309,19 +309,19 @@ ThemeData get appTheme {
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) return AppColors.white;
-        return AppColors.darkBrown.withOpacity(0.40);
+        return AppColors.Brown.withOpacity(0.40);
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.selected)) {
-          return AppColors.darkBrown.withOpacity(0.65);
+          return AppColors.Brown.withOpacity(0.65);
         }
-        return AppColors.darkBrown.withOpacity(0.15);
+        return AppColors.Brown.withOpacity(0.15);
       }),
       trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
     ),
 
     dividerTheme: DividerThemeData(
-      color: AppColors.darkBrown.withOpacity(0.15),
+      color: AppColors.Brown.withOpacity(0.15),
       thickness: 1,
       space: 1,
     ),
@@ -329,19 +329,19 @@ ThemeData get appTheme {
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.beige.withOpacity(0.97),
       contentTextStyle: AppTextStyles.bodyLarge.copyWith(
-        color: AppColors.darkBrown,
+        color: AppColors.Brown,
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       behavior: SnackBarBehavior.floating,
     ),
 
     progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: AppColors.darkBrown,
+      color: AppColors.Brown,
       linearMinHeight: 2.5,
     ),
 
     iconTheme: IconThemeData(
-      color: AppColors.darkBrown.withOpacity(0.75),
+      color: AppColors.Brown.withOpacity(0.75),
       size: 20,
     ),
 
@@ -354,13 +354,13 @@ ThemeData get appTheme {
         return TextStyle(
           fontSize: 11.5,
           fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          color: AppColors.darkBrown,
+          color: AppColors.Brown,
         );
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final bool selected = states.contains(WidgetState.selected);
         return IconThemeData(
-          color: AppColors.darkBrown,
+          color: AppColors.Brown,
           size: selected ? 22 : 20,
         );
       }),

@@ -3,15 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:get_storage/get_storage.dart';
-// ════════════════════════════════════════════════
-//  ONE SCREEN FOR BOTH ROLES — CLIENT & LAWYER
-//  Backend's GET /conversations/mine already branches by
-//  req.user.role (same pattern as /appointments/mine), so
-//  we don't need a role param to pick the data source.
-//  The ONLY thing that differs per role is which field
-//  holds "the other person" — lawyer_name/lawyer_id for a
-//  client, client_name/client_id for a lawyer.
-// ════════════════════════════════════════════════
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -50,9 +41,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   String _otherName(Map<String, dynamic> conv) {
   final role = GetStorage().read("role")?.toString().toLowerCase() ?? '';
 
-  // The backend always returns BOTH client_name and lawyer_name on every
-  // row (it doesn't know who's asking). So we must pick based on OUR
-  // OWN role — a lawyer wants to see the client's name, and vice versa.
   if (role == 'lawyer') {
     return (conv["client_name"] ?? conv["other_name"] ?? "Client").toString();
   } else if (role == 'client') {
@@ -92,7 +80,7 @@ int _otherId(Map<String, dynamic> conv) {
   }
 
   Future<void> fetchConversations({bool silent = false}) async {
-    // Single endpoint for everyone — backend decides client vs lawyer scope.
+    
     final data = await _service.fetchMyConversations();
 
     if (mounted) {
@@ -131,9 +119,9 @@ int _otherId(Map<String, dynamic> conv) {
         title: const Text("Messages"),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(color: Colors.white10, height: 1),
+          child: Container(color: Colors.brown, height: 1),
         ),
-        backgroundColor: const Color(0xFF3D2B1F),
+        backgroundColor: Colors.brown,
         foregroundColor: Colors.white,
       ),
       body: Column(
@@ -145,8 +133,8 @@ int _otherId(Map<String, dynamic> conv) {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: "Search conversations...",
-                hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
-                prefixIcon: const Icon(Icons.search, color: Colors.black38),
+                hintStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                prefixIcon: const Icon(Icons.search, color: Colors.black),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -165,7 +153,7 @@ int _otherId(Map<String, dynamic> conv) {
               alignment: Alignment.centerLeft,
               child: Text(
                 "Chat with lawyers and clients",
-                style: TextStyle(fontSize: 12, color: Colors.black45),
+                style: TextStyle(fontSize: 12, color: Colors.black),
               ),
             ),
           ),
@@ -213,7 +201,7 @@ int _otherId(Map<String, dynamic> conv) {
                                 children: [
                                   CircleAvatar(
                                     radius: 22,
-                                    backgroundColor: const Color(0xFF3D2B1F),
+                                    backgroundColor: Colors.brown,
                                     child: Text(
                                       name.isNotEmpty ? name.substring(0, 1).toUpperCase() : "U",
                                       style: const TextStyle(
@@ -233,7 +221,7 @@ int _otherId(Map<String, dynamic> conv) {
                                           style: const TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.w600,
-                                            color: Color(0xFF3D2B1F),
+                                            color: Colors.brown,
                                           ),
                                         ),
                                         const SizedBox(height: 3),
@@ -241,7 +229,7 @@ int _otherId(Map<String, dynamic> conv) {
                                           conv["last_message"] ?? "",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 13, color: Colors.black54),
+                                          style: const TextStyle(fontSize: 13, color: Colors.black),
                                         ),
                                       ],
                                     ),
@@ -252,14 +240,14 @@ int _otherId(Map<String, dynamic> conv) {
                                     children: [
                                       Text(
                                         _formatTime(conv["last_at"]),
-                                        style: const TextStyle(fontSize: 11, color: Colors.black45),
+                                        style: const TextStyle(fontSize: 11, color: Colors.black),
                                       ),
                                       if (unread > 0) ...[
                                         const SizedBox(height: 4),
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                                           decoration: BoxDecoration(
-                                            color: const Color(0xFF3D2B1F),
+                                            color: Colors.brown,
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Text(

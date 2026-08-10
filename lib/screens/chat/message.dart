@@ -116,7 +116,7 @@ class _MessageScreenState extends State<MessageScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F0E8),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF3D2B1F),
+        backgroundColor: Colors.brown,
         foregroundColor: Colors.white,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +215,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     width: 46,
                     height: 46,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF3D2B1F),
+                      color: Colors.brown,
                       shape: BoxShape.circle,
                     ),
                     child: isSending
@@ -273,7 +273,7 @@ class _MessageBubble extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isMine ? const Color(0xFF3D2B1F) : const Color(0xFFEDE8DF),
+          color: isMine ? Colors.brown : const Color(0xFFEDE8DF),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -293,7 +293,7 @@ class _MessageBubble extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF3D2B1F),
+                    color: Colors.brown,
                   ),
                 ),
               ),
@@ -302,7 +302,7 @@ class _MessageBubble extends StatelessWidget {
               body,
               style: TextStyle(
                 fontSize: 14,
-                color: isMine ? Colors.white : Colors.black87,
+                color: isMine ? Colors.white : Colors.black,
               ),
             ),
 
@@ -315,7 +315,7 @@ class _MessageBubble extends StatelessWidget {
                 // ← FIXED: withValues instead of withOpacity
                 color: isMine
                     ? Colors.white.withValues(alpha: 0.65)
-                    : Colors.black38,
+                    : Colors.black,
               ),
             ),
           ],

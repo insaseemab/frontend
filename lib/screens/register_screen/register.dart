@@ -55,7 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  // ── Field-level validators ────────────────────────────
+  
   String? _validateFullName(String? value) {
     if (value == null || value.trim().isEmpty) return "Full name is required";
     if (value.trim().length < 3) return "Name must be at least 3 characters";
@@ -123,12 +123,12 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  // ── Register Handler ──────────────────────────────────
+
   Future<void> _handleRegister() async {
-    // 1. Run all field validators
+    
     final isValid = _formKey.currentState?.validate() ?? false;
 
-    // 2. Dropdown validator runs separately since it isn't a TextFormField
+  
     if (!isClient && selectedSpecialization == null) {
       Get.snackbar(
         "Validation Error",
@@ -140,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    // 3. License validator runs separately since it's an image, not a form field
+  
     final licenseError = _validateLicense();
     if (licenseError != null) {
       Get.snackbar(
@@ -157,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() => _isLoading = true);
 
-    // 4. Build body based on role
+    
     final Map<String, dynamic> body = {
       'name': fullNameController.text.trim(),
       'email': emailController.text.trim(),
@@ -173,7 +173,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body['experience'] = experienceController.text.trim();
     }
 
-    // 5. Call API (with license image attached for lawyers)
+    
     final result = await AuthService.register(
   body,
   licenseImageBytes: licenseImageBytes,
@@ -190,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
         snackPosition: SnackPosition.BOTTOM,
       );
 
-      // ── Navigate based on role ──────────────────────────
+      
       if (isClient) {
         Get.offAllNamed(AppRoutes.clientDashboard);
       } else {
@@ -214,7 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes(); // works on web + mobile
+      final bytes = await pickedFile.readAsBytes(); 
       setState(() {
         licenseImageBytes = bytes;
         licenseImageName = pickedFile.name;

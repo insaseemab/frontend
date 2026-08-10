@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/routes/default_transitions.dart';
+import 'dart:async';
 import 'package:get_storage/get_storage.dart';
-import 'package:insaafconnect/screens/dashboard_screen/client/calendar.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
@@ -55,8 +54,15 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -67,7 +73,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             const Text(
               "Insaaf Connect",
               style: TextStyle(
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -75,39 +81,39 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           ],
         ),
         actions: [
-  // 🔔 Notification bell
-  Stack(
-    clipBehavior: Clip.none,
-    children: [
-      IconButton(
-        icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
-        onPressed: () => Get.to(() => const NotificationsScreen()),
-      ),
-      Positioned(
-        right: 8,
-        top: 8,
-        child: Container(
-          height: 9,
-          width: 9,
-          decoration: const BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.circle,
+          // 🔔 Notification bell
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
+                onPressed: () => Get.to(() => const NotificationsScreen()),
+              ),
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  height: 9,
+                  width: 9,
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-    ],
-  ),
 
-  IconButton(
-    icon: const CircleAvatar(
-      radius: 16,
-      backgroundColor: Color(0xFF6B4F3F),
-      child: Icon(Icons.person, color: Colors.white, size: 18),
-    ),
-    onPressed: () => Get.to(() => const ProfileScreen()),
-  ),
-  const SizedBox(width: 8),
-],
+          IconButton(
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundColor: Color(0xFF6B4F3F),
+              child: Icon(Icons.person, color: Colors.white, size: 18),
+            ),
+            onPressed: () => Get.to(() => const ProfileScreen()),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       drawer: Drawer(
         backgroundColor: const Color(0xFFF5EFE6),
@@ -115,7 +121,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: AppColors.darkBrown),
+              decoration: const BoxDecoration(color: AppColors.Brown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -152,7 +158,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: AppColors.darkBrown),
+              leading: const Icon(Icons.home, color: AppColors.Brown),
               title: const Text("Home"),
               onTap: () {
                 Get.back();
@@ -160,7 +166,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.folder, color: AppColors.darkBrown),
+              leading: const Icon(Icons.folder, color: AppColors.Brown),
               title: const Text("Active Cases"),
               onTap: () {
                 Get.back();
@@ -168,7 +174,10 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.calendar_today, color: AppColors.darkBrown),
+              leading: const Icon(
+                Icons.calendar_today,
+                color: AppColors.Brown,
+              ),
               title: const Text("Appointments"),
               onTap: () {
                 Get.back();
@@ -176,7 +185,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.message, color: AppColors.darkBrown),
+              leading: const Icon(Icons.message, color: AppColors.Brown),
               title: const Text("Messages"),
               onTap: () {
                 Get.back();
@@ -187,7 +196,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             ListTile(
               leading: const Icon(
                 Icons.calendar_month,
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
               ),
               title: const Text("My Calendar"),
               onTap: () {
@@ -197,7 +206,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.logout, color: AppColors.darkBrown),
+              leading: const Icon(Icons.logout, color: AppColors.Brown),
               title: const Text("Logout"),
               onTap: () {
                 GetStorage().erase();
@@ -215,8 +224,8 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: AppColors.darkBrown,
-        unselectedItemColor: AppColors.darkBrown,
+        selectedItemColor: AppColors.Brown,
+        unselectedItemColor: AppColors.Brown,
         backgroundColor: AppColors.beige,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -345,7 +354,13 @@ class _HomePageState extends State<_HomePage> {
     }
 
     final todaysAppointments = _todaysAppointments;
-    final activeCases = cases.where((c) => c['case_status']?.toString().toLowerCase() != 'completed' && c['case_status']?.toString().toLowerCase() != 'closed').toList();
+    final activeCases = cases
+        .where(
+          (c) =>
+              c['case_status']?.toString().toLowerCase() != 'completed' &&
+              c['case_status']?.toString().toLowerCase() != 'closed',
+        )
+        .toList();
 
     // Calculate Lawyer Earnings
     double totalEarnings = 0;
@@ -353,12 +368,15 @@ class _HomePageState extends State<_HomePage> {
     final now = DateTime.now();
     for (final a in appointments) {
       if (a['payment_status'] == 1) {
-        final double amt = double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
+        final double amt =
+            double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
         totalEarnings += amt;
         final startRaw = a['slot_start_time'];
         if (startRaw != null) {
           final start = DateTime.tryParse(startRaw.toString());
-          if (start != null && start.year == now.year && start.month == now.month) {
+          if (start != null &&
+              start.year == now.year &&
+              start.month == now.month) {
             thisMonthEarnings += amt;
           }
         }
@@ -366,7 +384,7 @@ class _HomePageState extends State<_HomePage> {
     }
 
     return RefreshIndicator(
-      color: AppColors.darkBrown,
+      color: AppColors.Brown,
       onRefresh: loadDashboardData,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -379,7 +397,7 @@ class _HomePageState extends State<_HomePage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -483,7 +501,7 @@ class _HomePageState extends State<_HomePage> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
               ),
             ),
             const SizedBox(height: 10),
@@ -497,21 +515,23 @@ class _HomePageState extends State<_HomePage> {
               )
             else
               Column(
-                children: todaysAppointments.map(
-                  (a) => _scheduleCard(
-                    _formatTime(a['slot_start_time']?.toString()),
-                    (a['case_type'] ??
-                            a['short_description'] ??
-                            'Appointment')
-                        .toString(),
-                    (a['client_name'] ?? 'Client #${a['client_id']}')
-                        .toString(),
-                    _formatDuration(
-                      a['slot_start_time']?.toString(),
-                      a['slot_end_time']?.toString(),
-                    ),
-                  ),
-                ).toList(),
+                children: todaysAppointments
+                    .map(
+                      (a) => _scheduleCard(
+                        _formatTime(a['slot_start_time']?.toString()),
+                        (a['case_type'] ??
+                                a['short_description'] ??
+                                'Appointment')
+                            .toString(),
+                        (a['client_name'] ?? 'Client #${a['client_id']}')
+                            .toString(),
+                        _formatDuration(
+                          a['slot_start_time']?.toString(),
+                          a['slot_end_time']?.toString(),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             const SizedBox(height: 24),
 
@@ -521,7 +541,7 @@ class _HomePageState extends State<_HomePage> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
               ),
             ),
             const SizedBox(height: 10),
@@ -535,15 +555,19 @@ class _HomePageState extends State<_HomePage> {
               )
             else
               Column(
-                children: activeCases.take(3).map(
-                  (c) => _caseCard(
-                    (c['name'] ?? c['title'] ?? 'Untitled Case').toString(),
-                    (c['client_name'] ?? 'Client #${c['client_id']}').toString(),
-                    (c['hearing_date'] ?? '—').toString(),
-                    (c['case_status'] ?? '—').toString(),
-                    _statusColor(c['case_status']?.toString()),
-                  ),
-                ).toList(),
+                children: activeCases
+                    .take(3)
+                    .map(
+                      (c) => _caseCard(
+                        (c['name'] ?? c['title'] ?? 'Untitled Case').toString(),
+                        (c['client_name'] ?? 'Client #${c['client_id']}')
+                            .toString(),
+                        (c['hearing_date'] ?? '—').toString(),
+                        (c['case_status'] ?? '—').toString(),
+                        _statusColor(c['case_status']?.toString()),
+                      ),
+                    )
+                    .toList(),
               ),
           ],
         ),
@@ -737,7 +761,7 @@ class _HomePageState extends State<_HomePage> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkBrown.withOpacity(0.10),
+            color: AppColors.Brown.withOpacity(0.10),
             blurRadius: 6,
           ),
         ],
@@ -745,7 +769,7 @@ class _HomePageState extends State<_HomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 24, color: AppColors.darkBrown),
+          Icon(icon, size: 24, color: AppColors.Brown),
           const SizedBox(height: 6),
           Text(
             value,
@@ -820,6 +844,9 @@ class _HomePageState extends State<_HomePage> {
       );
 }
 
+// ⚠️ Add this import at the TOP of lawyer_dashboard.dart:
+// import 'dart:async';
+
 class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
 
@@ -829,97 +856,255 @@ class _MessagesPage extends StatefulWidget {
 
 class _MessagesPageState extends State<_MessagesPage> {
   final MessageService service = MessageService();
+  final TextEditingController _searchController = TextEditingController();
 
-  List conversations = [];
+  List<Map<String, dynamic>> conversations = [];
+  List<Map<String, dynamic>> filteredConversations = [];
   bool loading = true;
+  Timer? _pollTimer;
 
   @override
   void initState() {
     super.initState();
     loadConversations();
+    _searchController.addListener(_onSearchChanged);
+
+    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      loadConversations(silent: true);
+    });
   }
 
-  Future<void> loadConversations() async {
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  String _clientName(Map<String, dynamic> c) {
+    return (c['client_name'] ?? 'Client').toString();
+  }
+
+  void _onSearchChanged() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredConversations = conversations.where((c) {
+        final name = _clientName(c).toLowerCase();
+        final msg = (c["last_message"] as String? ?? "").toLowerCase();
+        return name.contains(query) || msg.contains(query);
+      }).toList();
+    });
+  }
+
+  Future<void> loadConversations({bool silent = false}) async {
     final data = await service.fetchMyConversations();
 
     if (mounted) {
       setState(() {
-        conversations = data;
+        conversations = List<Map<String, dynamic>>.from(data);
+        filteredConversations = _searchController.text.isEmpty
+            ? conversations
+            : filteredConversations;
+        if (_searchController.text.isEmpty) filteredConversations = conversations;
         loading = false;
       });
     }
   }
 
+  String _formatTime(dynamic isoString) {
+    if (isoString == null) return '';
+    try {
+      final dt = DateTime.parse(isoString.toString()).toLocal();
+      final now = DateTime.now();
+      if (dt.day == now.day && dt.month == now.month && dt.year == now.year) {
+        final h = dt.hour.toString().padLeft(2, '0');
+        final m = dt.minute.toString().padLeft(2, '0');
+        return '$h:$m';
+      }
+      return '${dt.day}/${dt.month}';
+    } catch (_) {
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (conversations.isEmpty) {
-      return const Center(child: Text("No conversations found"));
-    }
-
-    return Padding(
-      padding: const EdgeInsets.all(20),
-
+    return Container(
+      color: AppColors.beige,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Messages",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 4),
-
-          const Text(
-            "Your client conversations",
-            style: TextStyle(color: Colors.grey),
-          ),
-
-          const SizedBox(height: 16),
-
-          Expanded(
-            child: ListView.builder(
-              itemCount: conversations.length,
-
-              itemBuilder: (context, index) {
-                final c = conversations[index];
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 10),
-
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: const Color(0xFF6B4F3F),
-
-                      child: Text(
-                        "C",
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-
-                    title: Text("${c['client_name']}"),
-
-                    subtitle: Text("Conversation ID ${c['id']}"),
-
-                    onTap: () {
-                      Get.to(
-                        () => const MessageScreen(),
-                        arguments: {
-                          "conversation_id": c["id"],
-
-                          "receiver_id": c["client_id"],
-
-                          "other_name": "${c['client_name']}",
-                        },
-                      );
-                    },
-                  ),
-                );
-              },
+          // ── HEADER ──
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Messages",
+                style: TextStyle(
+                  color: Colors.brown,
+                  fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
+          ),
+
+          // ── SEARCH BAR ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: "Search conversations...",
+                hintStyle: TextStyle(
+                    color: AppColors.Brown.withOpacity(0.6), fontSize: 14),
+                prefixIcon: Icon(Icons.search, color: AppColors.Brown),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+
+          // ── SUBTITLE ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Your client conversations",
+                style: TextStyle(
+                    fontSize: 12, color: AppColors.Brown.withOpacity(0.7)),
+              ),
+            ),
+          ),
+
+          // ── LIST ──
+          Expanded(
+            child: loading
+                ? Center(
+                    child: CircularProgressIndicator(color: AppColors.Brown))
+                : filteredConversations.isEmpty
+                    ? const Center(child: Text("No conversations yet"))
+                    : ListView.builder(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        itemCount: filteredConversations.length,
+                        itemBuilder: (context, index) {
+                          final c = filteredConversations[index];
+                          final unread = c["unread_count"] as int? ?? 0;
+                          final name = _clientName(c);
+                          final avatarLetter = name.isNotEmpty
+                              ? name.trim().substring(0, 1).toUpperCase()
+                              : "C";
+
+                          return GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                () => const MessageScreen(),
+                                arguments: {
+                                  "conversation_id": c["id"],
+                                  "receiver_id": c["client_id"],
+                                  "other_name": name,
+                                },
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 22,
+                                    backgroundColor: Colors.brown,
+                                    child: Text(
+                                      avatarLetter,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          name,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.Brown,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 3),
+                                        Text(
+                                          c["last_message"] ??
+                                              "Conversation ID ${c['id']}",
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.Brown
+                                                  .withOpacity(0.75)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        _formatTime(c["last_at"]),
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: AppColors.Brown
+                                                .withOpacity(0.6)),
+                                      ),
+                                      if (unread > 0) ...[
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 7, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.Brown,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            '$unread',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),

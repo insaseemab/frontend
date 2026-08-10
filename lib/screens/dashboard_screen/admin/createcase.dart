@@ -102,7 +102,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: AppColors.darkBrown,
+              primary: AppColors.Brown,
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
@@ -229,7 +229,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Case'),
-        backgroundColor: AppColors.darkBrown,
+        backgroundColor: AppColors.Brown,
         foregroundColor: Colors.white,
       ),
       body: isFetchingData
@@ -399,7 +399,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                                     .split(' ')[0],
                             suffixIcon: const Icon(
                               Icons.calendar_today,
-                              color: AppColors.darkBrown,
+                              color: AppColors.Brown,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -466,7 +466,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : createCase,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.darkBrown,
+                        backgroundColor: AppColors.Brown,
                         foregroundColor: Colors.white,
                       ),
                       child: isLoading

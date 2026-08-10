@@ -67,7 +67,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             const Text(
               "Insaaf Connect",
               style: TextStyle(
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
               ),
@@ -79,7 +79,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             clipBehavior: Clip.none,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications, color: AppColors.darkBrown),
+                icon: const Icon(Icons.notifications, color: AppColors.Brown),
                 onPressed: () => Get.to(() => const NotificationsScreen()),
               ),
               Positioned(
@@ -99,7 +99,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           IconButton(
             icon: const CircleAvatar(
               radius: 16,
-              backgroundColor: AppColors.darkBrown,
+              backgroundColor: AppColors.Brown,
               child: Icon(Icons.person, color: AppColors.white, size: 18),
             ),
             onPressed: () => Get.to(() => const ProfileScreen()),
@@ -113,7 +113,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: AppColors.darkBrown),
+              decoration: BoxDecoration(color: AppColors.Brown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -138,11 +138,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home, color: AppColors.darkBrown),
+              leading: const Icon(Icons.home, color: AppColors.Brown),
               title: const Text(
                 "Home",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -152,11 +152,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.search, color: AppColors.darkBrown),
+              leading: const Icon(Icons.search, color: AppColors.Brown),
               title: const Text(
                 "Find Lawyer",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -166,11 +166,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.calendar_month, color: AppColors.darkBrown),
+              leading: const Icon(Icons.calendar_month, color: AppColors.Brown),
               title: const Text(
                 "My Calendar",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -180,11 +180,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.assignment, color: AppColors.darkBrown),
+              leading: const Icon(Icons.assignment, color: AppColors.Brown),
               title: const Text(
                 "Appointments",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -194,11 +194,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.message, color: AppColors.darkBrown),
+              leading: const Icon(Icons.message, color: AppColors.Brown),
               title: const Text(
                 "Messages",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -208,11 +208,11 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.logout, color: AppColors.darkBrown),
+              leading: const Icon(Icons.logout, color: AppColors.Brown),
               title: const Text(
                 "Logout",
                 style: TextStyle(
-                  color: AppColors.darkBrown,
+                  color: AppColors.Brown,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -254,14 +254,14 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                         children: [
                           Icon(
                             isSelected ? item.activeIcon : item.icon,
-                            color: AppColors.darkBrown,
+                            color: AppColors.Brown,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             item.label,
                             style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.darkBrown,
+                              color: AppColors.Brown,
                               fontWeight:
                                   isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
@@ -387,7 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.darkBrown));
+      return const Center(child: CircularProgressIndicator(color: AppColors.Brown));
     }
 
     if (errorMessage != null) {
@@ -436,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return RefreshIndicator(
-      color: AppColors.darkBrown,
+      color: AppColors.Brown,
       onRefresh: _loadData,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -449,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -551,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.darkBrown,
+                color: AppColors.Brown,
               ),
             ),
             const SizedBox(height: 12),
@@ -619,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkBrown.withOpacity(0.10),
+            color: AppColors.Brown.withOpacity(0.10),
             blurRadius: 6,
           ),
         ],
@@ -627,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 24, color: AppColors.darkBrown),
+          Icon(icon, size: 24, color: AppColors.Brown),
           const SizedBox(height: 6),
           Text(
             value,
@@ -729,7 +729,7 @@ class _CaseCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFEADDD0)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.darkBrown.withOpacity(0.05),
+            color: AppColors.Brown.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -820,7 +820,7 @@ class _AppointmentCard extends StatelessWidget {
             ),
             child: const Icon(
               Icons.calendar_month,
-              color: AppColors.darkBrown,
+              color: AppColors.Brown,
               size: 20,
             ),
           ),
