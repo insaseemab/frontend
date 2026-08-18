@@ -150,7 +150,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
             _buildField('Hearing Date (YYYY-MM-DD)', hearingDateController),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              initialValue: selectedPaymentStatus,
+              value: selectedPaymentStatus,
               decoration: const InputDecoration(
                 labelText: 'Payment Status',
                 border: UnderlineInputBorder(),

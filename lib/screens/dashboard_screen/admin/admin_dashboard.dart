@@ -10,6 +10,7 @@ import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/screens/notifications.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/settings_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -26,8 +27,7 @@ class _DashboardStats {
   final int clientsCount; // approximated from unique client_id in appointments
   final double totalEarnings;
   final double thisMonthEarnings;
-  final int manualPaymentsCount;
-  final int cardPaymentsCount;
+  final int totalPaymentsCount;
 
   _DashboardStats({
     required this.casesCount,
@@ -36,8 +36,7 @@ class _DashboardStats {
     required this.clientsCount,
     required this.totalEarnings,
     required this.thisMonthEarnings,
-    required this.manualPaymentsCount,
-    required this.cardPaymentsCount,
+    required this.totalPaymentsCount,
   });
 }
 
@@ -90,8 +89,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final clientIds = <String>{};
     double totalEarnings = 0;
     double thisMonthEarnings = 0;
-    int manualCount = 0;
-    int cardCount = 0;
+    int totalPaymentsCount = 0;
     final now = DateTime.now();
 
     for (final raw in appointments) {
@@ -118,12 +116,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           thisMonthEarnings += amount;
         }
 
-        final mode = (apt['payment_mode'] ?? '').toString().toLowerCase();
-        if (mode.contains('card')) {
-          cardCount++;
-        } else if (mode.isNotEmpty) {
-          manualCount++;
-        }
+        totalPaymentsCount++;
       }
     }
 
@@ -134,8 +127,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       clientsCount: clientIds.length,
       totalEarnings: totalEarnings,
       thisMonthEarnings: thisMonthEarnings,
-      manualPaymentsCount: manualCount,
-      cardPaymentsCount: cardCount,
+      totalPaymentsCount: totalPaymentsCount,
     );
   }
 
@@ -341,6 +333,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Get.toNamed('/calendar');
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: AppColors.Brown),
+            title: const Text('Settings'),
+            onTap: () {
+              Get.back();
+              Get.to(() => const SettingsScreen());
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: AppColors.Brown),
@@ -516,16 +516,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Expanded(
                       child: _countCard(
                         Icons.account_balance_wallet_outlined,
-                        'Manual Payments',
-                        stats.manualPaymentsCount,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _countCard(
-                        Icons.credit_card_outlined,
-                        'Card Payments',
-                        stats.cardPaymentsCount,
+                        'Total Payments',
+                        stats.totalPaymentsCount,
                       ),
                     ),
                   ],

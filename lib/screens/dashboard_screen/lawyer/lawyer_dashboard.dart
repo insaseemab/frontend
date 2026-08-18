@@ -12,6 +12,9 @@ import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:insaafconnect/screens/notifications.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/edit_profile.dart';
+import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:insaafconnect/core/services/settings_services.dart';
 
 class LawyerDashboard extends StatefulWidget {
   const LawyerDashboard({super.key});
@@ -82,26 +85,9 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         ),
         actions: [
           // 🔔 Notification bell
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
-                onPressed: () => Get.to(() => const NotificationsScreen()),
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  height: 9,
-                  width: 9,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
+            onPressed: () => Get.to(() => const NotificationsScreen()),
           ),
 
           IconButton(
@@ -204,6 +190,14 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
                 Get.toNamed('/calendar');
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.edit, color: AppColors.Brown),
+              title: const Text("Edit Profile"),
+              onTap: () {
+                Get.back();
+                Get.to(() => const EditLawyerProfile());
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: AppColors.Brown),
@@ -276,6 +270,8 @@ class _HomePageState extends State<_HomePage> {
 
   List<dynamic> cases = [];
   List<dynamic> appointments = [];
+  Map<String, dynamic>? lawyerData;
+  Map<String, dynamic>? settingsData;
   bool loading = true;
   String? errorMsg;
 
@@ -288,15 +284,20 @@ class _HomePageState extends State<_HomePage> {
   Future<void> loadDashboardData() async {
     try {
       final token = box.read<String>('token') ?? '';
+      final userId = box.read<int>('id') ?? -1;
       final results = await Future.wait([
         CasesService.fetchMyCases(token),
         AppointmentService.getMyAppointments(),
+        LawyerService().fetchLawyerById(userId),
+        SettingsService.getSettings(),
       ]);
 
       if (!mounted) return;
       setState(() {
-        cases = results[0];
-        appointments = results[1];
+        cases = results[0] as List<dynamic>;
+        appointments = results[1] as List<dynamic>;
+        lawyerData = results[2] as Map<String, dynamic>?;
+        settingsData = results[3] as Map<String, dynamic>?;
         loading = false;
       });
     } catch (e) {
@@ -392,6 +393,69 @@ class _HomePageState extends State<_HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Subscription banner ─────────────────────────────
+            Builder(
+              builder: (context) {
+                final subDateStr = lawyerData?['subscription_end_date'];
+                DateTime? subDate;
+                if (subDateStr != null) {
+                  subDate = DateTime.tryParse(subDateStr.toString());
+                }
+                final isExpired = subDate == null || subDate.isBefore(DateTime.now());
+                final fee = settingsData?['subscription_fee'] ?? '2000';
+
+                return Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isExpired ? Colors.red.shade100 : Colors.green.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isExpired ? Colors.red.shade400 : Colors.green.shade400,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+                        color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                        size: 32,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isExpired ? 'Subscription Expired' : 'Subscription Active',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              isExpired
+                                  ? 'Your subscription has expired. Please pay PKR $fee to the Admin via JazzCash to renew your account.'
+                                  : 'Your subscription is valid until ${subDateStr.toString().split('T')[0]}.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
             // ── Welcome banner ────────────────────────────────
             Container(
               width: double.infinity,

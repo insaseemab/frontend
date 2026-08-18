@@ -14,8 +14,6 @@ class PaymentBottomSheet extends StatefulWidget {
 }
 
 class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
-  String selectedMethod = "Manual";
-
   Uint8List? screenshotBytes;
   String? screenshotName;
   bool _isSubmitting = false;
@@ -45,7 +43,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     try {
       await AppointmentService.payAppointment(
         widget.appointment['id'],
-        selectedMethod,
+        "Manual",
         screenshotBytes,
       );
 
@@ -105,107 +103,20 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
           const SizedBox(height: 15),
 
-          Row(
+          Column(
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedMethod = "Manual";
-                    });
-                  },
-                  child: Container(
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: selectedMethod == "Manual"
-                          ? const Color(0xFF5C3D2E)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.upload,
-                          color: selectedMethod == "Manual"
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Manual Payment",
-                          style: TextStyle(
-                            color: selectedMethod == "Manual"
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              OutlinedButton(
+                onPressed: pickImage,
+                child: const Text("Upload Screenshot"),
               ),
 
-              const SizedBox(width: 10),
-
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedMethod = "Stripe";
-                    });
-                  },
-                  child: Container(
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: selectedMethod == "Stripe"
-                          ? const Color(0xFF5C3D2E)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.payment_outlined,
-                          color: selectedMethod == "Stripe"
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Stripe",
-                          style: TextStyle(
-                            color: selectedMethod == "Stripe"
-                                ? Colors.white
-                                : Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              if (screenshotName != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(screenshotName!),
                 ),
-              ),
             ],
           ),
-
-          const SizedBox(height: 20),
-
-          if (selectedMethod == "Manual")
-            Column(
-              children: [
-                OutlinedButton(
-                  onPressed: pickImage,
-                  child: const Text("Upload Screenshot"),
-                ),
-
-                if (screenshotName != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(screenshotName!),
-                  ),
-              ],
-            ),
 
           const SizedBox(height: 20),
 

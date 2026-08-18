@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class NotificationService {
-  final String baseUrl = "http://localhost:3000"; 
+  final String baseUrl = "http://insaaf.sandbox.pk"; 
 
   final _box = GetStorage();
 
@@ -19,7 +19,7 @@ class NotificationService {
   final box = GetStorage();
   
   final res = await http.get(
-    Uri.parse('$baseUrl/notifications'),
+    Uri.parse('$baseUrl/notifications/mine'),
     headers: _headers,
   );
 

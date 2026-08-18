@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/auth_services.dart';
 import 'reset_password.dart';
+import '../../routes/app_routes.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -44,7 +45,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
     // Since the reset link carries a token, take the user to a screen
     // where they can paste/enter it (or deep-link handling can auto-fill this).
-    // Get.toNamed('/reset-password');
+    Get.toNamed(AppRoutes.resetPassword);
   }
 
   @override

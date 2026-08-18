@@ -242,6 +242,27 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
+  // ── RENEW ─────────────────────────────────────────────────────────────────
+  Future<void> _renewLawyer(int index) async {
+    final id = _lawyers[index]['id'];
+    try {
+      await _lawyerService.renewLawyer(id);
+      if (!mounted) return;
+      _loadLawyers(); // reload to get new subscription date
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Subscription renewed (30 Days) ✅'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    }
+  }
+
   @override
 Widget build(BuildContext context) {
   return Scaffold(
@@ -380,6 +401,8 @@ Widget build(BuildContext context) {
               Text('📍 ${lawyer["location"] ?? ""}'),
               Text('${lawyer["experience"] ?? ""} years experience'),
               Text('${lawyer["cases"] ?? ""} cases'),
+              if (lawyer["subscription_end_date"] != null)
+                Text('Expires: ${lawyer["subscription_end_date"].toString().split("T")[0]}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
               const SizedBox(height: 10),
 
               // ── Status Badge ─────────────────────────────────────────────
@@ -503,6 +526,28 @@ Widget build(BuildContext context) {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              // ── Renew Button ──────────────────────────────────────────────
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => _renewLawyer(index),
+                  icon: const Icon(Icons.autorenew, size: 16),
+                  label: const Text(
+                    'Renew (30 Days)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.blueAccent,
+                    side: const BorderSide(color: Colors.blueAccent),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
