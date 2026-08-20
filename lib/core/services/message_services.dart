@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:insaafconnect/config/environment.dart';
 
 class MessageService {
-  final String baseUrl = "http://localhost:3000";
+  static const String baseUrl = Environment.apiBaseUrl;
 
   String get _token => GetStorage().read("token") ?? "";
 

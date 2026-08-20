@@ -2,9 +2,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/config/environment.dart';
 
 class NotificationService {
-  final String baseUrl = "http://localhost:3000"; 
+ static const String baseUrl = Environment.apiBaseUrl;
 
   final _box = GetStorage();
 

@@ -1,11 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'dart:typed_data'; 
+import 'package:insaafconnect/config/environment.dart';
 
 class AuthService {
-  static const String baseUrl = "http://localhost:3000";
+  static const String baseUrl = Environment.apiBaseUrl;
   static final box = GetStorage();
 
   static Future<Map<String, dynamic>> login(

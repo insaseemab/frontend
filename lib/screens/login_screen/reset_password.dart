@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/auth_services.dart';
-import '../login_screen/login.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -25,9 +25,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     _tokenController.text = _extractTokenFromUrl();
   }
 
-  /// Extracts the `token` query parameter from the current browser URL.
-  /// Works for both normal query strings and hash-based routing
-  /// (e.g. http://localhost:62336/#/reset-password?token=xxxx).
+  
   String _extractTokenFromUrl() {
     final uri = Uri.base;
 
@@ -95,7 +93,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       snackPosition: SnackPosition.BOTTOM,
     );
 
-    Get.offAll(() => const LoginScreen());
+    Get.offAllNamed(AppRoutes.login);
   }
 
   @override

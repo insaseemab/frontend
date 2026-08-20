@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/config/environment.dart';
 
 class LawyerService {
-  static const String _baseUrl = 'http://insaaf.sandbox.pk';
-
+  static const String _baseUrl = Environment.apiBaseUrl;
   
   String? _getToken() {
     final box = GetStorage();

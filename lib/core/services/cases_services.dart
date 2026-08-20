@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/config/environment.dart';
 
 class CasesService {
-  static const String baseUrl = "http://localhost:3000";
+ static const String baseUrl = Environment.apiBaseUrl;
 
  static Future<List<dynamic>> fetchCases() async {
   try {
