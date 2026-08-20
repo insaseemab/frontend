@@ -278,22 +278,20 @@ class _LawyerCard extends StatelessWidget {
   const _LawyerCard({required this.lawyer});
 
   Future<void> _openChat() async {
-    // CORRECT — add the
-    final result = await MessageService().startConversation(
-      lawyerId: lawyer['id'],
+  final result = await MessageService().startConversation(
+    lawyerId: lawyer['id'],
+  );
+  if (result != null) {
+    Get.toNamed(
+      AppRoutes.message,
+      arguments: {
+        "conversation_id": result["id"],
+        "other_name": lawyer["name"],
+        "receiver_id": lawyer["user_id"] ?? lawyer["id"],
+      },
     );
-    if (result != null) {
-      Get.toNamed(
-        '/messages',
-        arguments: {
-          "conversation_id": result["id"],
-          "other_name": lawyer["name"],
-          "receiver_id": lawyer["user_id"] ?? lawyer["id"],
-        },
-      );
-    }
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -511,7 +509,7 @@ class LawyerProfileScreen extends StatelessWidget {
     );
     if (result != null) {
       Get.toNamed(
-        AppRoutes.messages,
+        AppRoutes.message,
         arguments: {
           "conversation_id": result["id"],
           "other_name": lawyer["name"],

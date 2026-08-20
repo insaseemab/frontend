@@ -19,7 +19,7 @@ class NotificationService {
   final box = GetStorage();
   
   final res = await http.get(
-    Uri.parse('$baseUrl/notifications'),
+    Uri.parse('$baseUrl/notifications/mine'),
     headers: _headers,
   );
 

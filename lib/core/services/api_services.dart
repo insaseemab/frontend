@@ -4,7 +4,6 @@ import 'package:get_storage/get_storage.dart';
 
 class ApiService {
   static const String baseUrl = "http://localhost:3000";
-
   static final _box = GetStorage();
 
   static String? getToken() => _box.read<String>('token');
@@ -70,6 +69,16 @@ class ApiService {
     return data;
   }
 
+  static Future<void> updateLawyerProfile(Map<String, dynamic> data) async {
+    final id = _box.read('id');
+    final res = await http.put(
+      Uri.parse('$baseUrl/lawyers/$id'),
+      headers: authHeaders(),
+      body: jsonEncode(data),
+    );
+    checkStatus(res);
+  }
+
   static Future<void> changePassword({
     required int id,
     required String currentPassword,
@@ -89,50 +98,6 @@ class ApiService {
     checkStatus(res);
   }
 
-  // ════════════════════════════════════════════════
-  //  STRIPE PAYMENT ENDPOINTS
-  // ════════════════════════════════════════════════
-
-  /// Returns both 'clientSecret' (to show/confirm the card form) and
-  /// 'paymentIntentId' (save this in the widget — needed later for
-  /// the /confirm-payment call).
-  static Future<Map<String, String>> createStripePaymentIntent(
-    int appointmentId,
-    num amount, {
-    String currency = "usd",
-  }) async {
-    final res = await http.post(
-      Uri.parse('$baseUrl/api/create-payment-intent'),
-      headers: authHeaders(),
-      body: jsonEncode({
-        'appointmentId': appointmentId,
-        'amount': (amount * 100).round(), // smallest currency unit
-        'currency': currency,
-      }),
-    );
-    checkStatus(res);
-
-    final data = jsonDecode(res.body);
-    return {
-      'clientSecret': data['clientSecret'],
-      'paymentIntentId': data['paymentIntentId'],
-    };
-  }
-
-  static Future<void> confirmAppointmentPayment(
-    int appointmentId,
-    String paymentIntentId,
-  ) async {
-    final res = await http.post(
-      Uri.parse('$baseUrl/api/confirm-payment'),
-      headers: authHeaders(),
-      body: jsonEncode({
-        'appointmentId': appointmentId,
-        'paymentIntentId': paymentIntentId,
-      }),
-    );
-    checkStatus(res);
-  }
 }
 
 class ApiException implements Exception {

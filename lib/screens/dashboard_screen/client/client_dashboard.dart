@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/chat/conversation.dart';
+import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
@@ -31,15 +32,15 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     _NavItem(0, Icons.home_outlined, Icons.home, 'Home'),
     _NavItem(1, Icons.search, Icons.search, 'Lawyers'),
     _NavItem(2, Icons.calendar_month_outlined, Icons.calendar_month, 'Calendar'),
-    _NavItem(4, Icons.message_outlined, Icons.message, 'Chat'),
+    _NavItem(3, Icons.message_outlined, Icons.message, 'Chat'),
   ];
 
   final List<Widget> pages = [
     const HomeScreen(),                                     // 0
     const LawyerFindScreen(),                                // 1
     const CalendarScreen(isNested: true),                    // 2
-    const AppointmentsPage(role: AppointmentRole.client),    // 3 (drawer-only)
-    const ConversationsScreen(),                              // 4
+    const ConversationsScreen(),                              // 3
+    const AppointmentsPage(role: AppointmentRole.client),    // 4 (drawer-only)
   ];
 
   @override
@@ -75,26 +76,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ],
         ),
         actions: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications, color: AppColors.Brown),
-                onPressed: () => Get.to(() => const NotificationsScreen()),
-              ),
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  height: 9,
-                  width: 9,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.notifications, color: AppColors.Brown),
+            onPressed: () => Get.to(() => const NotificationsScreen()),
           ),
           IconButton(
             icon: const CircleAvatar(
@@ -190,7 +174,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ),
               onTap: () {
                 Get.back();
-                setState(() => currentIndex = 3);
+                setState(() => currentIndex = 4);
               },
             ),
             ListTile(
@@ -204,7 +188,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ),
               onTap: () {
                 Get.back();
-                setState(() => currentIndex = 4);
+                setState(() => currentIndex = 3);
               },
             ),
             ListTile(

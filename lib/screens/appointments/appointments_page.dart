@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/appointments/payment_bottom_sheet.dart';
 import 'package:insaafconnect/screens/appointments/admin_book_appointment.dart';
+import 'package:insaafconnect/screens/appointments/ratings.dart';
 import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
@@ -1094,6 +1095,32 @@ class _AppointmentCard extends StatelessWidget {
                     style: TextStyle(fontSize: 12, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600),
                   ),
                 ],
+              ),
+            ),
+          ],
+
+          // ── CLIENT: Rate Lawyer (converted or closed/completed and paid) ──
+          if (role == AppointmentRole.client && isAccepted && paymentApproved && (isConverted || appointment['case_status'] == 'closed' || appointment['case_status'] == 'completed')) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                   showModalBottomSheet(
+                     context: context,
+                     isScrollControlled: true,
+                     backgroundColor: Colors.transparent,
+                     builder: (_) => RatingBottomSheet(appointment: appointment),
+                   );
+                },
+                icon: const Icon(Icons.star_outline, size: 16),
+                label: const Text('Rate Lawyer'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF57C00),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
               ),
             ),
           ],

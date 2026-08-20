@@ -7,7 +7,7 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 
-const String baseUrl = 'http://localhost:3000';
+const String baseUrl = 'http://insaaf.sandbox.pk';
 
 class CaseModel {
   final int id;
@@ -46,9 +46,9 @@ class CaseModel {
           ? json['id']
           : int.tryParse(json['id'].toString()) ?? 0,
       caseType: json['case_type']?.toString() ?? 'Unknown',
-      clientName: json['name']?.toString() ?? 'N/A',
+      clientName: json['client_name']?.toString() ?? json['name']?.toString() ?? '',
       lawyerId: json['lawyer_id']?.toString() ?? 'N/A',       // ← fixed
-      lawyerName: json['name']?.toString() ?? 'N/A',
+      lawyerName: json['lawyer_name']?.toString() ?? '',
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
       hearingDate: json['hearing_date']?.toString() ?? 'N/A',

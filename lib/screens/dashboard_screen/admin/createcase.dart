@@ -19,6 +19,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   String selectedStatus = 'pending';
   int paymentStatus = 0; // int, 0=unpaid 1=paid
@@ -144,7 +145,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
         final regRes = await AuthService.register({
           'name': nameController.text.trim(),
           'email': emailController.text.trim(),
-          'password': 'password123', // default secure password
+          'password': passwordController.text.trim(),
           'role': 'client',
         });
 
@@ -221,6 +222,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
     phoneController.dispose();
     addressController.dispose();
     emailController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -256,6 +258,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                               nameController.clear();
                               phoneController.clear();
                               emailController.clear();
+                              passwordController.clear();
                             });
                           },
                         ),
@@ -270,6 +273,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                               nameController.clear();
                               phoneController.clear();
                               emailController.clear();
+                              passwordController.clear();
                             });
                           },
                         ),
@@ -278,8 +282,10 @@ class _CreateCasePageState extends State<CreateCasePage> {
                   ),
 
                   buildField('Client Name', nameController),
-                  if (isNewClient)
+                  if (isNewClient) ...[
                     buildField('Client Email', emailController),
+                    buildField('Temporary Password', passwordController),
+                  ],
                   buildField('Case Type', caseTypeController),
                   buildField(
                     'Description',

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/notifications_services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:insaafconnect/screens/appointments/appointments_page.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart'; // adjust path to match your project
+import 'package:insaafconnect/routes/app_routes.dart'; 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -125,23 +124,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           onTap: () async {
-            await _markRead(n['id'], index);
+  await _markRead(n['id'], index);
 
-            final role = GetStorage().read('role'); // 'admin' | 'lawyer' | 'client'
+  final role = GetStorage().read('role'); // 'admin' | 'lawyer' | 'client'
 
-            if (n['type'] == 'appointment') {
-              if (role == 'lawyer') {
-                Get.to(() => const AppointmentsPage(role: AppointmentRole.lawyer));
-              } else if (role == 'client') {
-                Get.to(() => const AppointmentsPage(role: AppointmentRole.client));
-              } else if (role == 'admin') {
-                Get.to(() => const AppointmentsPage(role: AppointmentRole.admin));
-              }
-            } else if (n['type'] == 'case') {
-              Get.to(() => ManageCasesPage(userRole: role ?? 'client'));
-            }
-          },
-        
+  if (n['type'] == 'appointment') {
+    Get.toNamed(AppRoutes.appointments, arguments: {'role': role ?? 'client'});
+  } else if (n['type'] == 'case') {
+    Get.toNamed(AppRoutes.manageCases, arguments: {'userRole': role ?? 'client'});
+  }
+},
                     tileColor: isRead
                         ? Colors.transparent
                         : Colors.white,

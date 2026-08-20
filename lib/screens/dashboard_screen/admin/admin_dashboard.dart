@@ -6,10 +6,13 @@ import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
+import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/screens/notifications.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/settings_screen.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -26,8 +29,7 @@ class _DashboardStats {
   final int clientsCount; // approximated from unique client_id in appointments
   final double totalEarnings;
   final double thisMonthEarnings;
-  final int manualPaymentsCount;
-  final int cardPaymentsCount;
+  final int totalPaymentsCount;
 
   _DashboardStats({
     required this.casesCount,
@@ -36,8 +38,7 @@ class _DashboardStats {
     required this.clientsCount,
     required this.totalEarnings,
     required this.thisMonthEarnings,
-    required this.manualPaymentsCount,
-    required this.cardPaymentsCount,
+    required this.totalPaymentsCount,
   });
 }
 
@@ -85,13 +86,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       if (s != 0 && s != 1) pendingLawyers++;
     }
 
-    // ── Clients: unique client_id seen across all appointments ──
-    // TODO: replace with a real /clients count endpoint once available.
     final clientIds = <String>{};
     double totalEarnings = 0;
     double thisMonthEarnings = 0;
-    int manualCount = 0;
-    int cardCount = 0;
+    int totalPaymentsCount = 0;
     final now = DateTime.now();
 
     for (final raw in appointments) {
@@ -118,12 +116,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           thisMonthEarnings += amount;
         }
 
-        final mode = (apt['payment_mode'] ?? '').toString().toLowerCase();
-        if (mode.contains('card')) {
-          cardCount++;
-        } else if (mode.isNotEmpty) {
-          manualCount++;
-        }
+        totalPaymentsCount++;
       }
     }
 
@@ -134,8 +127,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       clientsCount: clientIds.length,
       totalEarnings: totalEarnings,
       thisMonthEarnings: thisMonthEarnings,
-      manualPaymentsCount: manualCount,
-      cardPaymentsCount: cardCount,
+      totalPaymentsCount: totalPaymentsCount,
     );
   }
 
@@ -185,18 +177,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               onPressed: _reload,
             ),
 
-          // 🔔 Notification bell
+          //notification bell
           Stack(
             clipBehavior: Clip.none,
             children: [
               IconButton(
-                icon: const Icon(
-                  Icons.notifications,
-                  color: AppColors.Brown,
-                ),
-                onPressed: () => Get.to(() => const NotificationsScreen()),
+                icon: const Icon(Icons.notifications, color: AppColors.Brown),
+                // avatar/profile icon
+                onPressed: () => Get.toNamed(AppRoutes.profile),
               ),
-              // static badge dot — replace `true` with your unread check once wired up
+
               Positioned(
                 right: 8,
                 top: 8,
@@ -218,7 +208,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               backgroundColor: AppColors.Brown,
               child: Icon(Icons.person, color: AppColors.white, size: 18),
             ),
-            onPressed: () => Get.to(() => const ProfileScreen()),
+
+            onPressed: () => Get.toNamed(AppRoutes.profile),
           ),
           const SizedBox(width: 8),
         ],
@@ -307,10 +298,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(
-              Icons.verified_user,
-              color: AppColors.Brown,
-            ),
+            leading: const Icon(Icons.verified_user, color: AppColors.Brown),
             title: const Text("Manage Lawyers"),
             onTap: () {
               Get.back();
@@ -339,6 +327,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             onTap: () {
               Get.back();
               Get.toNamed('/calendar');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: AppColors.Brown),
+            title: const Text('Settings'),
+            
+            onTap: () {
+              Get.back();
+              Get.toNamed(AppRoutes.adminSettings);
             },
           ),
           const Divider(),
@@ -516,16 +513,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Expanded(
                       child: _countCard(
                         Icons.account_balance_wallet_outlined,
-                        'Manual Payments',
-                        stats.manualPaymentsCount,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _countCard(
-                        Icons.credit_card_outlined,
-                        'Card Payments',
-                        stats.cardPaymentsCount,
+                        'Total Payments',
+                        stats.totalPaymentsCount,
                       ),
                     ),
                   ],
@@ -565,10 +554,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.Brown.withOpacity(0.10),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: AppColors.Brown.withOpacity(0.10), blurRadius: 6),
         ],
       ),
       child: Column(
@@ -687,10 +673,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
             Text(
               lbl,
-              style: const TextStyle(
-                fontSize: 11.5,
-                color: AppColors.Brown,
-              ),
+              style: const TextStyle(fontSize: 11.5, color: AppColors.Brown),
             ),
           ],
         ),

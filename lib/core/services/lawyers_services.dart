@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
 
 class LawyerService {
-  static const String _baseUrl = 'http://localhost:3000';
+  static const String _baseUrl = 'http://insaaf.sandbox.pk';
 
   
   String? _getToken() {
@@ -249,6 +249,28 @@ class LawyerService {
         throw Exception('Lawyer not found');
       } else {
         throw Exception('Failed to disapprove lawyer: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> renewLawyer(int id) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/lawyers/$id/renew'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return Map<String, dynamic>.from(jsonDecode(response.body));
+      } else if (response.statusCode == 404) {
+        throw Exception('Lawyer not found');
+      } else {
+        throw Exception('Failed to renew lawyer: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Network error: $e');
