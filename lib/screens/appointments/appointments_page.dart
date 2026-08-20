@@ -571,8 +571,6 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                           ],
                         ),
                       ),
-
-                      // ── Search (admin only — lawyer/client lists are small enough not to need it) ──
                       if (_isAdmin)
                         Padding(
                           padding: const EdgeInsets.all(16),
@@ -594,7 +592,6 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                       else
                         const SizedBox(height: 16),
 
-                      // ── Filter Chips (everyone) ──
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: SingleChildScrollView(
@@ -625,8 +622,6 @@ void _showConvertToCase(Map<String, dynamic> apt) {
                         ),
                       ),
                       const SizedBox(height: 10),
-
-                      // ── List ──
                       Expanded(
                         child: filtered.isEmpty
                             ? const Center(
@@ -666,9 +661,9 @@ void _showConvertToCase(Map<String, dynamic> apt) {
   }
 }
 
-// ════════════════════════════════════════════════
+
 //  STAT CARD
-// ════════════════════════════════════════════════
+
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -697,9 +692,8 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════
 //  ONE CARD, ROLE-AWARE FOOTER
-// ════════════════════════════════════════════════
+
 class _AppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appointment;
   final AppointmentRole role;
@@ -711,7 +705,7 @@ class _AppointmentCard extends StatelessWidget {
   final VoidCallback onLawyerAccept;
   final VoidCallback onClientCancel;
   final VoidCallback onClientPay;
-  final VoidCallback onConvertToCase;   // ← add this line
+  final VoidCallback onConvertToCase;   
 
   const _AppointmentCard({
     required this.appointment,
@@ -774,7 +768,7 @@ class _AppointmentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header: title + status + admin menu ──
+          
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -797,7 +791,7 @@ class _AppointmentCard extends StatelessWidget {
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _statusColor),
                     ),
                   ),
-                  // ── Admin gets the "..." power menu. Lawyer/client use inline buttons below. ──
+                  
                   if (role == AppointmentRole.admin)
                     PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert, color: Color(0xFF5C3D2E)),
@@ -849,7 +843,7 @@ class _AppointmentCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          // ── Client & Lawyer names (admin sees both; lawyer sees client; client sees lawyer) ──
+          
           if (role == AppointmentRole.admin)
             Row(
               children: [
@@ -894,7 +888,7 @@ class _AppointmentCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           _InfoRow(
-            // NOTE: backend always stores lowercase 'online' | 'physical' — compare lowercase.
+            
             icon: (appointment['appointment_mode'] ?? '').toString().toLowerCase() == 'online'
                 ? Icons.videocam_outlined
                 : Icons.person_outline,
@@ -930,9 +924,6 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ════════ ROLE-SPECIFIC ACTION ZONE ════════
-
-          // ── LAWYER: Accept / Reject (pending) ──
           if (role == AppointmentRole.lawyer && isPending) ...[
             const SizedBox(height: 14),
             const Divider(color: Color(0xFFEADDD0), height: 1),
@@ -967,7 +958,6 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── LAWYER (or ADMIN): client submitted payment proof, needs approval ──
           if ((role == AppointmentRole.lawyer || role == AppointmentRole.admin) &&
               isAccepted && hasClientPayment && !paymentApproved) ...[
             const SizedBox(height: 10),
@@ -1011,7 +1001,6 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── CLIENT: Cancel (pending) ──
           if (role == AppointmentRole.client && isPending) ...[
             const SizedBox(height: 12),
             Align(
@@ -1026,7 +1015,7 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── CLIENT: Pay (accepted, not yet paid) ──
+          
           if (role == AppointmentRole.client && isAccepted && amount != null && !hasClientPayment) ...[
             const SizedBox(height: 10),
             SizedBox(
@@ -1042,7 +1031,7 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ],
-// ── CLIENT: payment submitted, waiting on lawyer ──
+
           if (role == AppointmentRole.client && isAccepted && hasClientPayment && !paymentApproved) ...[
             const SizedBox(height: 10),
             Container(
@@ -1055,7 +1044,6 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── ADMIN / LAWYER: Convert to Case (accepted, payment approved, not yet converted) ──
           if ((role == AppointmentRole.admin || role == AppointmentRole.lawyer) &&
               isAccepted && paymentApproved && !isConverted) ...[
             const SizedBox(height: 10),
@@ -1076,7 +1064,6 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── Already converted badge ──
           if (isConverted) ...[
             const SizedBox(height: 10),
             Container(
@@ -1099,7 +1086,7 @@ class _AppointmentCard extends StatelessWidget {
             ),
           ],
 
-          // ── CLIENT: Rate Lawyer (converted or closed/completed and paid) ──
+          
           if (role == AppointmentRole.client && isAccepted && paymentApproved && (isConverted || appointment['case_status'] == 'closed' || appointment['case_status'] == 'completed')) ...[
             const SizedBox(height: 10),
             SizedBox(
@@ -1129,9 +1116,9 @@ class _AppointmentCard extends StatelessWidget {
     );
   }
 }
-// ════════════════════════════════════════════════
+
 //  DETAIL BOTTOM SHEET (admin only)
-// ════════════════════════════════════════════════
+
 class _DetailSheet extends StatefulWidget {
   final int appointmentId;
   const _DetailSheet({required this.appointmentId});
@@ -1252,9 +1239,8 @@ class _DetailSheetState extends State<_DetailSheet> {
   }
 }
 
-// ════════════════════════════════════════════════
 //  PAYMENT FORM SHEET (lawyer: accept + set fee)
-// ════════════════════════════════════════════════
+
 class _PaymentFormSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback onAccepted;
@@ -1287,7 +1273,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
         paymentAmount: double.parse(_amountCtrl.text.trim()),
       );
       if (!mounted) return;
-      Get.back(); // close the sheet
+      Get.back(); 
       Get.snackbar('Success', 'Appointment accepted! Client has been notified.',
           snackPosition: SnackPosition.BOTTOM);
       widget.onAccepted();
@@ -1385,10 +1371,7 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
   }
 }
 
-// ════════════════════════════════════════════════
 //  SHARED SMALL WIDGETS
-//  (previously duplicated 3-4x across separate files)
-// ════════════════════════════════════════════════
 
 class _DetailSection extends StatelessWidget {
   final String title;
@@ -1553,17 +1536,14 @@ class _DetailChip extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════
-//  RECEIPT PREVIEW (decodes base64 screenshot instead of
-//  dumping the raw hash string in the Approve Payment dialog)
-// ════════════════════════════════════════════════
+//  RECEIPT PREVIEW 
+
 class _ReceiptPreview extends StatelessWidget {
   final String raw;
   const _ReceiptPreview({required this.raw});
 
   Uint8List? get _bytes {
     try {
-      // Handles both raw base64 and "data:image/png;base64,...." prefixed strings.
       final cleaned = raw.contains(',') ? raw.split(',').last : raw;
       return base64Decode(cleaned);
     } catch (_) {
@@ -1575,7 +1555,6 @@ class _ReceiptPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final bytes = _bytes;
 
-    // Not decodable as base64 → show a plain fallback instead of the raw hash.
     if (bytes == null) {
       return Container(
         width: double.infinity,
