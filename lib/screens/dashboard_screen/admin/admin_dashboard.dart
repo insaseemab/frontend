@@ -6,12 +6,8 @@ import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart';
-import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
-import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
-import 'package:insaafconnect/screens/notifications.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/settings_screen.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -21,12 +17,12 @@ class AdminDashboardScreen extends StatefulWidget {
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
-// ── Holds every computed dashboard number in one place ──
+
 class _DashboardStats {
   final int casesCount;
   final int lawyersCount;
   final int pendingLawyersCount;
-  final int clientsCount; // approximated from unique client_id in appointments
+  final int clientsCount; 
   final double totalEarnings;
   final double thisMonthEarnings;
   final int totalPaymentsCount;
@@ -64,7 +60,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     setState(() => _statsFuture = _loadStats());
   }
 
-  // ── Fetches cases, lawyers, and appointments in parallel and derives stats ──
   Future<_DashboardStats> _loadStats() async {
     final results = await Future.wait([
       CaseApiService.fetchAllCases(),
@@ -76,9 +71,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final lawyers = results[1] as List<Map<String, dynamic>>;
     final appointments = results[2] as List<dynamic>;
 
-    // ── Pending lawyers: status isn't cleanly 0 (rejected) or 1 (approved) ──
-    // TODO: if your backend actually uses a distinct value (e.g. status == 2)
-    // for pending, swap the condition below to match it exactly.
+  
     int pendingLawyers = 0;
     for (final l in lawyers) {
       final raw = l['status'];
@@ -171,13 +164,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ],
         ),
         actions: [
-          if (currentIndex == 0)
-            IconButton(
-              icon: const Icon(Icons.refresh, color: AppColors.Brown),
-              onPressed: _reload,
-            ),
-
-          //notification bell
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -352,7 +338,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ── HOME PAGE (body only, no Scaffold) ──────────────────────
+  // ── HOME PAGE 
   Widget _homePage() {
     return FutureBuilder<_DashboardStats>(
       future: _statsFuture,
@@ -385,10 +371,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     style: TextStyle(color: AppColors.labelSecondary),
                   ),
                   const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: _reload,
-                    child: const Text('Retry'),
-                  ),
+                 
                 ],
               ),
             ),

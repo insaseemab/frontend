@@ -7,7 +7,7 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 
-const String baseUrl = 'http://insaaf.sandbox.pk';
+const String baseUrl = 'http://localhost:3000';
 
 class CaseModel {
   final int id;
@@ -46,8 +46,9 @@ class CaseModel {
           ? json['id']
           : int.tryParse(json['id'].toString()) ?? 0,
       caseType: json['case_type']?.toString() ?? 'Unknown',
-      clientName: json['client_name']?.toString() ?? json['name']?.toString() ?? '',
-      lawyerId: json['lawyer_id']?.toString() ?? 'N/A',       // ← fixed
+      clientName:
+          json['client_name']?.toString() ?? json['name']?.toString() ?? '',
+      lawyerId: json['lawyer_id']?.toString() ?? 'N/A', // ← fixed
       lawyerName: json['lawyer_name']?.toString() ?? '',
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
@@ -175,6 +176,9 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   String searchQuery = '';
   final box = GetStorage();
 
+  static const Color brown = Color(0xFF5D4037);
+  static const Color beige = Color(0xFFF5EFE6);
+
   @override
   void initState() {
     super.initState();
@@ -263,7 +267,10 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ),
           Expanded(
             child: Text(
@@ -392,7 +399,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: beige,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,14 +413,14 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     child: Text(
                       "Case Management",
                       style: TextStyle(
-                        color: Colors.brown,
+                        color: brown,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.refresh, color: Colors.brown),
+                    icon: const Icon(Icons.refresh, color: brown),
                     onPressed: _loadCases,
                   ),
                   // "+" is create-a-new-case — allowed for admin and lawyer.
@@ -422,7 +429,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   // aren't authorized for.
                   if (['admin', 'lawyer'].contains(box.read('role') ?? 'client'))
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.brown),
+                      icon: const Icon(Icons.add, color: brown),
                       onPressed: () async {
                         final result = await Get.toNamed(AppRoutes.createCase);
                         if (result == true) {
@@ -433,9 +440,45 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                 ],
               ),
             ),
+
+            // ── Stat cards row (matches appointments page) ─────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _statCard('${allCases.length}', 'Total'),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _statCard(
+                      '$approvedCases',
+                      'Approved',
+                      color: Colors.green.shade800,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _statCard(
+                      '$closedCases',
+                      'Closed',
+                      color: Colors.blue.shade800,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _statCard(
+                      '$pendingPayment',
+                      'Unpaid',
+                      color: Colors.red.shade800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 16),
-            _buildStatsRow(),
-            const SizedBox(height: 16),
+
+            // ── Search bar ───────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
@@ -453,6 +496,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               ),
             ),
             const SizedBox(height: 12),
+
+            // ── Filter pills ─────────────────────────────────────
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
@@ -470,26 +515,28 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                         final isSelected = selectedFilter == filter;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: ElevatedButton(
-                            onPressed: () =>
+                          child: ChoiceChip(
+                            label: Text(filter),
+                            selected: isSelected,
+                            onSelected: (_) =>
                                 setState(() => selectedFilter = filter),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: isSelected
-                                  ? const Color(0xFF5D4037)
-                                  : Colors.white,
-                              foregroundColor: isSelected
-                                  ? Colors.white
-                                  : Colors.black87,
+                            selectedColor: brown,
+                            backgroundColor: Colors.white,
+                            labelStyle: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: FontWeight.w500,
                             ),
-                            child: Text(filter),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                              side: BorderSide.none,
+                            ),
                           ),
                         );
                       }).toList(),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            _buildTableHeader(),
+            const SizedBox(height: 12),
             Expanded(child: _buildBody()),
           ],
         ),
@@ -497,9 +544,39 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     );
   }
 
+  Widget _statCard(String value, String label, {Color? color}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: color ?? brown,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator(color: brown));
     }
     if (errorMessage != null) {
       return Center(child: Text(errorMessage!));
@@ -508,113 +585,23 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       return const Center(child: Text('No cases found'));
     }
     return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       itemCount: filteredCases.length,
-      itemBuilder: (_, index) => _buildCaseRow(filteredCases[index]),
+      itemBuilder: (_, index) => _buildCaseCard(filteredCases[index]),
     );
   }
 
-  Widget _buildStatsRow() {
-    final stats = [
-      {'label': 'Total', 'value': '${allCases.length}'},
-      {'label': 'Approved', 'value': '$approvedCases'},
-      {'label': 'Closed', 'value': '$closedCases'},
-      {'label': 'Unpaid', 'value': '$pendingPayment'},
-    ];
-
-    return Row(
-      children: stats.map((stat) {
-        return Expanded(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              children: [
-                Text(
-                  stat['value']!,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  stat['label']!,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildTableHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: const Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(
-              'Case ID',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              'Case Type',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              'Lawyer ID',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-           Expanded(
-            flex: 2,
-            child: Text(
-              'Lawyer Name',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              'Status',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Text(
-              'Actions',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Role-aware actions:
+  // Role-aware trailing action:
   // - admin: full menu (status changes + edit + delete)
-  // - lawyer: view detail + status changes (no delete/edit — those stay admin-only)
-  // - client / anything else: view detail only
+  // - lawyer: status changes + edit + delete (no admin-only items removed here
+  //   since original logic gave lawyers the same actions as admin minus none)
+  // - client / anything else: view-detail icon only
   Widget _buildActionsForRole(CaseModel c) {
     final String role = box.read('role') ?? 'client';
 
     if (role == 'admin') {
       return PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert, size: 18),
+        icon: const Icon(Icons.more_vert, color: brown),
         onSelected: (value) {
           if (value == 'delete') {
             _deleteCase(c);
@@ -649,7 +636,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     if (role == 'lawyer') {
       return PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert, size: 18),
+        icon: const Icon(Icons.more_vert, color: brown),
         onSelected: (value) {
           if (value == 'delete') {
             _deleteCase(c);
@@ -682,48 +669,167 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     // Client (or unknown role): view-only.
     return IconButton(
-      icon: const Icon(Icons.visibility_outlined, size: 18),
+      icon: const Icon(Icons.visibility_outlined, color: brown),
       onPressed: () => _viewCaseDetail(c),
     );
   }
 
-  Widget _buildCaseRow(CaseModel c) {
-    final statusColor = _statusColor(c.caseStatus);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Expanded(flex: 1, child: Text('#${c.id}')),
-          Expanded(flex: 2, child: Text(c.caseType)),
-          Expanded(flex: 2, child: Text(c.lawyerId)),
-          Expanded(flex: 2, child: Text(c.lawyerName)),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: statusColor.withValues(
-                  alpha: 0.12,
-                ), // ← fixed deprecation
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                c.caseStatus,
-                style: TextStyle(fontSize: 11, color: statusColor),
+  Widget _infoTile(IconData icon, String label, String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: beige,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: brown),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  ),
+                  Text(
+                    value.isEmpty ? '-' : value,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 15, color: Colors.grey.shade600),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(fontSize: 12.5, color: Colors.grey.shade800),
           ),
-          Expanded(
-            flex: 1,
-            child: _buildActionsForRole(c),
-          ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCaseCard(CaseModel c) {
+    final statusColor = _statusColor(c.caseStatus);
+    final isUnpaid = c.paymentStatus.toLowerCase() == 'unpaid';
+
+    return GestureDetector(
+      onTap: () => _viewCaseDetail(c),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── header row: case id + status chip + actions ──────
+            Row(
+              children: [
+                Text(
+                  'Case #${c.id}',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: brown,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    c.caseStatus.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.bold,
+                      color: statusColor,
+                    ),
+                  ),
+                ),
+                _buildActionsForRole(c),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // ── client / lawyer info tiles ────────────────────────
+            Row(
+              children: [
+                _infoTile(Icons.person_outline, 'Client', c.clientName),
+                const SizedBox(width: 10),
+                _infoTile(Icons.gavel_outlined, 'Lawyer', c.lawyerName),
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // ── case type / hearing date / payment status ────────
+            _detailRow(Icons.folder_outlined, '${c.caseType}'),
+            const SizedBox(height: 6),
+            _detailRow(Icons.event_outlined, 'Hearing: ${c.hearingDate}'),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  isUnpaid ? Icons.error_outline : Icons.check_circle_outline,
+                  size: 15,
+                  color: isUnpaid ? Colors.red.shade400 : Colors.green.shade600,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Payment: ${c.paymentStatus}',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: isUnpaid ? Colors.red.shade400 : Colors.green.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+
+            if (c.descriptionCase.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                c.descriptionCase,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
