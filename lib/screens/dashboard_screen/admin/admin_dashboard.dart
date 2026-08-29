@@ -170,7 +170,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               IconButton(
                 icon: const Icon(Icons.notifications, color: AppColors.Brown),
                 // avatar/profile icon
-                onPressed: () => Get.toNamed(AppRoutes.profile),
+                onPressed: () => Get.toNamed(AppRoutes.notifications),
               ),
 
               Positioned(
@@ -308,7 +308,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.calendar_month),
+            leading: const Icon(Icons.calendar_month, color: AppColors.Brown),
             title: const Text('My Calendar'),
             onTap: () {
               Get.back();

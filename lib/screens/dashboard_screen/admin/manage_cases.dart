@@ -6,8 +6,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
+import 'package:insaafconnect/config/environment.dart';
 
-const String baseUrl = 'http://localhost:3000';
+const String baseUrl = Environment.apiBaseUrl;
 
 class CaseModel {
   final int id;

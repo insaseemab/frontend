@@ -5,6 +5,7 @@ import 'package:insaafconnect/config/environment.dart';
 
 class ApiService {
   static const String baseUrl = Environment.apiBaseUrl;
+
   static final _box = GetStorage();
 
   static String? getToken() => _box.read<String>('token');
@@ -71,7 +72,11 @@ class ApiService {
   }
 
   static Future<void> updateLawyerProfile(Map<String, dynamic> data) async {
-    final id = _box.read('id');
+    final rawId = _box.read('userId') ?? _box.read('id') ?? _box.read('user')?['id'];
+    final int id = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
+    if (id <= 0) {
+      throw const ApiException(statusCode: 400, message: 'User ID not found. Please log in again.');
+    }
     final res = await http.put(
       Uri.parse('$baseUrl/lawyers/$id'),
       headers: authHeaders(),

@@ -58,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final userName = user['name'];
 
     box.write('user', user);
+    box.write('id', userId);
     box.write('userId', userId);
     box.write('userName', userName);
     box.write('token', token);

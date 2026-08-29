@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
+
+final Color _primaryColor = AppColors.Brown;
+final Color _bgColor = AppColors.beige;
+final Color _borderColor = AppColors.divider;
+final Color _hintColor = AppColors.hintText;
 
 class AddLawyerPage extends StatefulWidget {
   const AddLawyerPage({super.key});
@@ -20,114 +26,236 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
   final experienceController = TextEditingController();
   final casesController = TextEditingController();
 
+  bool isLoading = false;
+
+  Widget _sectionLabel(String text) => Text(
+        text,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: _primaryColor,
+        ),
+      );
+
+  Widget _fieldLabel(String text) => Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: _primaryColor,
+        ),
+      );
+
+  InputDecoration _inputDecor(String hint) => InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(fontSize: 13, color: _hintColor),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _borderColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _borderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: _primaryColor, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+        ),
+      );
+
+  Widget _themedField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+    String hint = '',
+    String? Function(String?)? validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _fieldLabel(label),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            validator: validator,
+            decoration: _inputDecor(hint.isEmpty ? 'Enter $label' : hint),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    specializationController.dispose();
+    cityController.dispose();
+    experienceController.dispose();
+    casesController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+    try {
+      await LawyerService().createLawyer(
+        name: nameController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        specialization: specializationController.text,
+        location: cityController.text,
+        experience: experienceController.text,
+        cases: casesController.text,
+      );
+      Get.back();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: $e"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _bgColor,
       appBar: AppBar(
-        title: const Text("Add Lawyer"),
-        backgroundColor: Color(0xFF6B4F3F),
-        titleTextStyle: TextStyle(color: Colors.white),
+        backgroundColor: _bgColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: _primaryColor, size: 20),
+          onPressed: () => Get.back(),
+        ),
+        title: Text(
+          'Add Lawyer',
+          style: TextStyle(
+            color: _primaryColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Name
-              TextFormField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: "Name"),
-                validator: (value) => value!.isEmpty ? "Enter name" : null,
-              ),
+              _sectionLabel('Account Details'),
+              const SizedBox(height: 10),
 
-               TextFormField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: "Email"),
-                validator: (value) => value!.isEmpty ? "Enter email" : null,
+              _themedField(
+                'Name',
+                nameController,
+                hint: 'Enter full name',
+                validator: (v) => v!.isEmpty ? 'Enter name' : null,
               ),
-
-               TextFormField(
-                controller: passwordController,
-                decoration: const InputDecoration(labelText: "Password"),
+              _themedField(
+                'Email',
+                emailController,
+                keyboardType: TextInputType.emailAddress,
+                hint: 'Enter email address',
+                validator: (v) => v!.isEmpty ? 'Enter email' : null,
+              ),
+              _themedField(
+                'Password',
+                passwordController,
                 keyboardType: TextInputType.visiblePassword,
-                validator: (value) => value!.isEmpty ? "Enter password" : null,
+                hint: 'Enter password',
+                validator: (v) => v!.isEmpty ? 'Enter password' : null,
               ),
 
+              const SizedBox(height: 8),
+              _sectionLabel('Professional Details'),
+              const SizedBox(height: 10),
 
-
-              // Specialization
-              TextFormField(
-                controller: specializationController,
-                decoration: const InputDecoration(labelText: "Specialization"),
-                validator: (value) =>
-                    value!.isEmpty ? "Enter specialization" : null,
+              _themedField(
+                'Specialization',
+                specializationController,
+                hint: 'e.g. Family Law',
+                validator: (v) => v!.isEmpty ? 'Enter specialization' : null,
               ),
-
-              // City
-              TextFormField(
-                controller: cityController,
-                decoration: const InputDecoration(labelText: "Location"),
-                validator: (value) => value!.isEmpty ? " Enter Location" : null,
+              _themedField(
+                'Location',
+                cityController,
+                hint: 'Enter city',
+                validator: (v) => v!.isEmpty ? 'Enter location' : null,
               ),
-
-              // Experience
-              TextFormField(
-                controller: experienceController,
-                decoration: const InputDecoration(
-                  labelText: "Experience (years)",
-                ),
+              _themedField(
+                'Experience (years)',
+                experienceController,
                 keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? "Enter experience" : null,
+                hint: 'Enter years of experience',
+                validator: (v) => v!.isEmpty ? 'Enter experience' : null,
               ),
-
-              // Cases
-              TextFormField(
-                controller: casesController,
-                decoration: const InputDecoration(labelText: "Total Cases"),
+              _themedField(
+                'Total Cases',
+                casesController,
                 keyboardType: TextInputType.number,
-                validator: (value) => value!.isEmpty ? "Enter cases" : null,
+                hint: 'Enter total cases handled',
+                validator: (v) => v!.isEmpty ? 'Enter cases' : null,
               ),
-               
-
 
               const SizedBox(height: 20),
 
-              // Save Button
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    try {
-                      await LawyerService().createLawyer(
-                        name: nameController.text,
-                        email: emailController.text,
-                        password: passwordController.text,
-                        specialization: specializationController.text,
-                        location: cityController.text,
-                        experience: experienceController.text,
-                        cases: casesController.text,
-                      );
-                      Get.back();
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Error: $e"),
-                          backgroundColor: Colors.red,
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 0,
+                    disabledBackgroundColor: _primaryColor.withOpacity(0.5),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'Save',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      );
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6B4F3F),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: const Text(
-                  "Save",
-                  style: TextStyle(color: Colors.white),
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),

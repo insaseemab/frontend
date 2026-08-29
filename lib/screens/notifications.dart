@@ -1,4 +1,4 @@
-// screens/notifications_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/notifications_services.dart';
 import 'package:get/get.dart';

@@ -18,7 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String role;
 
   final Color Brown = AppColors.Brown;
-  final Color mediumBrown = AppColors.mediumBrown;
   final Color muted = AppColors.labelSecondary;
   final Color bg = AppColors.beige;
   final Color cardBorder = AppColors.divider;
@@ -135,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: mediumBrown,
+                      backgroundColor: Brown,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -214,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: mediumBrown,
+                      backgroundColor: Brown,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -351,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: mediumBrown,
+                    backgroundColor: Brown,
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: const TextStyle(
@@ -398,7 +397,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(color: Colors.white),
                     ),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: mediumBrown,
+                      backgroundColor: Brown,
                       side: BorderSide.none,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -487,12 +486,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.edit_outlined, size: 16, color: mediumBrown),
+                      Icon(Icons.edit_outlined, size: 16, color: Brown),
                       SizedBox(width: 8),
                       Text(
                         'Change Password',
                         style: TextStyle(
-                          color: mediumBrown,
+                          color: Brown,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -512,14 +511,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   box.erase();
                   Get.offAll(() => LoginScreen());
                 },
-                icon: const Icon(Icons.logout, color: Colors.red),
+                icon: const Icon(Icons.logout, color: Colors.brown),
                 label: const Text(
                   'Logout',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: Colors.brown),
                 ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: Colors.red),
+                  side: const BorderSide(color: Colors.brown),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
