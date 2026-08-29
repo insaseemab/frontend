@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/rating_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class RatingBottomSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
@@ -50,9 +51,9 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -62,13 +63,13 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: const Color(0xFFEADDD0), borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(color: AppColors.cardBorder, borderRadius: BorderRadius.circular(2)),
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Rate Lawyer',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3E2C23)),
+              style: AppTextStyles.heading3,
             ),
             const SizedBox(height: 20),
             Row(
@@ -77,7 +78,7 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
                 return IconButton(
                   icon: Icon(
                     index < _rating ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
+                    color: AppColors.earningsOrange,
                     size: 40,
                   ),
                   onPressed: () => setState(() => _rating = index + 1),
@@ -90,9 +91,14 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: 'Leave an optional review...',
+                hintStyle: AppTextStyles.hint,
                 filled: true,
-                fillColor: const Color(0xFFF1ECE5),
+                fillColor: AppColors.beige,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.Brown, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -102,16 +108,16 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5C3D2E),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.Brown,
+                  foregroundColor: AppColors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
                 ),
                 child: _isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2.5),
                       )
                     : const Text('Submit Rating', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),

@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import '../../appointments/appointment_screen.dart';
-import 'package:insaafconnect/routes/app_routes.dart'; // ← ADD THIS
+import 'package:insaafconnect/routes/app_routes.dart';
+import 'package:insaafconnect/core/utils/theme.dart'; 
 
 class LawyerFindScreen extends StatefulWidget {
   const LawyerFindScreen({super.key});
@@ -82,29 +83,21 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1ECE5),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1ECE5),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Find a Lawyer',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3E2C23),
-              ),
+              style: AppTextStyles.heading3,
             ),
             Text(
               'Search for legal professionals',
-              style: TextStyle(
-                fontSize: 12,
-                color: Color(0xFF8C7B6B),
-                fontWeight: FontWeight.normal,
-              ),
+              style: AppTextStyles.bodySmall,
             ),
           ],
         ),
@@ -117,29 +110,26 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
               onChanged: (v) => setState(() => _searchQuery = v),
               decoration: InputDecoration(
                 hintText: 'Search by name, specialization, or location...',
-                hintStyle: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFFAA9988),
-                ),
-                prefixIcon: const Icon(
+                hintStyle: AppTextStyles.hint,
+                prefixIcon: Icon(
                   Icons.search,
-                  color: Color(0xFFAA9988),
+                  color: AppColors.hintText,
                   size: 20,
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppColors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+                  borderSide: BorderSide(color: AppColors.cardBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+                  borderSide: BorderSide(color: AppColors.cardBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.brown, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
                 ),
               ),
             ),
@@ -151,9 +141,9 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.filter_list,
-                    color: Color(0xFF8C7B6B),
+                    color: AppColors.iconMuted,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
@@ -170,13 +160,13 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF5C3D2E)
-                                : Colors.white,
+                                ? AppColors.Brown
+                                : AppColors.white,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isSelected
-                                  ? const Color(0xFF5C3D2E)
-                                  : const Color(0xFFDDD0C5),
+                                  ? AppColors.Brown
+                                  : AppColors.cardBorder,
                             ),
                           ),
                           child: Text(
@@ -185,8 +175,8 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
                               color: isSelected
-                                  ? Colors.white
-                                  : const Color(0xFF8C7B6B),
+                                  ? AppColors.white
+                                  : AppColors.labelSecondary,
                             ),
                           ),
                         ),
@@ -199,40 +189,40 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
           ),
           Expanded(
             child: _loading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+                ? Center(
+                    child: CircularProgressIndicator(color: AppColors.Brown),
                   )
                 : _error != null
                 ? Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.error_outline,
-                          color: Colors.red,
+                          color: AppColors.error,
                           size: 48,
                         ),
                         const SizedBox(height: 12),
                         Text(
                           _error!,
-                          style: const TextStyle(color: Colors.grey),
+                          style: AppTextStyles.bodyMedium,
                         ),
                         const SizedBox(height: 8),
                         TextButton(
                           onPressed: _loadLawyers,
-                          child: const Text(
+                          child: Text(
                             'Retry',
-                            style: TextStyle(color: Color(0xFF5C3D2E)),
+                            style: TextStyle(color: AppColors.Brown),
                           ),
                         ),
                       ],
                     ),
                   )
                 : filtered.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'No lawyers found for this filter.',
-                      style: TextStyle(color: Color(0xFF8C7B6B)),
+                      style: AppTextStyles.bodyMedium,
                     ),
                   )
                 : LayoutBuilder(
@@ -295,18 +285,7 @@ class _LawyerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEADDD0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.brown.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: AppDecorations.card,
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -317,11 +296,11 @@ class _LawyerCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: const Color(0xFF5C3D2E),
+                  backgroundColor: AppColors.Brown,
                   child: Text(
                     (lawyer['name'] ?? 'L').toString()[0].toUpperCase(),
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -333,23 +312,23 @@ class _LawyerCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF0EBE5),
+                    color: AppColors.beige,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.star,
                         size: 13,
-                        color: Color(0xFFE6A817),
+                        color: AppColors.earningsOrange,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         (lawyer['rating'] ?? '0.0').toString(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF5C3D2E),
+                          color: AppColors.Brown,
                         ),
                       ),
                     ],
@@ -365,24 +344,24 @@ class _LawyerCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE3F4E8),
+                      color: AppColors.success.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           Icons.verified,
                           size: 13,
-                          color: Color(0xFF2E7D4F),
+                          color: AppColors.success,
                         ),
-                        SizedBox(width: 3),
+                        const SizedBox(width: 3),
                         Text(
                           'Verified',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2E7D4F),
+                            color: AppColors.success,
                           ),
                         ),
                       ],
@@ -392,10 +371,10 @@ class _LawyerCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               (lawyer['name'] ?? 'Unknown').toString(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
-                color: Color(0xFF3E2C23),
+                color: AppColors.Brown,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -403,23 +382,20 @@ class _LawyerCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               (lawyer['specialization'] ?? '').toString(),
-              style: const TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
+              style: AppTextStyles.bodySmall,
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.location_on_outlined,
                   size: 13,
-                  color: Color(0xFF8C7B6B),
+                  color: AppColors.iconMuted,
                 ),
                 const SizedBox(width: 3),
                 Text(
                   (lawyer['location'] ?? '-').toString(),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF8C7B6B),
-                  ),
+                  style: AppTextStyles.bodySmall,
                 ),
               ],
             ),
@@ -429,16 +405,16 @@ class _LawyerCard extends StatelessWidget {
               children: [
                 Text(
                   (lawyer['experience'] ?? '-').toString(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
-                    color: Color(0xFFAA9988),
+                    color: AppColors.hintText,
                   ),
                 ),
                 Text(
                   (lawyer['cases'] ?? '-').toString(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10,
-                    color: Color(0xFFAA9988),
+                    color: AppColors.hintText,
                   ),
                 ),
               ],
@@ -455,8 +431,8 @@ class _LawyerCard extends StatelessWidget {
                   Get.to(() => LawyerProfileScreen(lawyer: fullLawyer));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF5C3D2E),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.Brown,
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(vertical: 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -475,9 +451,9 @@ class _LawyerCard extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: _openChat,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF5C3D2E),
+                  foregroundColor: AppColors.Brown,
                   padding: const EdgeInsets.symmetric(vertical: 9),
-                  side: const BorderSide(color: Color(0xFFDDD0C5)),
+                  side: BorderSide(color: AppColors.cardBorder),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -522,25 +498,21 @@ class LawyerProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1ECE5),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1ECE5),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF3E2C23),
+            color: AppColors.Brown,
             size: 20,
           ),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
+        title: Text(
           'Lawyer Profile',
-          style: TextStyle(
-            color: Color(0xFF3E2C23),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: AppTextStyles.heading3,
         ),
       ),
       body: SingleChildScrollView(
@@ -551,23 +523,19 @@ class LawyerProfileScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFEADDD0)),
-              ),
+              decoration: AppDecorations.card,
               child: Column(
                 children: [
                   CircleAvatar(
                     radius: 38,
-                    backgroundColor: const Color(0xFF5C3D2E),
+                    backgroundColor: AppColors.Brown,
                     child: Text(
                       (lawyer['name'] ?? 'L')
                           .toString()
                           .substring(0, 1)
                           .toUpperCase(),
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 28,
                       ),
@@ -581,18 +549,14 @@ class LawyerProfileScreen extends StatelessWidget {
                     children: [
                       Text(
                         (lawyer['name'] ?? 'Unknown Lawyer').toString(),
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF3E2C23),
-                        ),
+                        style: AppTextStyles.heading2,
                       ),
                       if (_isApproved(lawyer)) ...[
                         const SizedBox(width: 6),
-                        const Icon(
+                        Icon(
                           Icons.verified,
                           size: 18,
-                          color: Color(0xFF2E7D4F),
+                          color: AppColors.success,
                         ),
                       ],
                     ],
@@ -602,10 +566,7 @@ class LawyerProfileScreen extends StatelessWidget {
 
                   Text(
                     (lawyer['specialization'] ?? 'Not Available').toString(),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF8C7B6B),
-                    ),
+                    style: AppTextStyles.bodyMedium,
                   ),
 
                   const SizedBox(height: 6),
@@ -613,18 +574,15 @@ class LawyerProfileScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_outlined,
                         size: 15,
-                        color: Color(0xFF8C7B6B),
+                        color: AppColors.iconMuted,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         (lawyer['location'] ?? 'Not Available').toString(),
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF8C7B6B),
-                        ),
+                        style: AppTextStyles.bodyMedium,
                       ),
                     ],
                   ),
@@ -636,7 +594,7 @@ class LawyerProfileScreen extends StatelessWidget {
                     children: [
                       _StatBox(
                         icon: Icons.star,
-                        iconColor: const Color(0xFFE6A817),
+                        iconColor: AppColors.earningsOrange,
                         value: (lawyer['rating'] ?? '0.0').toString(),
                         label: 'Rating',
                       ),
@@ -645,7 +603,7 @@ class LawyerProfileScreen extends StatelessWidget {
 
                       _StatBox(
                         icon: Icons.work_outline,
-                        iconColor: const Color(0xFF5C3D2E),
+                        iconColor: AppColors.Brown,
                         value: (lawyer['experience'] ?? '0').toString(),
                         label: 'Experience',
                       ),
@@ -654,7 +612,7 @@ class LawyerProfileScreen extends StatelessWidget {
 
                       _StatBox(
                         icon: Icons.gavel,
-                        iconColor: const Color(0xFF5C3D2E),
+                        iconColor: AppColors.Brown,
                         value: (lawyer['cases'] ?? '0').toString(),
                         label: 'Cases',
                       ),
@@ -669,11 +627,7 @@ class LawyerProfileScreen extends StatelessWidget {
               title: 'About',
               child: Text(
                 'Specialized in ${(lawyer['specialization'] ?? 'law').toString()}.',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B5B4E),
-                  height: 1.6,
-                ),
+                style: AppTextStyles.bodyLarge,
               ),
             ),
             const SizedBox(height: 12),
@@ -685,9 +639,13 @@ class LawyerProfileScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Experience: ${(lawyer['experience'] ?? 'Not Available')}',
+                    style: AppTextStyles.bodyMedium,
                   ),
                   const SizedBox(height: 8),
-                  Text('Cases: ${(lawyer['cases'] ?? 'Not Available')}'),
+                  Text(
+                    'Cases: ${(lawyer['cases'] ?? 'Not Available')}',
+                    style: AppTextStyles.bodyMedium,
+                  ),
                 ],
               ),
             ),
@@ -723,8 +681,8 @@ class LawyerProfileScreen extends StatelessWidget {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5C3D2E),
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.Brown,
+                      foregroundColor: AppColors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -746,10 +704,10 @@ class LawyerProfileScreen extends StatelessWidget {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF5C3D2E),
+                      foregroundColor: AppColors.Brown,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      side: const BorderSide(
-                        color: Color(0xFF5C3D2E),
+                      side: BorderSide(
+                        color: AppColors.Brown,
                         width: 1.5,
                       ),
                       shape: RoundedRectangleBorder(
@@ -768,7 +726,7 @@ class LawyerProfileScreen extends StatelessWidget {
   }
 
   Widget _divider() =>
-      Container(width: 1, height: 36, color: const Color(0xFFEADDD0));
+      Container(width: 1, height: 36, color: AppColors.divider);
 }
 
 // ════════════════════════════════════════════════
@@ -795,15 +753,11 @@ class _StatBox extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value.toString(),
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF3E2C23),
-          ),
+          style: AppTextStyles.heading4,
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: Color(0xFF8C7B6B)),
+          style: AppTextStyles.bodySmall,
         ),
       ],
     );
@@ -820,21 +774,13 @@ class _SectionCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
-      ),
+      decoration: AppDecorations.card,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3E2C23),
-            ),
+            style: AppTextStyles.heading4,
           ),
           const SizedBox(height: 12),
           child,
@@ -856,18 +802,15 @@ class _ContactRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5EDE4),
+            color: AppColors.beige,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: Colors.brown, size: 18),
+          child: Icon(icon, color: AppColors.Brown, size: 18),
         ),
         const SizedBox(width: 12),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color.fromARGB(255, 0, 0, 0),
-          ),
+          style: AppTextStyles.bodyLarge,
         ),
       ],
     );

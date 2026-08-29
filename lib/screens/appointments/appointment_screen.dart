@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/core/utils/theme.dart'; 
 
 
 class BookAppointmentScreen extends StatefulWidget {
@@ -66,9 +67,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       lastDate: DateTime.now().add(const Duration(days: 90)),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.light(
-            primary: Color(0xFF5C3D2E),
-            onPrimary: Colors.white,
+          colorScheme: ColorScheme.light(
+            primary: AppColors.Brown,
+            onPrimary: AppColors.white,
           ),
         ),
         child: child!,
@@ -82,7 +83,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       initialTime: TimeOfDay.now(),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.light(primary: Color(0xFF5C3D2E)),
+          colorScheme: ColorScheme.light(primary: AppColors.Brown),
         ),
         child: child!,
       ),
@@ -153,11 +154,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle, color: Color(0xFF2E7D32)),
-            SizedBox(width: 10),
-            Text('Appointment Sent!'),
+            Icon(Icons.check_circle, color: AppColors.success),
+            const SizedBox(width: 10),
+            const Text('Appointment Sent!'),
           ],
         ),
         content: Column(
@@ -172,12 +173,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F0),
+                color: AppColors.beige,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     'What happens next?',
                     style: TextStyle(
@@ -202,7 +203,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               Get.back();
               Get.back(result: true);
             },
-            child: const Text('OK', style: TextStyle(color: Color(0xFF5C3D2E))),
+            child: Text('OK', style: TextStyle(color: AppColors.Brown)),
           ),
         ],
       ),
@@ -218,25 +219,21 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1ECE5),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF1ECE5),
+        backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF3E2C23),
+            color: AppColors.Brown,
             size: 20,
           ),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
+        title: Text(
           'Book Appointment',
-          style: TextStyle(
-            color: Color(0xFF3E2C23),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: AppTextStyles.heading3,
         ),
       ),
       body: Form(
@@ -320,22 +317,20 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5C3D2E),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.Brown,
+                    foregroundColor: AppColors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
                     elevation: 0,
-                    disabledBackgroundColor: const Color(
-                      0xFF5C3D2E,
-                    ).withValues(alpha: 0.5),
+                    disabledBackgroundColor: AppColors.Brown.withOpacity(0.5),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 22,
                           width: 22,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppColors.white,
                             strokeWidth: 2.5,
                           ),
                         )
@@ -358,47 +353,43 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
   Widget _sectionLabel(String text) => Text(
     text,
-    style: const TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      color: Color(0xFF3E2C23),
-    ),
+    style: AppTextStyles.heading4.copyWith(fontSize: 16),
   );
 
   Widget _fieldLabel(String text) => Text(
     text,
-    style: const TextStyle(
+    style: TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w600,
-      color: Color(0xFF5C3D2E),
+      color: AppColors.mediumBrown,
     ),
   );
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
     hintText: hint,
-    hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
+    hintStyle: AppTextStyles.hint,
     filled: true,
-    fillColor: Colors.white,
+    fillColor: AppColors.white,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+      borderSide: BorderSide(color: AppColors.cardBorder),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+      borderSide: BorderSide(color: AppColors.cardBorder),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFF5C3D2E), width: 1.5),
+      borderSide: BorderSide(color: AppColors.Brown, width: 1.5),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.red),
+      borderSide: BorderSide(color: AppColors.error),
     ),
     focusedErrorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      borderSide: BorderSide(color: AppColors.error, width: 1.5),
     ),
   );
 }
@@ -450,8 +441,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
       future: _future,
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF5C3D2E)),
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.Brown),
           );
         }
         if (snap.hasError) {
@@ -462,19 +453,19 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
+                Icon(
                   Icons.error_outline,
-                  color: Color(0xFF8C7B6B),
+                  color: AppColors.labelSecondary,
                   size: 48,
                 ),
                 const SizedBox(height: 12),
-                Text(msg, style: const TextStyle(color: Color(0xFF8C7B6B))),
+                Text(msg, style: TextStyle(color: AppColors.labelSecondary)),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: _load,
-                  child: const Text(
+                  child: Text(
                     'Retry',
-                    style: TextStyle(color: Color(0xFF5C3D2E)),
+                    style: TextStyle(color: AppColors.Brown),
                   ),
                 ),
               ],
@@ -484,16 +475,16 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
         final appointments = snap.data ?? [];
         if (appointments.isEmpty) {
-          return const Center(
+          return Center(
             child: Text(
               'No appointments yet.',
-              style: TextStyle(color: Color(0xFF8C7B6B)),
+              style: TextStyle(color: AppColors.labelSecondary),
             ),
           );
         }
 
         return RefreshIndicator(
-          color: const Color(0xFF5C3D2E),
+          color: AppColors.Brown,
           onRefresh: () async => _load(),
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -516,25 +507,21 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   Widget build(BuildContext context) {
     if (widget.isStandalone) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF1ECE5),
+        backgroundColor: AppColors.beige,
         appBar: AppBar(
-          backgroundColor: const Color(0xFFF1ECE5),
+          backgroundColor: AppColors.beige,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back,
-              color: Color(0xFF3E2C23),
+              color: AppColors.Brown,
               size: 20,
             ),
             onPressed: () => Get.back(),
           ),
-          title: const Text(
+          title: Text(
             'My Appointments',
-            style: TextStyle(
-              color: Color(0xFF3E2C23),
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+            style: AppTextStyles.heading3,
           ),
         ),
         body: _buildBody(),
@@ -542,20 +529,16 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     }
 
     return Container(
-      color: const Color(0xFFF1ECE5),
+      color: AppColors.beige,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: const Text(
+            child: Text(
               'My Appointments',
-              style: TextStyle(
-                color: Color(0xFF3E2C23),
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+              style: AppTextStyles.heading3,
             ),
           ),
           Expanded(child: _buildBody()),
@@ -573,25 +556,27 @@ class _AppointmentTile extends StatelessWidget {
 
   const _AppointmentTile({required this.appointment, required this.onDelete});
 
+  // No direct theme equivalent for the "pending" amber tone, so it stays
+  // as a literal alongside the themed success/error colors.
   Color get _statusColor {
     switch (appointment['status']) {
       case 'accepted':
-        return const Color(0xFF2E7D32);
+        return AppColors.success;
       case 'rejected':
-        return const Color(0xFFB71C1C);
+        return AppColors.error;
       default:
-        return const Color(0xFFB5651D);
+        return AppColors.warning;
     }
   }
 
   Color get _statusBg {
     switch (appointment['status']) {
       case 'accepted':
-        return const Color(0xFFE8F5E9);
+        return AppColors.success.withOpacity(0.12);
       case 'rejected':
-        return const Color(0xFFFFEBEE);
+        return AppColors.error.withOpacity(0.12);
       default:
-        return const Color(0xFFF5E6D3);
+        return AppColors.warning.withOpacity(0.15);
     }
   }
 
@@ -600,13 +585,12 @@ class _AppointmentTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.cardBorder),
         boxShadow: [
           BoxShadow(
-            // withValues replaces deprecated withOpacity
-            color: Colors.brown.withValues(alpha: 0.05),
+            color: AppColors.Brown.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -620,10 +604,10 @@ class _AppointmentTile extends StatelessWidget {
             children: [
               Text(
                 appointment['case_type'] ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Color(0xFF3E2C23),
+                  color: AppColors.Brown,
                 ),
               ),
               Container(
@@ -667,9 +651,9 @@ class _AppointmentTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               appointment['short_description'],
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Color(0xFF8C7B6B),
+                color: AppColors.labelSecondary,
                 height: 1.4,
               ),
               maxLines: 2,
@@ -681,16 +665,16 @@ class _AppointmentTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: AppColors.success.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Your appointment has been accepted!',
                     style: TextStyle(
-                      color: Color(0xFF2E7D32),
+                      color: AppColors.success,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -700,8 +684,8 @@ class _AppointmentTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Consultation Fee: Rs. ${appointment['payment_amount']}',
-                      style: const TextStyle(
-                        color: Color(0xFF2E7D32),
+                      style: TextStyle(
+                        color: AppColors.success,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                       ),
@@ -718,15 +702,15 @@ class _AppointmentTile extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 onPressed: () => _confirmDelete(context),
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline,
                   size: 16,
-                  color: Color(0xFFB71C1C),
+                  color: AppColors.error,
                 ),
-                label: const Text(
+                label: Text(
                   'Cancel',
                   style: TextStyle(
-                    color: Color(0xFFB71C1C),
+                    color: AppColors.error,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -756,9 +740,9 @@ class _AppointmentTile extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text(
+            child: Text(
               'Yes, Cancel',
-              style: TextStyle(color: Color(0xFFB71C1C)),
+              style: TextStyle(color: AppColors.error),
             ),
           ),
         ],
@@ -777,12 +761,12 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 13, color: const Color(0xFF8C7B6B)),
+        Icon(icon, size: 13, color: AppColors.labelSecondary),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF8C7B6B)),
+            style: TextStyle(fontSize: 12, color: AppColors.labelSecondary),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -801,19 +785,19 @@ class _LawyerSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.cardBorder),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 26,
-            backgroundColor: const Color(0xFF5C3D2E),
+            backgroundColor: AppColors.Brown,
             child: Text(
               lawyer['initials'] ?? '',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -825,31 +809,31 @@ class _LawyerSummaryCard extends StatelessWidget {
             children: [
               Text(
                 lawyer['name'] ?? '',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF3E2C23),
+                  color: AppColors.Brown,
                 ),
               ),
               const SizedBox(height: 3),
               Text(
                 lawyer['specialty'] ?? '',
-                style: const TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
+                style: AppTextStyles.bodyMedium.copyWith(fontSize: 13),
               ),
               const SizedBox(height: 3),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.location_on_outlined,
                     size: 13,
-                    color: Color(0xFF8C7B6B),
+                    color: AppColors.labelSecondary,
                   ),
                   const SizedBox(width: 3),
                   Text(
                     lawyer['location'] ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF8C7B6B),
+                      color: AppColors.labelSecondary,
                     ),
                   ),
                 ],
@@ -886,10 +870,10 @@ class _AppDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF5C3D2E),
+            color: AppColors.mediumBrown,
           ),
         ),
         const SizedBox(height: 6),
@@ -898,33 +882,33 @@ class _AppDropdown extends StatelessWidget {
           value: value,
           hint: Text(
             hint,
-            style: const TextStyle(fontSize: 13, color: Color(0xFFAA9988)),
+            style: AppTextStyles.hint,
           ),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 14,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+              borderSide: BorderSide(color: AppColors.cardBorder),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+              borderSide: BorderSide(color: AppColors.cardBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFF5C3D2E),
+              borderSide: BorderSide(
+                color: AppColors.Brown,
                 width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
+              borderSide: BorderSide(color: AppColors.error),
             ),
           ),
           items: items
@@ -962,16 +946,16 @@ class _SlotPicker extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFEADDD0)),
+          border: Border.all(color: AppColors.cardBorder),
         ),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.calendar_today_outlined,
               size: 18,
-              color: Color(0xFF5C3D2E),
+              color: AppColors.Brown,
             ),
             const SizedBox(width: 10),
             Column(
@@ -979,9 +963,9 @@ class _SlotPicker extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: Color(0xFF8C7B6B),
+                    color: AppColors.labelSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -992,8 +976,8 @@ class _SlotPicker extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: dateTime != null
-                        ? const Color(0xFF3E2C23)
-                        : const Color(0xFFAA9988),
+                        ? AppColors.Brown
+                        : AppColors.hintText,
                   ),
                 ),
               ],
@@ -1030,12 +1014,12 @@ class _ModeSelector extends StatelessWidget {
               margin: EdgeInsets.only(right: i < options.length - 1 ? 10 : 0),
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: isActive ? const Color(0xFF5C3D2E) : Colors.white,
+                color: isActive ? AppColors.Brown : AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isActive
-                      ? const Color(0xFF5C3D2E)
-                      : const Color(0xFFEADDD0),
+                      ? AppColors.Brown
+                      : AppColors.cardBorder,
                 ),
               ),
               child: Row(
@@ -1044,7 +1028,7 @@ class _ModeSelector extends StatelessWidget {
                   Icon(
                     icons[i],
                     size: 16,
-                    color: isActive ? Colors.white : const Color(0xFF8C7B6B),
+                    color: isActive ? AppColors.white : AppColors.labelSecondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -1052,7 +1036,7 @@ class _ModeSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isActive ? Colors.white : const Color(0xFF8C7B6B),
+                      color: isActive ? AppColors.white : AppColors.labelSecondary,
                     ),
                   ),
                 ],

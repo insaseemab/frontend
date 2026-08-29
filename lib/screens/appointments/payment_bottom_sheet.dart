@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/services/appointment_services.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class PaymentBottomSheet extends StatefulWidget {
   final Map appointment;
@@ -19,9 +20,6 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   bool _isSubmitting = false;
 
   Future pickImage() async {
-    // Compress + downscale on pick so the base64 payload sent to the
-    // backend stays well under typical body-size limits (this is what
-    // was causing the server to return an HTML 413 error page).
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 1080,
@@ -65,16 +63,16 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5F0EA),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      decoration: BoxDecoration(
+        color: AppColors.beige,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          Text(
             "Payment Method",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: AppTextStyles.heading3,
           ),
 
           const SizedBox(height: 20),
@@ -82,7 +80,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
@@ -91,10 +89,10 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 const Text("Consultation Fee"),
                 Text(
                   "PKR ${widget.appointment['payment_amount']}",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
-                    color: Color(0xFF5C3D2E),
+                    color: AppColors.Brown,
                   ),
                 ),
               ],
@@ -107,13 +105,20 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             children: [
               OutlinedButton(
                 onPressed: pickImage,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.Brown,
+                  side: BorderSide(color: AppColors.cardBorder),
+                ),
                 child: const Text("Upload Screenshot"),
               ),
 
               if (screenshotName != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text(screenshotName!),
+                  child: Text(
+                    screenshotName!,
+                    style: TextStyle(color: AppColors.labelSecondary),
+                  ),
                 ),
             ],
           ),
@@ -125,20 +130,20 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             child: ElevatedButton(
               onPressed: _isSubmitting ? null : submitPayment,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5C3D2E),
+                backgroundColor: AppColors.Brown,
               ),
               child: _isSubmitting
-                  ? const SizedBox(
+                  ? SizedBox(
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: AppColors.white,
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text(
+                  : Text(
                       "Submit Payment",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: AppColors.white),
                     ),
             ),
           ),

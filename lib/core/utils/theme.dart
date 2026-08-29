@@ -160,7 +160,7 @@ class AppDecorations {
 
   /// Standard card — used by Admin, NotificationSettings, etc.
   static BoxDecoration card = BoxDecoration(
-    color: AppColors.cardFill,
+    color: AppColors.white,
     borderRadius: BorderRadius.circular(16),
     border: Border.all(color: AppColors.cardBorder),
     boxShadow: [

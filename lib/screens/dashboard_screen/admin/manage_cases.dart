@@ -7,6 +7,7 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:insaafconnect/config/environment.dart';
+import 'package:insaafconnect/core/utils/theme.dart'; 
 
 const String baseUrl = Environment.apiBaseUrl;
 
@@ -177,9 +178,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   String searchQuery = '';
   final box = GetStorage();
 
-  static const Color brown = Color(0xFF5D4037);
-  static const Color beige = Color(0xFFF5EFE6);
-
   @override
   void initState() {
     super.initState();
@@ -270,7 +268,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             width: 120,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: AppTextStyles.bodySmall,
             ),
           ),
           Expanded(
@@ -297,7 +295,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -356,19 +354,21 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     }
   }
 
+  // Status colors kept semantic (not all map cleanly onto the brown/beige
+  // theme palette) — using AppColors where a direct match exists.
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
-        return Colors.green.shade800;
+        return AppColors.success;
       case 'closed':
-        return Colors.blue.shade800;
+        return AppColors.info;
       case 'rejected':
-        return Colors.red.shade800;
+        return AppColors.error;
       case 'hearing':
-        return Colors.purple.shade800;
+        return Colors.purple.shade800; // no theme equivalent
       case 'pending':
       default:
-        return Colors.orange.shade800;
+        return AppColors.warning;
     }
   }
 
@@ -400,7 +400,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: beige,
+      backgroundColor: AppColors.beige,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,18 +410,14 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               child: Row(
                 children: [
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Case Management",
-                      style: TextStyle(
-                        color: brown,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
+                      style: AppTextStyles.heading3,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.refresh, color: brown),
+                    icon: Icon(Icons.refresh, color: AppColors.Brown),
                     onPressed: _loadCases,
                   ),
                   // "+" is create-a-new-case — allowed for admin and lawyer.
@@ -430,7 +426,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   // aren't authorized for.
                   if (['admin', 'lawyer'].contains(box.read('role') ?? 'client'))
                     IconButton(
-                      icon: const Icon(Icons.add, color: brown),
+                      icon: Icon(Icons.add, color: AppColors.Brown),
                       onPressed: () async {
                         final result = await Get.toNamed(AppRoutes.createCase);
                         if (result == true) {
@@ -455,7 +451,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     child: _statCard(
                       '$approvedCases',
                       'Approved',
-                      color: Colors.green.shade800,
+                      color: AppColors.success,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -463,7 +459,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     child: _statCard(
                       '$closedCases',
                       'Closed',
-                      color: Colors.blue.shade800,
+                      color: AppColors.info,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -471,7 +467,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     child: _statCard(
                       '$pendingPayment',
                       'Unpaid',
-                      color: Colors.red.shade800,
+                      color: AppColors.error,
                     ),
                   ),
                 ],
@@ -488,7 +484,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                   hintText: 'Search by case ID or client',
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
@@ -521,10 +517,10 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                             selected: isSelected,
                             onSelected: (_) =>
                                 setState(() => selectedFilter = filter),
-                            selectedColor: brown,
-                            backgroundColor: Colors.white,
+                            selectedColor: AppColors.Brown,
+                            backgroundColor: AppColors.white,
                             labelStyle: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
+                              color: isSelected ? AppColors.white : Colors.black87,
                               fontWeight: FontWeight.w500,
                             ),
                             shape: RoundedRectangleBorder(
@@ -549,7 +545,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4),
@@ -562,13 +558,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: color ?? brown,
+              color: color ?? AppColors.Brown,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: Colors.grey),
+            style: AppTextStyles.bodySmall,
           ),
         ],
       ),
@@ -577,7 +573,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
   Widget _buildBody() {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: brown));
+      return Center(child: CircularProgressIndicator(color: AppColors.Brown));
     }
     if (errorMessage != null) {
       return Center(child: Text(errorMessage!));
@@ -602,7 +598,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     if (role == 'admin') {
       return PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert, color: brown),
+        icon: Icon(Icons.more_vert, color: AppColors.Brown),
         onSelected: (value) {
           if (value == 'delete') {
             _deleteCase(c);
@@ -623,13 +619,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           const PopupMenuItem(value: 'hearing', child: Text('Set Hearing')),
           const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
           const PopupMenuDivider(),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'edit',
-            child: Text('Edit Case', style: TextStyle(color: Colors.blue)),
+            child: Text('Edit Case', style: TextStyle(color: AppColors.info)),
           ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'delete',
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
       );
@@ -637,7 +633,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     if (role == 'lawyer') {
       return PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert, color: brown),
+        icon: Icon(Icons.more_vert, color: AppColors.Brown),
         onSelected: (value) {
           if (value == 'delete') {
             _deleteCase(c);
@@ -656,13 +652,13 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           const PopupMenuItem(value: 'hearing', child: Text('Set Hearing')),
           const PopupMenuItem(value: 'closed', child: Text('Set Closed')),
           const PopupMenuDivider(),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'edit',
-            child: Text('Edit Case', style: TextStyle(color: Colors.blue)),
+            child: Text('Edit Case', style: TextStyle(color: AppColors.info)),
           ),
-          const PopupMenuItem(
+          PopupMenuItem(
             value: 'delete',
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
       );
@@ -670,7 +666,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
 
     // Client (or unknown role): view-only.
     return IconButton(
-      icon: const Icon(Icons.visibility_outlined, color: brown),
+      icon: Icon(Icons.visibility_outlined, color: AppColors.Brown),
       onPressed: () => _viewCaseDetail(c),
     );
   }
@@ -680,12 +676,12 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: beige,
+          color: AppColors.beige,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: brown),
+            Icon(icon, size: 16, color: AppColors.Brown),
             const SizedBox(width: 6),
             Expanded(
               child: Column(
@@ -694,7 +690,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    style: AppTextStyles.bodySmall.copyWith(fontSize: 10),
                   ),
                   Text(
                     value.isEmpty ? '-' : value,
@@ -716,12 +712,12 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
   Widget _detailRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 15, color: Colors.grey.shade600),
+        Icon(icon, size: 15, color: AppColors.iconMuted),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(fontSize: 12.5, color: Colors.grey.shade800),
+            style: AppTextStyles.bodyMedium.copyWith(fontSize: 12.5),
           ),
         ),
       ],
@@ -738,7 +734,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -756,10 +752,10 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               children: [
                 Text(
                   'Case #${c.id}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: brown,
+                    color: AppColors.Brown,
                   ),
                 ),
                 const Spacer(),
@@ -806,14 +802,14 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                 Icon(
                   isUnpaid ? Icons.error_outline : Icons.check_circle_outline,
                   size: 15,
-                  color: isUnpaid ? Colors.red.shade400 : Colors.green.shade600,
+                  color: isUnpaid ? AppColors.error : AppColors.success,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   'Payment: ${c.paymentStatus}',
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: isUnpaid ? Colors.red.shade400 : Colors.green.shade600,
+                    color: isUnpaid ? AppColors.error : AppColors.success,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -826,7 +822,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                 c.descriptionCase,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12.5, color: Colors.grey.shade700),
+                style: AppTextStyles.bodyMedium.copyWith(fontSize: 12.5),
               ),
             ],
           ],

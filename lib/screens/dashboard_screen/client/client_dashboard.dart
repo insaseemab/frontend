@@ -111,7 +111,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                     ),
                   ),
                   Text(
-                    "Legal Portal",
+                    "Client",
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 14,
