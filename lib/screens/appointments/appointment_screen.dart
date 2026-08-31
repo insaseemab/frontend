@@ -556,8 +556,6 @@ class _AppointmentTile extends StatelessWidget {
 
   const _AppointmentTile({required this.appointment, required this.onDelete});
 
-  // No direct theme equivalent for the "pending" amber tone, so it stays
-  // as a literal alongside the themed success/error colors.
   Color get _statusColor {
     switch (appointment['status']) {
       case 'accepted':

@@ -408,7 +408,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               Text('${lawyer["cases"] ?? ""} cases', style: AppTextStyles.bodyMedium),
               if (lawyer["subscription_end_date"] != null)
                 Text(
-                  'Expires: ${lawyer["subscription_end_date"].toString().split("T")[0]}',
+                  'Expires: ${lawyer["subscription_expiry"].toString().split("T")[0]}',
                   style: AppTextStyles.label,
                 ),
               const SizedBox(height: 10),

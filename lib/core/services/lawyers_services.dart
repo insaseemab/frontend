@@ -258,7 +258,7 @@ class LawyerService {
   Future<Map<String, dynamic>> renewLawyer(int id) async {
     try {
       final response = await http.patch(
-        Uri.parse('$_baseUrl/lawyers/$id/renew'),
+        Uri.parse('$_baseUrl/lawyers/$id/renew-subscription'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${_getToken()}',
