@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/auth_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'reset_password.dart';
 import '../../routes/app_routes.dart';
 
@@ -43,22 +44,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       duration: const Duration(seconds: 4),
     );
 
-    
     Get.toNamed(AppRoutes.resetPassword);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: AppColors.beige,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F2EE),
+              color: AppColors.cardFill,
               borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: AppColors.cardBorder),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.Brown.withOpacity(0.07),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -66,30 +74,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   height: 60,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE6DED3),
+                    color: AppColors.navActive,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   padding: const EdgeInsets.all(10),
-                  child: const Icon(
+                  child: Icon(
                     Icons.lock_reset,
-                    color: Color(0xFF6B4F3F),
+                    color: AppColors.Brown,
                     size: 30,
                   ),
                 ),
 
                 const SizedBox(height: 16),
 
-                const Text(
-                  "Forgot Password?",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
+                Text("Forgot Password?", style: AppTextStyles.heading1),
 
                 const SizedBox(height: 6),
 
-                const Text(
+                Text(
                   "Enter your email to receive a reset link",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey),
+                  style: AppTextStyles.bodyMedium,
                 ),
 
                 const SizedBox(height: 24),
@@ -97,11 +102,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  style: AppTextStyles.bodyLarge,
                   decoration: InputDecoration(
                     hintText: "your.email@example.com",
+                    hintStyle: AppTextStyles.hint,
                     filled: true,
-                    fillColor: Colors.white,
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    fillColor: AppColors.white,
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: AppColors.iconMuted,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
@@ -111,43 +121,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                 const SizedBox(height: 20),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B4F3F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 22,
-                            width: 22,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : const Text(
-                            "Send Reset Link",
-                            style: TextStyle(color: Colors.white),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _submit,
+                  style: AppButtonStyles.primary,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 22,
+                          width: 22,
+                          child: CircularProgressIndicator(
+                            color: AppColors.white,
+                            strokeWidth: 2.5,
                           ),
-                  ),
+                        )
+                      : Text("Send Reset Link", style: AppTextStyles.button),
                 ),
 
                 const SizedBox(height: 16),
 
                 TextButton(
                   onPressed: () => Get.back(),
-                  child: const Text(
+                  child: Text(
                     "Back to Login",
-                    style: TextStyle(
-                      color: Color(0xFF6B4F3F),
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: AppColors.Brown),
                   ),
                 ),
               ],

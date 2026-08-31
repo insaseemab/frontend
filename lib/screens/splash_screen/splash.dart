@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import '../../routes/app_routes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -56,11 +57,11 @@ class _SplashPageState extends State<SplashPage>
         double opacity = (_controller.value + index * 0.3) % 1.0;
         return Opacity(opacity: opacity, child: child);
       },
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: CircleAvatar(
           radius: 5,
-          backgroundColor: Color(0xFF6B4F3F),
+          backgroundColor: AppColors.Brown,
         ),
       ),
     );
@@ -69,7 +70,7 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: AppColors.beige,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,7 +80,7 @@ class _SplashPageState extends State<SplashPage>
               height: 80,
               width: 80,
               decoration: BoxDecoration(
-                color: const Color(0xFFE6DED3),
+                color: AppColors.beige,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
@@ -93,23 +94,18 @@ class _SplashPageState extends State<SplashPage>
 
             const SizedBox(height: 24),
 
-            const Text(
-              "Insaaf Connect",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A342E),
-              ),
-            ),
+            Text("Insaaf Connect", style: AppTextStyles.splashSubtitle.copyWith(
+              fontFamily: null,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: AppColors.Brown,
+            )),
 
             const SizedBox(height: 6),
 
-            const Text(
+            Text(
               "Digital Platform for Lawyers and Clients",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.brown,
-              ),
+              style: AppTextStyles.bodyMedium,
             ),
 
             const SizedBox(height: 24),

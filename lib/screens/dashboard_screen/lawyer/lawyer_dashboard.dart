@@ -46,7 +46,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.beige,
       // ───────── APP BAR ─────────
       appBar: AppBar(
         backgroundColor: AppColors.beige,
@@ -821,7 +821,7 @@ class _HomePageState extends State<_HomePage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.beige,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(

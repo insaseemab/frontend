@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/auth_services.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
-import 'dart:io';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 
@@ -55,12 +55,14 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  
-  String? _validateFullName(String? value) {
-    if (value == null || value.trim().isEmpty) return "Full name is required";
-    if (value.trim().length < 3) return "Name must be at least 3 characters";
-    return null;
+ String? _validateFullName(String? value) {
+  if (value == null || value.trim().isEmpty) return "Full name is required";
+  if (value.trim().length < 3) return "Name must be at least 3 characters";
+  if (!RegExp(r'^[A-Z]').hasMatch(value.trim())) {
+    return "Name must start with a capital letter";
   }
+  return null;
+}
 
   String? _validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) return "Email is required";
@@ -123,31 +125,27 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-
   Future<void> _handleRegister() async {
-    
     final isValid = _formKey.currentState?.validate() ?? false;
 
-  
     if (!isClient && selectedSpecialization == null) {
       Get.snackbar(
         "Validation Error",
         "Please select a specialization",
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
-  
     final licenseError = _validateLicense();
     if (licenseError != null) {
       Get.snackbar(
         "Validation Error",
         licenseError,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -157,7 +155,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() => _isLoading = true);
 
-    
     final Map<String, dynamic> body = {
       'name': fullNameController.text.trim(),
       'email': emailController.text.trim(),
@@ -173,24 +170,22 @@ class _RegisterPageState extends State<RegisterPage> {
       body['experience'] = experienceController.text.trim();
     }
 
-    
     final result = await AuthService.register(
-  body,
-  licenseImageBytes: licenseImageBytes,
-  licenseImageName: licenseImageName,
-);
+      body,
+      licenseImageBytes: licenseImageBytes,
+      licenseImageName: licenseImageName,
+    );
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
       Get.snackbar(
         "Success",
         "Account created!",
-        backgroundColor: Colors.green.shade100,
-        colorText: Colors.green.shade900,
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
 
-      
       if (isClient) {
         Get.offAllNamed(AppRoutes.clientDashboard);
       } else {
@@ -200,8 +195,8 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar(
         "Error",
         result['message'] ?? "Registration failed. Please try again.",
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -214,7 +209,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
 
     if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes(); 
+      final bytes = await pickedFile.readAsBytes();
       setState(() {
         licenseImageBytes = bytes;
         licenseImageName = pickedFile.name;
@@ -225,15 +220,23 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5EFE6),
+      backgroundColor: AppColors.beige,
       body: SingleChildScrollView(
         child: Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F2EE),
+              color: AppColors.cardFill,
               borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: AppColors.cardBorder),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.Brown.withOpacity(0.07),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Form(
               key: _formKey,
@@ -246,7 +249,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 90,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE6DED3),
+                      color: AppColors.beige,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Image.asset(
@@ -256,10 +259,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  const Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+                  Text("Create Account", style: AppTextStyles.heading1),
                   const SizedBox(height: 20),
 
                   // ── Client / Lawyer Toggle ────────────────
@@ -273,17 +273,18 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: isClient
-                                  ? const Color(0xFF6B4F3F)
-                                  : Colors.white,
+                                  ? AppColors.Brown
+                                  : AppColors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.brown),
+                              border: Border.all(color: AppColors.Brown),
                             ),
                             child: Center(
                               child: Text(
                                 "Register as Client",
-                                style: TextStyle(
-                                  color: isClient ? Colors.white : Colors.brown,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTextStyles.label.copyWith(
+                                  color: isClient
+                                      ? AppColors.white
+                                      : AppColors.Brown,
                                 ),
                               ),
                             ),
@@ -298,19 +299,18 @@ class _RegisterPageState extends State<RegisterPage> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: !isClient
-                                  ? const Color(0xFF6B4F3F)
-                                  : Colors.white,
+                                  ? AppColors.Brown
+                                  : AppColors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.brown),
+                              border: Border.all(color: AppColors.Brown),
                             ),
                             child: Center(
                               child: Text(
                                 "Register as Lawyer",
-                                style: TextStyle(
+                                style: AppTextStyles.label.copyWith(
                                   color: !isClient
-                                      ? Colors.white
-                                      : Colors.brown,
-                                  fontWeight: FontWeight.bold,
+                                      ? AppColors.white
+                                      : AppColors.Brown,
                                 ),
                               ),
                             ),
@@ -361,8 +361,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           .toList(),
                       decoration: InputDecoration(
                         hintText: "Specialization",
+                        hintStyle: AppTextStyles.hint,
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppColors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -389,14 +390,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 12),
 
                     // ── License Upload ────────────────────
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Upload License Picture",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                        style: AppTextStyles.heading4,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -405,14 +403,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       onTap: _pickLicenseImage,
                       child: Container(
                         width: double.infinity,
-                        height: licenseImageBytes!= null ? 160 : 100,
+                        height: licenseImageBytes != null ? 160 : 100,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: licenseImageBytes == null
-                                ? Colors.brown.shade200
-                                : Colors.brown,
+                                ? AppColors.mediumBrown.withOpacity(0.35)
+                                : AppColors.Brown,
                           ),
                         ),
                         child: licenseImageBytes != null
@@ -423,20 +421,19 @@ class _RegisterPageState extends State<RegisterPage> {
                                   fit: BoxFit.cover,
                                 ),
                               )
-                            : const Center(
+                            : Center(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
                                       Icons.upload_file,
-                                      color: Colors.brown,
+                                      color: AppColors.Brown,
                                     ),
-                                    SizedBox(height: 6),
+                                    const SizedBox(height: 6),
                                     Text(
                                       "Tap to upload license picture",
-                                      style: TextStyle(
-                                        color: Colors.brown,
-                                        fontSize: 13,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColors.Brown,
                                       ),
                                     ),
                                   ],
@@ -458,6 +455,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         _obscurePassword
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: AppColors.iconMuted,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
@@ -475,6 +473,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         _obscureConfirmPassword
                             ? Icons.visibility_off
                             : Icons.visibility,
+                        color: AppColors.iconMuted,
                       ),
                       onPressed: () {
                         setState(
@@ -513,10 +512,12 @@ class _RegisterPageState extends State<RegisterPage> {
       keyboardType: keyboardType,
       validator: validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      style: AppTextStyles.bodyLarge,
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: AppTextStyles.hint,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.white,
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -524,42 +525,30 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
       ),
     );
   }
 
   Widget createAccountButton() {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleRegister,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6B4F3F),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                height: 22,
-                width: 22,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2.5,
-                ),
-              )
-            : const Text(
-                "Create Account",
-                style: TextStyle(fontSize: 16, color: Colors.white),
+    return ElevatedButton(
+      onPressed: _isLoading ? null : _handleRegister,
+      style: AppButtonStyles.primary,
+      child: _isLoading
+          ? const SizedBox(
+              height: 22,
+              width: 22,
+              child: CircularProgressIndicator(
+                color: AppColors.white,
+                strokeWidth: 2.5,
               ),
-      ),
+            )
+          : Text("Create Account", style: AppTextStyles.button),
     );
   }
 
@@ -567,12 +556,12 @@ class _RegisterPageState extends State<RegisterPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Already have an account? "),
+        Text("Already have an account? ", style: AppTextStyles.bodyMedium),
         GestureDetector(
           onTap: () => Get.back(),
-          child: const Text(
+          child: Text(
             "Login",
-            style: TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+            style: AppTextStyles.label.copyWith(color: AppColors.Brown),
           ),
         ),
       ],

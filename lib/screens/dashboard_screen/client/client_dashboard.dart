@@ -3,7 +3,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/chat/conversation.dart';
-import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
 import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
@@ -46,7 +45,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
         backgroundColor: AppColors.beige,
         elevation: 0,
@@ -544,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.beige,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFFEADDD0)),
                 ),
@@ -599,7 +598,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.beige,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(

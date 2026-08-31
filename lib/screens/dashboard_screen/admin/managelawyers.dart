@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
-import 'package:insaafconnect/screens/dashboard_screen/admin/admin_dashboard.dart';
 
 class Managelawyers extends StatefulWidget {
   const Managelawyers({super.key});
@@ -54,16 +54,19 @@ class _ManagelawyersState extends State<Managelawyers> {
     // Show confirmation dialog first
     final confirmed = await Get.dialog(
       AlertDialog(
-        title: const Text('Delete Lawyer'),
-        content: const Text('Are you sure you want to delete this lawyer?'),
+        title: Text('Delete Lawyer', style: AppTextStyles.heading3),
+        content: Text(
+          'Are you sure you want to delete this lawyer?',
+          style: AppTextStyles.bodyLarge,
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: AppTextStyles.label.copyWith(color: AppColors.Brown)),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text('Delete', style: AppTextStyles.label.copyWith(color: AppColors.error)),
           ),
         ],
       ),
@@ -76,9 +79,9 @@ class _ManagelawyersState extends State<Managelawyers> {
       if (!mounted) return;
       _loadLawyers();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lawyer deleted successfully'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Lawyer deleted successfully'),
+          backgroundColor: AppColors.success,
         ),
       );
     } catch (e) {
@@ -86,7 +89,7 @@ class _ManagelawyersState extends State<Managelawyers> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -112,49 +115,54 @@ class _ManagelawyersState extends State<Managelawyers> {
 
     await Get.dialog(
       AlertDialog(
-        title: const Text(
-          'Edit Lawyer',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text('Edit Lawyer', style: AppTextStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                style: AppTextStyles.bodyLarge,
+                decoration: InputDecoration(labelText: 'Name', labelStyle: AppTextStyles.labelMuted),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: specController,
-                decoration: const InputDecoration(labelText: 'Specialization'),
+                style: AppTextStyles.bodyLarge,
+                decoration: InputDecoration(labelText: 'Specialization', labelStyle: AppTextStyles.labelMuted),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                style: AppTextStyles.bodyLarge,
+                decoration: InputDecoration(labelText: 'Location', labelStyle: AppTextStyles.labelMuted),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: experienceController,
-                decoration: const InputDecoration(labelText: 'Experience'),
+                style: AppTextStyles.bodyLarge,
+                decoration: InputDecoration(labelText: 'Experience', labelStyle: AppTextStyles.labelMuted),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: casesController,
-                decoration: const InputDecoration(labelText: 'Cases'),
+                style: AppTextStyles.bodyLarge,
+                decoration: InputDecoration(labelText: 'Cases', labelStyle: AppTextStyles.labelMuted),
                 keyboardType: TextInputType.number,
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel', style: AppTextStyles.label.copyWith(color: AppColors.Brown)),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.brown,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.Brown,
+              foregroundColor: AppColors.white,
             ),
             onPressed: () async {
               Get.back();
@@ -174,9 +182,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                 if (!mounted) return;
                 _loadLawyers();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Lawyer updated successfully'),
-                    backgroundColor: Colors.green,
+                  SnackBar(
+                    content: const Text('Lawyer updated successfully'),
+                    backgroundColor: AppColors.success,
                   ),
                 );
               } catch (e) {
@@ -184,12 +192,12 @@ class _ManagelawyersState extends State<Managelawyers> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Error: $e'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
               }
             },
-            child: const Text('Save'),
+            child: Text('Save', style: AppTextStyles.button),
           ),
         ],
       ),
@@ -206,15 +214,15 @@ class _ManagelawyersState extends State<Managelawyers> {
         _lawyers[index]['status'] = 1;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lawyer approved ✅'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Lawyer approved ✅'),
+          backgroundColor: AppColors.success,
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
       );
     }
   }
@@ -229,15 +237,15 @@ class _ManagelawyersState extends State<Managelawyers> {
         _lawyers[index]['status'] = 0;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lawyer rejected ❌'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('Lawyer rejected ❌'),
+          backgroundColor: AppColors.error,
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
       );
     }
   }
@@ -248,65 +256,59 @@ class _ManagelawyersState extends State<Managelawyers> {
     try {
       await _lawyerService.renewLawyer(id);
       if (!mounted) return;
-      _loadLawyers(); // reload to get new subscription date
+      _loadLawyers();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Subscription renewed (30 Days) ✅'),
-          backgroundColor: Colors.green,
+        SnackBar(
+          content: const Text('Subscription renewed (30 Days) ✅'),
+          backgroundColor: AppColors.success,
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
       );
     }
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-    body: SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // This replaces your old AppBar — now it's just a header row in the body
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text(
-                    "List of Lawyers",
-                    style: TextStyle(
-                      color: Colors.brown,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.beige,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text("List of Lawyers", style: AppTextStyles.heading2),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add, color: Colors.brown),
-                  onPressed: () async {
-                    await Get.toNamed(AppRoutes.addLawyer);
-                    _loadLawyers();
-                  },
-                ),
-              ],
+                  IconButton(
+                    icon: Icon(Icons.add, color: AppColors.Brown),
+                    onPressed: () async {
+                      await Get.toNamed(AppRoutes.addLawyer);
+                      _loadLawyers();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          // The rest of your page content
-          Expanded(child: _buildBody()),
-        ],
+            // The rest of your page content
+            Expanded(child: _buildBody()),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: CircularProgressIndicator(color: AppColors.Brown));
     }
 
     if (_errorMessage != null) {
@@ -314,18 +316,24 @@ Widget build(BuildContext context) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: AppColors.error),
             const SizedBox(height: 12),
-            Text('Error: $_errorMessage', textAlign: TextAlign.center),
+            Text('Error: $_errorMessage', textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
             const SizedBox(height: 12),
-            ElevatedButton(onPressed: _loadLawyers, child: const Text('Retry')),
+            ElevatedButton(
+              onPressed: _loadLawyers,
+              style: AppButtonStyles.primary.copyWith(
+                minimumSize: WidgetStateProperty.all(const Size(140, 44)),
+              ),
+              child: Text('Retry', style: AppTextStyles.button),
+            ),
           ],
         ),
       );
     }
 
     if (_lawyers.isEmpty) {
-      return const Center(child: Text('No lawyers found.'));
+      return Center(child: Text('No lawyers found.', style: AppTextStyles.bodyLarge));
     }
 
     return ListView.builder(
@@ -336,17 +344,17 @@ Widget build(BuildContext context) {
         final isApproved = status == 1;
         final isRejected = status == 0;
 
-        const brownColor = Colors.brown;
+        final brownColor = AppColors.Brown;
 
         return Container(
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5EFE6),
+            color: AppColors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: AppColors.Brown.withOpacity(0.10),
                 blurRadius: 6,
               ),
             ],
@@ -359,12 +367,12 @@ Widget build(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
-                    backgroundColor: Colors.brown,
+                    backgroundColor: AppColors.Brown,
                     child: Text(
                       (lawyer['name'] ?? '').isNotEmpty
                           ? lawyer['name'][0].toUpperCase()
                           : '?',
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: AppColors.white),
                     ),
                   ),
                   Container(
@@ -373,12 +381,12 @@ Widget build(BuildContext context) {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: AppColors.success,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '⭐ ${lawyer["rating"] ?? ""}',
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: AppColors.white),
                     ),
                   ),
                 ],
@@ -388,21 +396,21 @@ Widget build(BuildContext context) {
               // ── Details ──────────────────────────────────────────────────
               Text(
                 lawyer['name']?.toString() ?? 'Unknown',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: AppTextStyles.heading4.copyWith(fontSize: 16),
               ),
               Text(
                 'ID: ${lawyer["id"]}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: AppTextStyles.bodySmall,
               ),
-              Text(lawyer['specialization']?.toString() ?? ''),
-              Text('📍 ${lawyer["location"] ?? ""}'),
-              Text('${lawyer["experience"] ?? ""} years experience'),
-              Text('${lawyer["cases"] ?? ""} cases'),
+              Text(lawyer['specialization']?.toString() ?? '', style: AppTextStyles.bodyMedium),
+              Text('📍 ${lawyer["location"] ?? ""}', style: AppTextStyles.bodyMedium),
+              Text('${lawyer["experience"] ?? ""} years experience', style: AppTextStyles.bodyMedium),
+              Text('${lawyer["cases"] ?? ""} cases', style: AppTextStyles.bodyMedium),
               if (lawyer["subscription_end_date"] != null)
-                Text('Expires: ${lawyer["subscription_end_date"].toString().split("T")[0]}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.brown)),
+                Text(
+                  'Expires: ${lawyer["subscription_end_date"].toString().split("T")[0]}',
+                  style: AppTextStyles.label,
+                ),
               const SizedBox(height: 10),
 
               // ── Status Badge ─────────────────────────────────────────────
@@ -415,19 +423,17 @@ Widget build(BuildContext context) {
                   ),
                   decoration: BoxDecoration(
                     color: isApproved
-                        ? Colors.green.shade100
-                        : Colors.red.shade100,
+                        ? AppColors.success.withOpacity(0.12)
+                        : AppColors.error.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isApproved ? Colors.green : Colors.red,
+                      color: isApproved ? AppColors.success : AppColors.error,
                     ),
                   ),
                   child: Text(
                     isApproved ? '✅ Approved' : '❌ Rejected',
                     style: TextStyle(
-                      color: isApproved
-                          ? Colors.green.shade800
-                          : Colors.red.shade800,
+                      color: isApproved ? AppColors.success : AppColors.error,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -441,8 +447,8 @@ Widget build(BuildContext context) {
                     child: ElevatedButton(
                       onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isApproved ? brownColor : Colors.white,
-                        side: const BorderSide(color: brownColor),
+                        backgroundColor: isApproved ? brownColor : AppColors.white,
+                        side: BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -450,9 +456,8 @@ Widget build(BuildContext context) {
                       ),
                       child: Text(
                         'Approve',
-                        style: TextStyle(
-                          color: isApproved ? Colors.white : brownColor,
-                          fontWeight: FontWeight.bold,
+                        style: AppTextStyles.label.copyWith(
+                          color: isApproved ? AppColors.white : brownColor,
                         ),
                       ),
                     ),
@@ -462,8 +467,8 @@ Widget build(BuildContext context) {
                     child: ElevatedButton(
                       onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isRejected ? brownColor : Colors.white,
-                        side: const BorderSide(color: brownColor),
+                        backgroundColor: isRejected ? brownColor : AppColors.white,
+                        side: BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -471,9 +476,8 @@ Widget build(BuildContext context) {
                       ),
                       child: Text(
                         'Reject',
-                        style: TextStyle(
-                          color: isRejected ? Colors.white : brownColor,
-                          fontWeight: FontWeight.bold,
+                        style: AppTextStyles.label.copyWith(
+                          color: isRejected ? AppColors.white : brownColor,
                         ),
                       ),
                     ),
@@ -483,21 +487,17 @@ Widget build(BuildContext context) {
               const SizedBox(height: 10),
 
               // ── Edit / Delete Row ────────────────────────────────────────
-              // FIX: Edit button now has its OWN fixed style, not tied to isApproved
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _editLawyer(lawyer),
                       icon: const Icon(Icons.edit, size: 16),
-                      label: const Text(
-                        'Edit',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      label: Text('Edit', style: AppTextStyles.label.copyWith(color: brownColor)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, // always white
-                        foregroundColor: brownColor, // always brown text/icon
-                        side: const BorderSide(color: brownColor),
+                        backgroundColor: AppColors.white,
+                        foregroundColor: brownColor,
+                        side: BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -509,15 +509,12 @@ Widget build(BuildContext context) {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _deleteLawyer(lawyer['id']),
-                      icon: const Icon(Icons.delete, size: 16),
-                      label: const Text(
-                        'Delete',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      icon: Icon(Icons.delete, size: 16, color: AppColors.error),
+                      label: Text('Delete', style: AppTextStyles.label.copyWith(color: AppColors.error)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white, // always white
-                        foregroundColor: Colors.red, // always red text/icon
-                        side: const BorderSide(color: Colors.red),
+                        backgroundColor: AppColors.white,
+                        foregroundColor: AppColors.error,
+                        side: BorderSide(color: AppColors.error),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -533,15 +530,12 @@ Widget build(BuildContext context) {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () => _renewLawyer(index),
-                  icon: const Icon(Icons.autorenew, size: 16),
-                  label: const Text(
-                    'Renew (30 Days)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  icon: Icon(Icons.autorenew, size: 16, color: brownColor),
+                  label: Text('Renew (30 Days)', style: AppTextStyles.label.copyWith(color: brownColor)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.brown,
-                    side: const BorderSide(color: Colors.brown),
+                    backgroundColor: AppColors.white,
+                    foregroundColor: brownColor,
+                    side: BorderSide(color: brownColor),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

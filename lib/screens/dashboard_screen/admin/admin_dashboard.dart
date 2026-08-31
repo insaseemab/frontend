@@ -134,7 +134,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
         backgroundColor: AppColors.beige,
         elevation: 0,
@@ -144,7 +144,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                color: AppColors.beige,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ClipRRect(
@@ -534,7 +534,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.beige,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(color: AppColors.Brown.withOpacity(0.10), blurRadius: 6),
