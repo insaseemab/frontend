@@ -4,36 +4,41 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/config/environment.dart';
 
 class CasesService {
- static const String baseUrl = Environment.apiBaseUrl;
+  static const String baseUrl = Environment.apiBaseUrl;
 
- static Future<List<dynamic>> fetchCases() async {
-  try {
-    final box = GetStorage();
-    final String token = box.read('token');
+  static Future<List<dynamic>> fetchCases() async {
+    try {
+      final box = GetStorage();
+      final String token = box.read('token');
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/cases'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
+      final response = await http.get(
+        Uri.parse('$baseUrl/cases'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception("Failed to load cases: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Failed to load cases: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Error: $e");
     }
-  } catch (e) {
-    throw Exception("Error: $e");
   }
-}
 
-  
   static Future<List<Map<String, dynamic>>> fetchLawyers() async {
     try {
+      final box = GetStorage();
+      final String token = box.read('token');
       final response = await http.get(
         Uri.parse('$baseUrl/cases/lawyers'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -50,8 +55,15 @@ class CasesService {
 
   static Future<List<Map<String, dynamic>>> fetchClients() async {
     try {
+      final box = GetStorage();
+      final String token = box.read('token');
+
       final response = await http.get(
         Uri.parse('$baseUrl/cases/clients'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       );
 
       if (response.statusCode == 200) {
@@ -99,7 +111,7 @@ class CasesService {
         "case_status": caseStatus,
         "depart_concern": departConcern,
         "hearing_date": hearingDate,
-        "payment_status": paymentStatus, 
+        "payment_status": paymentStatus,
       }),
     );
 
@@ -109,44 +121,44 @@ class CasesService {
   }
 
   static Future<void> updateCase({
-  required int id,
-  required String name,
-  required String caseType,
-  required String caseStatus,
-  required String descriptionCase,
-  required String phone,
-  required String address,
-  required String caseStartDate,
-  required String departConcern,
-  required String hearingDate,
-  required int paymentStatus,   
-  required String token,
-}) async {
-  final response = await http.put(
-    Uri.parse('$baseUrl/cases/$id'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-    body: jsonEncode({
-      "name": name,
-      "case_type": caseType,
-      "case_status": caseStatus,
-      "description_case": descriptionCase,
-      "phone": phone,
-      "address": address,
-      "case_start_date": caseStartDate,
-      "depart_concern": departConcern,
-      "hearing_date": hearingDate,
-      "payment_status": paymentStatus,   
-    }),
-  );
+    required int id,
+    required String name,
+    required String caseType,
+    required String caseStatus,
+    required String descriptionCase,
+    required String phone,
+    required String address,
+    required String caseStartDate,
+    required String departConcern,
+    required String hearingDate,
+    required int paymentStatus,
+    required String token,
+  }) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/cases/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "name": name,
+        "case_type": caseType,
+        "case_status": caseStatus,
+        "description_case": descriptionCase,
+        "phone": phone,
+        "address": address,
+        "case_start_date": caseStartDate,
+        "depart_concern": departConcern,
+        "hearing_date": hearingDate,
+        "payment_status": paymentStatus,
+      }),
+    );
 
-  if (response.statusCode != 200) {
-    throw Exception('Failed to update case: ${response.body}');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update case: ${response.body}');
+    }
   }
-}
-  
+
   static Future<List<dynamic>> fetchMyCases(String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/cases/mine'),

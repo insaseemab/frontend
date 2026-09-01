@@ -406,7 +406,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               Text('📍 ${lawyer["location"] ?? ""}', style: AppTextStyles.bodyMedium),
               Text('${lawyer["experience"] ?? ""} years experience', style: AppTextStyles.bodyMedium),
               Text('${lawyer["cases"] ?? ""} cases', style: AppTextStyles.bodyMedium),
-              if (lawyer["subscription_end_date"] != null)
+              if (lawyer["subscription_expiry"] != null)
                 Text(
                   'Expires: ${lawyer["subscription_expiry"].toString().split("T")[0]}',
                   style: AppTextStyles.label,

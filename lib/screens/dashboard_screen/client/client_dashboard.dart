@@ -10,10 +10,8 @@ import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/screens/notifications.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
-// ════════════════════════════════════════════════
-//  CLIENT DASHBOARD SCREEN  (Bottom Nav Shell)
-// ════════════════════════════════════════════════
 
 class ClientDashboardScreen extends StatefulWidget {
   const ClientDashboardScreen({super.key});
@@ -25,8 +23,6 @@ class ClientDashboardScreen extends StatefulWidget {
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   int currentIndex = 0;
 
-  // Only 4 items appear in the bottom bar. Appointments (pageIndex 3) is
-  // deliberately excluded here and reached only via the drawer.
   final List<_NavItem> _navItems = const [
     _NavItem(0, Icons.home_outlined, Icons.home, 'Home'),
     _NavItem(1, Icons.search, Icons.search, 'Lawyers'),
@@ -35,11 +31,12 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   ];
 
   final List<Widget> pages = [
-    const HomeScreen(),                                     // 0
-    const LawyerFindScreen(),                                // 1
-    const CalendarScreen(isNested: true),                    // 2
-    const ConversationsScreen(),                              // 3
-    const AppointmentsPage(role: AppointmentRole.client),    // 4 (drawer-only)
+    const HomeScreen(),
+    const LawyerFindScreen(),
+    const CalendarScreen(isNested: true),
+    const ConversationsScreen(),
+    const AppointmentsPage(role: AppointmentRole.client),
+    const ManageCasesPage(userRole: 'client'),
   ];
 
   @override
@@ -48,14 +45,13 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       backgroundColor: AppColors.beige,
       appBar: AppBar(
         backgroundColor: AppColors.beige,
-        elevation: 0,
         title: Row(
           children: [
             Container(
               height: 40,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: AppColors.iconMuted,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: ClipRRect(
@@ -64,13 +60,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
+            Text(
               "Insaaf Connect",
-              style: TextStyle(
-                color: AppColors.Brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+              style: AppTextStyles.heading3.copyWith(fontSize: 20),
             ),
           ],
         ),
@@ -95,40 +87,27 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: AppColors.Brown),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: AppColors.Brown),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
                     "Insaaf Connect",
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.heading2.copyWith(color: AppColors.white),
                   ),
                   Text(
                     "Client",
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 14,
-                    ),
+                    style: AppTextStyles.bodyLarge.copyWith(color: AppColors.white),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
             ListTile(
               leading: const Icon(Icons.home, color: AppColors.Brown),
-              title: const Text(
-                "Home",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("Home", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 setState(() => currentIndex = 0);
@@ -136,13 +115,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.search, color: AppColors.Brown),
-              title: const Text(
-                "Find Lawyer",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("Find Lawyer", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 setState(() => currentIndex = 1);
@@ -150,27 +123,23 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.calendar_month, color: AppColors.Brown),
-              title: const Text(
-                "My Calendar",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("My Calendar", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 setState(() => currentIndex = 2);
               },
             ),
             ListTile(
+              leading: const Icon(Icons.folder_copy, color: AppColors.Brown),
+              title: Text("My Cases", style: AppTextStyles.label),
+              onTap: () {
+                Get.back();
+                setState(() => currentIndex = 5);
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.assignment, color: AppColors.Brown),
-              title: const Text(
-                "Appointments",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("Appointments", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 setState(() => currentIndex = 4);
@@ -178,13 +147,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.message, color: AppColors.Brown),
-              title: const Text(
-                "Messages",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("Messages", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 setState(() => currentIndex = 3);
@@ -192,13 +155,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.logout, color: AppColors.Brown),
-              title: const Text(
-                "Logout",
-                style: TextStyle(
-                  color: AppColors.Brown,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              title: Text("Logout", style: AppTextStyles.label),
               onTap: () {
                 Get.back();
                 final box = GetStorage();
@@ -215,7 +172,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           color: AppColors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: AppColors.black.withOpacity(0.08),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -242,8 +199,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                           const SizedBox(height: 4),
                           Text(
                             item.label,
-                            style: TextStyle(
-                              fontSize: 12,
+                            style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.Brown,
                               fontWeight:
                                   isSelected ? FontWeight.bold : FontWeight.normal,
@@ -262,10 +218,6 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     );
   }
 }
-
-// ════════════════════════════════════════════════
-//  HOME SCREEN  (Tab 1 — Dashboard content)
-// ════════════════════════════════════════════════
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -339,11 +291,11 @@ class _HomeScreenState extends State<HomeScreen> {
         return AppColors.success;
       case 'in progress':
       case 'in_progress':
-        return const Color(0xFFB5651D);
+        return AppColors.warning;
       case 'rejected':
-        return const Color(0xFFC62828);
+        return AppColors.error;
       default:
-        return const Color(0xFF6B6B6B);
+        return AppColors.labelSecondary;
     }
   }
 
@@ -351,14 +303,14 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (status.toLowerCase()) {
       case 'completed':
       case 'approved':
-        return const Color(0xFFE8F5E9);
+        return AppColors.success.withOpacity(0.12);
       case 'in progress':
       case 'in_progress':
-        return const Color(0xFFF5E6D3);
+        return AppColors.warning.withOpacity(0.12);
       case 'rejected':
-        return const Color(0xFFFDECEA);
+        return AppColors.error.withOpacity(0.12);
       default:
-        return const Color(0xFFEEEEEE);
+        return AppColors.Brown.withOpacity(0.08);
     }
   }
 
@@ -378,7 +330,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Couldn't load dashboard: $errorMessage", style: const TextStyle(color: Colors.red)),
+            Text(
+              "Couldn't load dashboard: $errorMessage",
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
+            ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _loadData,
@@ -391,7 +346,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final activeCases = cases.where((c) => c['case_status']?.toString().toLowerCase() != 'completed' && c['case_status']?.toString().toLowerCase() != 'closed').toList();
 
-    // Upcoming appointments count
     final now = DateTime.now();
     final upcomingAppointments = appointments.where((a) {
       final startRaw = a['slot_start_time'];
@@ -401,7 +355,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return start.isAfter(now);
     }).toList();
 
-    // Calculate Client Spent
     double totalSpent = 0;
     double thisMonthSpent = 0;
     for (final a in appointments) {
@@ -427,7 +380,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Welcome banner ────────────────────────────────
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -440,23 +392,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     "Welcome back, $userName",
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.heading3.copyWith(color: AppColors.white),
                   ),
                   const SizedBox(height: 5),
-                  const Text(
+                  Text(
                     "Track your active cases and legal appointments",
-                    style: TextStyle(color: AppColors.white),
+                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-
-            // ── Stat cards (Cases & Active Cases) ─────────────
             SizedBox(
               height: 100,
               child: Row(
@@ -480,7 +426,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
             SizedBox(
               height: 100,
               child: Row(
@@ -504,8 +449,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // ── Spent cards ──────────────────────────────────
             Row(
               children: [
                 Expanded(
@@ -528,28 +471,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 24),
-
-            const Text(
-              'Recent Cases',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.Brown,
-              ),
-            ),
+            Text('Recent Cases', style: AppTextStyles.heading4),
             const SizedBox(height: 12),
             if (cases.isEmpty)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFEADDD0)),
-                ),
-                child: const Text(
+                decoration: AppDecorations.card,
+                child: Text(
                   "You don't have any cases yet.",
-                  style: TextStyle(color: Color(0xFF8C7B6B)),
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.labelSecondary),
                 ),
               )
             else
@@ -612,15 +543,12 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Icon(icon, size: 24, color: AppColors.Brown),
           const SizedBox(height: 6),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
+          Text(value, style: AppTextStyles.heading4),
           const SizedBox(height: 2),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.labelSecondary),
           ),
         ],
       ),
@@ -709,7 +637,7 @@ class _CaseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.cardBorder),
         boxShadow: [
           BoxShadow(
             color: AppColors.Brown.withOpacity(0.05),
@@ -726,27 +654,20 @@ class _CaseCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTextStyles.bodyLarge.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: Color(0xFF3E2C23),
+                    color: AppColors.Brown,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   lawyer,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF8C7B6B),
-                  ),
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.labelSecondary),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   date,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFFAA9988),
-                  ),
+                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.hintText),
                 ),
               ],
             ),
@@ -759,8 +680,7 @@ class _CaseCard extends StatelessWidget {
             ),
             child: Text(
               status,
-              style: TextStyle(
-                fontSize: 12,
+              style: AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.w600,
                 color: statusColor,
               ),
@@ -790,7 +710,7 @@ class _AppointmentCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.beige,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.cardBorder),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -814,27 +734,20 @@ class _AppointmentCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: Color(0xFF3E2C23),
+                    color: AppColors.Brown,
                   ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   lawyer,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF8C7B6B),
-                  ),
+                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.labelSecondary),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   dateTime,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFAA9988),
-                  ),
+                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.hintText),
                 ),
               ],
             ),
@@ -846,7 +759,7 @@ class _AppointmentCard extends StatelessWidget {
 }
 
 class _NavItem {
-  final int pageIndex; // real index into `pages`
+  final int pageIndex;
   final IconData icon;
   final IconData activeIcon;
   final String label;

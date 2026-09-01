@@ -5,6 +5,8 @@ import '../../core/services/appointment_services.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 
+enum _PaymentMethod { screenshot, cash }
+
 class PaymentBottomSheet extends StatefulWidget {
   final Map appointment;
 
@@ -18,6 +20,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   Uint8List? screenshotBytes;
   String? screenshotName;
   bool _isSubmitting = false;
+  _PaymentMethod _selectedMethod = _PaymentMethod.screenshot;
 
   Future pickImage() async {
     final picked = await ImagePicker().pickImage(
@@ -41,8 +44,8 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     try {
       await AppointmentService.payAppointment(
         widget.appointment['id'],
-        "Manual",
-        screenshotBytes,
+        _selectedMethod == _PaymentMethod.cash ? "Cash" : "Manual",
+        _selectedMethod == _PaymentMethod.cash ? null : screenshotBytes,
       );
 
       Get.back();
@@ -57,6 +60,47 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
+  }
+
+  Widget _methodOption({
+    required _PaymentMethod method,
+    required IconData icon,
+    required String label,
+  }) {
+    final bool isSelected = _selectedMethod == method;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedMethod = method),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.Brown.withOpacity(0.1) : AppColors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? AppColors.Brown : AppColors.cardBorder,
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? AppColors.Brown : AppColors.labelSecondary,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? AppColors.Brown : AppColors.labelSecondary,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -99,29 +143,71 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 20),
 
-          Column(
+          // ── Payment method selector ──
+          Row(
             children: [
-              OutlinedButton(
-                onPressed: pickImage,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.Brown,
-                  side: BorderSide(color: AppColors.cardBorder),
-                ),
-                child: const Text("Upload Screenshot"),
+              _methodOption(
+                method: _PaymentMethod.screenshot,
+                icon: Icons.upload_file,
+                label: "Pay Online",
               ),
-
-              if (screenshotName != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Text(
-                    screenshotName!,
-                    style: TextStyle(color: AppColors.labelSecondary),
-                  ),
-                ),
+              const SizedBox(width: 12),
+              _methodOption(
+                method: _PaymentMethod.cash,
+                icon: Icons.payments_outlined,
+                label: "Pay in Cash",
+              ),
             ],
           ),
+
+          const SizedBox(height: 15),
+
+          if (_selectedMethod == _PaymentMethod.screenshot)
+            Column(
+              children: [
+                OutlinedButton(
+                  onPressed: pickImage,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.Brown,
+                    side: BorderSide(color: AppColors.cardBorder),
+                  ),
+                  child: const Text("Upload Screenshot"),
+                ),
+
+                if (screenshotName != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      screenshotName!,
+                      style: TextStyle(color: AppColors.labelSecondary),
+                    ),
+                  ),
+              ],
+            )
+          else
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.cardBorder),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: AppColors.labelSecondary, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      "You'll pay the lawyer directly in cash. Tap submit to confirm.",
+                      style: TextStyle(color: AppColors.labelSecondary, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           const SizedBox(height: 20),
 

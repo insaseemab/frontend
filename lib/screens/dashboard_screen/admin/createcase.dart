@@ -29,7 +29,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
   String selectedStatus = 'pending';
   int paymentStatus = 0; // int, 0=unpaid 1=paid
   String? selectedClientId;
-  String? selectedLawyerId;
   String? selectedDepartment;
   DateTime? selectedHearingDate;
 
@@ -38,7 +37,9 @@ class _CreateCasePageState extends State<CreateCasePage> {
   bool isNewClient = false;
 
   List<Map<String, String>> clients = [];
-  List<Map<String, String>> lawyers = [];
+
+  // The logged-in lawyer's own ID — pulled from storage, not picked from a dropdown.
+  String? currentLawyerId;
 
   final List<String> departments = [
     'Civil',
@@ -54,27 +55,19 @@ class _CreateCasePageState extends State<CreateCasePage> {
   @override
   void initState() {
     super.initState();
+    final box = GetStorage();
+    currentLawyerId = box.read('userId')?.toString();
     fetchDropdownData();
   }
 
   Future<void> fetchDropdownData() async {
     try {
       final results = await Future.wait([
-        CasesService.fetchLawyers(),
         CasesService.fetchClients(),
       ]);
 
       setState(() {
-        lawyers = results[0]
-            .map<Map<String, String>>(
-              (l) => {
-                'id': l['id'].toString(),
-                'name': l['name']?.toString() ?? 'Unknown',
-              },
-            )
-            .toList();
-
-        clients = results[1]
+        clients = results[0]
             .map<Map<String, String>>(
               (c) => {
                 'id': c['id'].toString(),
@@ -131,11 +124,20 @@ class _CreateCasePageState extends State<CreateCasePage> {
         (isNewClient
             ? emailController.text.trim().isEmpty
             : selectedClientId == null) ||
-        selectedLawyerId == null ||
         selectedDepartment == null ||
         selectedHearingDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+
+    if (currentLawyerId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not identify the logged-in lawyer. Please log in again.'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -170,7 +172,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
       await CasesService.createCase(
         descriptionCase: descriptionController.text.trim(),
         clientId: finalClientId,
-        lawyerId: selectedLawyerId!,
+        lawyerId: currentLawyerId!,
         phone: phoneController.text.trim(),
         address: addressController.text.trim(),
         caseType: caseTypeController.text.trim(),
@@ -467,14 +469,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
                     descriptionController,
                     maxLines: 3,
                     hint: 'Briefly describe the legal matter...',
-                  ),
-
-                  _themedIdDropdown(
-                    label: 'Lawyer',
-                    hint: 'Select lawyer',
-                    value: selectedLawyerId,
-                    items: lawyers,
-                    onChanged: (v) => setState(() => selectedLawyerId = v),
                   ),
 
                   _themedField('Phone', phoneController,

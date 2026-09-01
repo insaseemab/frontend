@@ -354,8 +354,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     }
   }
 
-  // Status colors kept semantic (not all map cleanly onto the brown/beige
-  // theme palette) — using AppColors where a direct match exists.
+  
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -420,10 +419,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     icon: Icon(Icons.refresh, color: AppColors.Brown),
                     onPressed: _loadCases,
                   ),
-                  // "+" is create-a-new-case — allowed for admin and lawyer.
-                  // Clients don't have a create-case flow, so the button is
-                  // hidden for them instead of navigating into a route they
-                  // aren't authorized for.
+                  
                   if (['admin', 'lawyer'].contains(box.read('role') ?? 'client'))
                     IconButton(
                       icon: Icon(Icons.add, color: AppColors.Brown),
@@ -515,6 +511,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                           child: ChoiceChip(
                             label: Text(filter),
                             selected: isSelected,
+                            showCheckmark: false,
                             onSelected: (_) =>
                                 setState(() => selectedFilter = filter),
                             selectedColor: AppColors.Brown,
@@ -588,11 +585,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
     );
   }
 
-  // Role-aware trailing action:
-  // - admin: full menu (status changes + edit + delete)
-  // - lawyer: status changes + edit + delete (no admin-only items removed here
-  //   since original logic gave lawyers the same actions as admin minus none)
-  // - client / anything else: view-detail icon only
   Widget _buildActionsForRole(CaseModel c) {
     final String role = box.read('role') ?? 'client';
 
@@ -747,7 +739,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── header row: case id + status chip + actions ──────
             Row(
               children: [
                 Text(

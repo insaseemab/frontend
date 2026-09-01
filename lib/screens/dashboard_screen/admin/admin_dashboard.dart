@@ -316,8 +316,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings, color: AppColors.Brown),
-            title: const Text('Settings'),
+            leading: const Icon(Icons.payment, color: AppColors.Brown),
+            title: const Text('Subscription'),
             
             onTap: () {
               Get.back();

@@ -396,7 +396,7 @@ class _HomePageState extends State<_HomePage> {
             // ── Subscription banner ─────────────────────────────
             Builder(
               builder: (context) {
-                final subDateStr = lawyerData?['subscription_end_date'];
+                final subDateStr = lawyerData?['subscription_expiry'];
                 DateTime? subDate;
                 if (subDateStr != null) {
                   subDate = DateTime.tryParse(subDateStr.toString());

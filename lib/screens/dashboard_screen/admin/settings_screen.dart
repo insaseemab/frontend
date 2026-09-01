@@ -37,7 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = true);
     try {
       await SettingsService.updateSetting('subscription_fee', _feeController.text.trim());
-      Get.snackbar('Success', 'Settings updated successfully',
+      Get.snackbar('Success', 'Subscription updated successfully',
           backgroundColor: Colors.green, colorText: Colors.white);
     } catch (e) {
       Get.snackbar('Error', e.toString(),
@@ -51,7 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(color: AppColors.Brown)),
+        title: const Text('Subscription', style: TextStyle(color: AppColors.Brown)),
         backgroundColor: AppColors.beige,
         iconTheme: const IconThemeData(color: AppColors.Brown),
       ),
@@ -92,7 +92,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: _isSaving
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Save Settings',
+                          : const Text('Save',
                               style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
