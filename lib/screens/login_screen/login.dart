@@ -90,11 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 // Logo icon
                 Container(
-                  height: 60,
-                  width: 60,
+                  height: 90,
+                  width: 90,
                   decoration: BoxDecoration(
                     color: AppColors.navActive,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   padding: const EdgeInsets.all(10),
                   child: Image.asset(
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height:20),
 
                 // Role pill
                 Container(

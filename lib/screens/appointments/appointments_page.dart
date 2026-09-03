@@ -65,7 +65,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.beige,
       builder: (_) => _DetailSheet(appointmentId: apt['id'] as int),
     );
   }

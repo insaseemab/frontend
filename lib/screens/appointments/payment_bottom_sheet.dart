@@ -44,7 +44,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     try {
       await AppointmentService.payAppointment(
         widget.appointment['id'],
-        _selectedMethod == _PaymentMethod.cash ? "Cash" : "Manual",
+       _selectedMethod == _PaymentMethod.cash ? "Pay in Cash" : "Pay Online",
         _selectedMethod == _PaymentMethod.cash ? null : screenshotBytes,
       );
 
