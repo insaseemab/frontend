@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:get/get.dart';
-import 'package:insaafconnect/core/utils/theme.dart'; 
-
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class BookAppointmentScreen extends StatefulWidget {
   final Map<String, dynamic> lawyer;
   final DateTime? initialDate;
 
-  const BookAppointmentScreen({super.key, required this.lawyer, this.initialDate});
+  const BookAppointmentScreen({
+    super.key,
+    required this.lawyer,
+    this.initialDate,
+  });
 
   @override
   State<BookAppointmentScreen> createState() => _BookAppointmentScreenState();
@@ -19,9 +22,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _descriptionCtrl = TextEditingController();
+  final _caseTypeCtrl = TextEditingController();
 
   String? _selectedLawType;
-  String? _selectedCaseType;
   String _appointmentMode = 'online';
 
   DateTime? _slotStart;
@@ -45,15 +48,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     'Property Law',
     'Labour Law',
     'Tax Law',
-  ];
-
-  final List<String> _caseTypes = [
-    'Consultation',
-    'Representation',
-    'Document Review',
-    'Contract Drafting',
-    'Litigation',
-    'Arbitration',
   ];
 
   String _fmtDateTime(DateTime dt) =>
@@ -82,9 +76,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: ColorScheme.light(primary: AppColors.Brown),
-        ),
+        data: Theme.of(
+          ctx,
+        ).copyWith(colorScheme: ColorScheme.light(primary: AppColors.Brown)),
         child: child!,
       ),
     );
@@ -126,7 +120,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       await AppointmentService.createAppointment(
         lawyerId: widget.lawyer['id'] as int,
         lawType: _selectedLawType!,
-        caseType: _selectedCaseType!,
+        caseType: _caseTypeCtrl.text.trim(),
         shortDescription: _descriptionCtrl.text.trim(),
         slotStartTime: _fmtDateTime(_slotStart!),
         slotEndTime: _fmtDateTime(_slotEnd!),
@@ -154,6 +148,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
         title: Row(
           children: [
             Icon(Icons.check_circle, color: AppColors.success),
@@ -181,12 +176,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 children: [
                   Text(
                     'What happens next?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                   SizedBox(height: 10),
+
                   _StepText('1. Lawyer reviews your request'),
                   _StepText('2. You get notified of acceptance'),
                   _StepText('3. Lawyer shares payment details'),
@@ -213,6 +206,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   void dispose() {
     _descriptionCtrl.dispose();
+     _caseTypeCtrl.dispose();
     super.dispose();
   }
 
@@ -224,17 +218,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
         backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: AppColors.Brown,
-            size: 20,
-          ),
+          icon: Icon(Icons.arrow_back, color: AppColors.Brown, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Book Appointment',
-          style: AppTextStyles.heading3,
-        ),
+        title: Text('Book Appointment', style: AppTextStyles.heading3),
       ),
       body: Form(
         key: _formKey,
@@ -259,21 +246,22 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               ),
               const SizedBox(height: 12),
 
-              _AppDropdown(
-                label: 'Case Type',
-                hint: 'Select case type',
-                value: _selectedCaseType,
-                items: _caseTypes,
-                onChanged: (v) => setState(() => _selectedCaseType = v),
-                validator: (v) =>
-                    v == null ? 'Please select a case type' : null,
+              _fieldLabel('Case Type'),
+              TextFormField(
+                controller: _descriptionCtrl,
+                decoration: _inputDecor(
+                  'Enter your case type',
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Case Type is required'
+                    : null,
               ),
               const SizedBox(height: 12),
 
               _fieldLabel('Short Description'),
               const SizedBox(height: 6),
               TextFormField(
-                controller: _descriptionCtrl,
+                controller: _caseTypeCtrl,
                 maxLines: 3,
                 decoration: _inputDecor(
                   'Briefly describe your legal matter...',
@@ -351,10 +339,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
   }
 
-  Widget _sectionLabel(String text) => Text(
-    text,
-    style: AppTextStyles.heading4.copyWith(fontSize: 16),
-  );
+  Widget _sectionLabel(String text) =>
+      Text(text, style: AppTextStyles.heading4.copyWith(fontSize: 16));
 
   Widget _fieldLabel(String text) => Text(
     text,
@@ -394,8 +380,6 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   );
 }
 
-
-
 class MyAppointmentsScreen extends StatefulWidget {
   final bool isStandalone;
 
@@ -416,7 +400,8 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   void _load() {
     setState(() {
-      _future = AppointmentService.getMyAppointments(); // ← uses token automatically
+      _future =
+          AppointmentService.getMyAppointments(); // ← uses token automatically
     });
   }
 
@@ -512,17 +497,10 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           backgroundColor: AppColors.beige,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: AppColors.Brown,
-              size: 20,
-            ),
+            icon: Icon(Icons.arrow_back, color: AppColors.Brown, size: 20),
             onPressed: () => Get.back(),
           ),
-          title: Text(
-            'My Appointments',
-            style: AppTextStyles.heading3,
-          ),
+          title: Text('My Appointments', style: AppTextStyles.heading3),
         ),
         body: _buildBody(),
       );
@@ -536,10 +514,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              'My Appointments',
-              style: AppTextStyles.heading3,
-            ),
+            child: Text('My Appointments', style: AppTextStyles.heading3),
           ),
           Expanded(child: _buildBody()),
         ],
@@ -614,7 +589,7 @@ class _AppointmentTile extends StatelessWidget {
                   vertical: 5,
                 ),
                 decoration: BoxDecoration(
-                  color: _statusBg,
+                  color: AppColors.beige,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -727,6 +702,7 @@ class _AppointmentTile extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        backgroundColor: AppColors.white,
         title: const Text('Cancel Appointment'),
         content: const Text(
           'Are you sure you want to cancel this appointment?',
@@ -772,7 +748,6 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-
 
 class _LawyerSummaryCard extends StatelessWidget {
   final Map<String, dynamic> lawyer;
@@ -878,10 +853,7 @@ class _AppDropdown extends StatelessWidget {
         DropdownButtonFormField<String>(
           // initialValue replaces deprecated value property
           value: value,
-          hint: Text(
-            hint,
-            style: AppTextStyles.hint,
-          ),
+          hint: Text(hint, style: AppTextStyles.hint),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.white,
@@ -899,10 +871,7 @@ class _AppDropdown extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: AppColors.Brown,
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: AppColors.Brown, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -1015,9 +984,7 @@ class _ModeSelector extends StatelessWidget {
                 color: isActive ? AppColors.Brown : AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isActive
-                      ? AppColors.Brown
-                      : AppColors.cardBorder,
+                  color: isActive ? AppColors.Brown : AppColors.cardBorder,
                 ),
               ),
               child: Row(
@@ -1026,7 +993,9 @@ class _ModeSelector extends StatelessWidget {
                   Icon(
                     icons[i],
                     size: 16,
-                    color: isActive ? AppColors.white : AppColors.labelSecondary,
+                    color: isActive
+                        ? AppColors.white
+                        : AppColors.labelSecondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -1034,7 +1003,9 @@ class _ModeSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isActive ? AppColors.white : AppColors.labelSecondary,
+                      color: isActive
+                          ? AppColors.white
+                          : AppColors.labelSecondary,
                     ),
                   ),
                 ],

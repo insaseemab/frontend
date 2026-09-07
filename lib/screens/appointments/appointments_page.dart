@@ -96,6 +96,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setS) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: AppColors.beige,
           title: const Text('Edit Appointment', style: TextStyle(fontWeight: FontWeight.bold)),
           content: SingleChildScrollView(
             child: Column(
@@ -219,6 +220,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setS) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: AppColors.beige,
           title: const Text('Update Status', style: TextStyle(fontWeight: FontWeight.bold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -341,7 +343,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.beige,
       builder: (_) => _PaymentFormSheet(appointment: apt, onAccepted: _load),
     );
   }
@@ -351,6 +353,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.white,
         title: const Text('Approve Payment', style: TextStyle(fontWeight: FontWeight.bold)),
         content: SizedBox(
           width: double.maxFinite,
@@ -406,7 +409,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       if (!mounted) return;
       _load();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Payment approved successfully')),
+        const SnackBar(content: Text('Payment approved successfully'),),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -418,7 +421,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.beige,
       builder: (_) => _ConvertToCaseSheet(appointment: apt, onConverted: _load),
     );
   }
@@ -428,6 +431,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        backgroundColor: AppColors.beige,
         title: const Text('Cancel Appointment'),
         content: const Text('Are you sure you want to cancel this appointment?'),
         actions: [
@@ -456,7 +460,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.beige,
       builder: (_) => PaymentBottomSheet(appointment: apt),
     ).then((_) => _load());
   }
@@ -766,7 +770,7 @@ class _AppointmentCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    decoration: BoxDecoration(color: _statusBg, borderRadius: BorderRadius.circular(20)),
+                    decoration: BoxDecoration(color: AppColors.beige, borderRadius: BorderRadius.circular(20)),
                     child: Text(
                       status.toUpperCase(),
                       style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _statusColor),
@@ -782,6 +786,7 @@ class _AppointmentCard extends StatelessWidget {
                         if (value == 'edit') onEdit();
                         if (value == 'payment') onApprovePayment();
                       },
+                      color: AppColors.white,
                       itemBuilder: (_) => [
                         PopupMenuItem(
                           value: 'status',
@@ -1058,7 +1063,7 @@ class _AppointmentCard extends StatelessWidget {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: AppColors.beige,
                     builder: (_) => RatingBottomSheet(appointment: appointment),
                   );
                 },

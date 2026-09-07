@@ -675,7 +675,7 @@ class _CaseCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: statusBg,
+              color: AppColors.beige,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(

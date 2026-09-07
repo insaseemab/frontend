@@ -227,6 +227,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        backgroundColor: AppColors.beige,
         title: Text('Case #${c.id}'),
         content: SizedBox(
           width: double.maxFinite,
@@ -602,6 +603,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             _updateStatus(c, value);
           }
         },
+        color: AppColors.white,
         itemBuilder: (_) => [
           const PopupMenuItem(value: 'view', child: Text('View Detail')),
           const PopupMenuDivider(),
@@ -637,6 +639,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             _updateStatus(c, value);
           }
         },
+        color: AppColors.beige,
         itemBuilder: (_) => [
           const PopupMenuItem(value: 'view', child: Text('View Detail')),
           const PopupMenuDivider(),

@@ -6,7 +6,7 @@ import 'api_services.dart';
 class AppointmentService {
   static const String baseUrl = ApiService.baseUrl;
 
-  
+  // GET /appointment
   static Future<List<dynamic>> getAllAppointments() async {
     final res = await http.get(
       Uri.parse('$baseUrl/appointments'),
@@ -42,7 +42,8 @@ class AppointmentService {
     ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
-
+// book appoint (+ button sy)
+// POST /appointments
   static Future<Map<String, dynamic>> createAppointment({
     required int lawyerId,
     required String lawType,
@@ -116,8 +117,8 @@ class AppointmentService {
     );
     ApiService.checkStatus(res);
   }
-
-
+// dropdown sy
+// PATCH /appointments/:id/status/:status
   static Future<Map<String, dynamic>> updateAppointmentStatus({
     required int id,
     required String status,
@@ -135,7 +136,7 @@ class AppointmentService {
     ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
-
+// PUT /appointments/:id
   static Future<void> editAppointment({
     required int id,
     required int lawyerId,
@@ -211,7 +212,7 @@ class AppointmentService {
       throw ApiException(statusCode: res.statusCode, message: message);
     }
   }
-
+// PATCH /appointments/:id/approve-payment
   static Future<void> approvePayment({required int id}) async {
     final res = await http.patch(
       Uri.parse('$baseUrl/appointments/$id/approve-payment'),
@@ -219,7 +220,7 @@ class AppointmentService {
     );
     ApiService.checkStatus(res);
   }
-
+// POST /appointments/:id/convert-to-case
   static Future<int> convertToCase({required int id}) async {
     final res = await http.post(
       Uri.parse('$baseUrl/appointments/$id/convert-to-case'),
