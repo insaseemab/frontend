@@ -318,4 +318,34 @@ class LawyerService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> submitSubscriptionPayment({
+    String? transactionId,
+    String? paymentReceiptBase64,
+    String paymentMethod = 'JazzCash',
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/lawyers/subscription/submit'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+        body: jsonEncode({
+          'transaction_id': transactionId,
+          'payment_receipt': paymentReceiptBase64,
+          'payment_method': paymentMethod,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Map<String, dynamic>.from(jsonDecode(response.body));
+      } else {
+        final err = jsonDecode(response.body);
+        throw Exception(err['error'] ?? 'Failed to submit payment proof');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
 }

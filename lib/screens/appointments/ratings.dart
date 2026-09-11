@@ -5,8 +5,9 @@ import 'package:insaafconnect/core/utils/theme.dart';
 
 class RatingBottomSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
+  final VoidCallback? onSuccess;
 
-  const RatingBottomSheet({super.key, required this.appointment});
+  const RatingBottomSheet({super.key, required this.appointment, this.onSuccess});
 
   @override
   State<RatingBottomSheet> createState() => _RatingBottomSheetState();
@@ -25,8 +26,12 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
 
     setState(() => _isLoading = true);
     try {
-      final appointmentId = widget.appointment['id'] as int;
-      final lawyerId = widget.appointment['lawyer_id'] as int;
+      final appointmentId = int.tryParse(widget.appointment['id']?.toString() ?? '') ?? 0;
+      final lawyerId = int.tryParse(widget.appointment['lawyer_id']?.toString() ?? '') ?? 0;
+
+      if (appointmentId == 0 || lawyerId == 0) {
+        throw Exception("Invalid appointment or lawyer ID");
+      }
 
       await RatingService.submitRating(
         appointmentId,
@@ -38,8 +43,9 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       if (!mounted) return;
       Get.back(); // close sheet
       Get.snackbar('Success', 'Rating submitted successfully!', snackPosition: SnackPosition.BOTTOM);
+      widget.onSuccess?.call();
     } catch (e) {
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', e.toString().replaceAll("Exception: ", ""), snackPosition: SnackPosition.BOTTOM);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
