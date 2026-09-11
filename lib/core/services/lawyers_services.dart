@@ -32,6 +32,27 @@ class LawyerService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchAllLawyers() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/lawyers'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      } else {
+        throw Exception('Failed to load all lawyers: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> fetchLawyerById(int id) async {
     try {
       final response = await http.get(
@@ -271,6 +292,27 @@ class LawyerService {
         throw Exception('Lawyer not found');
       } else {
         throw Exception('Failed to renew lawyer: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSubscriptionRecords() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/lawyers/subscription/records'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      } else {
+        throw Exception('Failed to fetch subscription records: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Network error: $e');

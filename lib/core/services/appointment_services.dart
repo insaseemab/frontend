@@ -57,6 +57,7 @@ class AppointmentService {
     final date = slotStartTime.split(' ')[0];
     final body = jsonEncode({
       if (clientId != null) 'client_id': clientId,
+      if (clientId != null) 'clientId': clientId,
       'lawyer_id': lawyerId,
       'date': date,
       'law_type': lawType,

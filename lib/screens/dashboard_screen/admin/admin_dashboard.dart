@@ -63,7 +63,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Future<_DashboardStats> _loadStats() async {
     final results = await Future.wait([
       CaseApiService.fetchAllCases(),
-      LawyerService().fetchLawyers(),
+      LawyerService().fetchAllLawyers(),
       AppointmentService.getAllAppointments(),
     ]);
 
@@ -317,11 +317,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.payment, color: AppColors.Brown),
-            title: const Text('Subscription'),
-            
+            title: const Text('Subscription Fee'),
             onTap: () {
               Get.back();
               Get.toNamed(AppRoutes.adminSettings);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.receipt_long, color: AppColors.Brown),
+            title: const Text('Subscription Records'),
+            onTap: () {
+              Get.back();
+              Get.toNamed(AppRoutes.subscriptionRecords);
             },
           ),
           const Divider(),

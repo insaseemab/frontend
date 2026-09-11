@@ -23,23 +23,60 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   void initState() {
     super.initState();
-    _tokenController.text = _extractTokenFromUrl();
+    _initToken();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_tokenController.text.isEmpty) {
+        _initToken();
+      }
+    });
+  }
+
+  void _initToken() {
+    final token = _extractTokenFromUrl();
+    if (token.isNotEmpty && mounted) {
+      setState(() {
+        _tokenController.text = token;
+      });
+    }
   }
 
   String _extractTokenFromUrl() {
-    final uri = Uri.base;
-
-    // Case: normal query string (non-hash routing)
-    if (uri.queryParameters.containsKey('token')) {
-      return uri.queryParameters['token'] ?? '';
+    // 1. Check GetX route parameters first
+    if (Get.parameters.containsKey('token') && (Get.parameters['token'] ?? '').isNotEmpty) {
+      return Get.parameters['token']!;
     }
 
-    // Case: hash routing -> fragment looks like "/reset-password?token=xxxx"
+    // 2. Check Get.arguments (if passed when navigating)
+    if (Get.arguments != null) {
+      if (Get.arguments is Map && Get.arguments['token'] != null) {
+        return Get.arguments['token'].toString();
+      } else if (Get.arguments is String && (Get.arguments as String).isNotEmpty) {
+        return Get.arguments as String;
+      }
+    }
+
+    // 3. Check Uri.base query parameters
+    final uri = Uri.base;
+    if (uri.queryParameters.containsKey('token') && (uri.queryParameters['token'] ?? '').isNotEmpty) {
+      return uri.queryParameters['token']!;
+    }
+
+    // 4. Check uri.fragment (e.g. #/reset-password?token=xxxx)
     final fragment = uri.fragment;
-    if (fragment.contains('?')) {
-      final queryPart = fragment.split('?').last;
+    if (fragment.contains('token=')) {
+      final queryPart = fragment.contains('?') ? fragment.split('?').last : fragment;
       final params = Uri.splitQueryString(queryPart);
-      return params['token'] ?? '';
+      if (params.containsKey('token') && (params['token'] ?? '').isNotEmpty) {
+        return params['token']!;
+      }
+    }
+
+    // 5. Fallback: regex search on complete URL string
+    final fullUrl = uri.toString();
+    final regExp = RegExp(r'[?&#]token=([^&#]+)');
+    final match = regExp.firstMatch(fullUrl);
+    if (match != null && match.groupCount >= 1) {
+      return Uri.decodeComponent(match.group(1)!);
     }
 
     return '';
@@ -53,7 +90,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (token.isEmpty) {
       Get.snackbar(
         "Error",
-        "Reset token is missing or invalid. Please use the link from your email again.",
+        "Reset token is missing. Please paste the token from your email link.",
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -141,7 +178,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 const SizedBox(height: 6),
 
                 Text(
-                  "Paste the token from your email and\nset a new password",
+                  "Enter your reset token and\nset a new password",
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyMedium,
                 ),
@@ -150,13 +187,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
                 TextField(
                   controller: _tokenController,
-                  readOnly: true,
+                  readOnly: false,
                   style: AppTextStyles.bodyLarge,
                   decoration: InputDecoration(
-                    hintText: "Reset token",
+                    hintText: "Reset token (auto-filled or paste here)",
                     hintStyle: AppTextStyles.hint,
                     filled: true,
-                    fillColor: AppColors.inputFill,
+                    fillColor: AppColors.white,
                     prefixIcon: Icon(
                       Icons.vpn_key_outlined,
                       color: AppColors.iconMuted,
