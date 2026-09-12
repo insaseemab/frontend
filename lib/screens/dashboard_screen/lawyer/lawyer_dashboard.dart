@@ -15,6 +15,8 @@ import 'package:insaafconnect/screens/notifications.dart';
 import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/core/services/settings_services.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscription_modal.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscription_screen.dart';
 
 class LawyerDashboard extends StatefulWidget {
   const LawyerDashboard({super.key});
@@ -198,6 +200,14 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
                 Get.to(() => const EditLawyerProfile());
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.card_membership, color: AppColors.Brown),
+              title: const Text("Subscription & Renewal"),
+              onTap: () {
+                Get.back();
+                Get.to(() => const LawyerSubscriptionScreen());
+              },
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: AppColors.Brown),
@@ -284,26 +294,53 @@ class _HomePageState extends State<_HomePage> {
   Future<void> loadDashboardData() async {
     try {
       final token = box.read<String>('token') ?? '';
-      final userId = box.read<int>('id') ?? -1;
-      final results = await Future.wait([
-        CasesService.fetchMyCases(token),
-        AppointmentService.getMyAppointments(),
-        LawyerService().fetchLawyerById(userId),
-        SettingsService.getSettings(),
-      ]);
+      final user = Map<String, dynamic>.from(box.read('user') ?? {});
+      final rawId = box.read('id') ?? box.read('userId') ?? user['id'];
+      final userId = int.tryParse(rawId?.toString() ?? '') ?? -1;
+
+      List<dynamic> loadedCases = [];
+      List<dynamic> loadedAppointments = [];
+      Map<String, dynamic>? loadedLawyer;
+      Map<String, dynamic>? loadedSettings;
+
+      try {
+        loadedCases = await CasesService.fetchMyCases(token);
+      } catch (e) {
+        debugPrint("Error loading cases: $e");
+      }
+
+      try {
+        loadedAppointments = await AppointmentService.getMyAppointments();
+      } catch (e) {
+        debugPrint("Error loading appointments: $e");
+      }
+
+      try {
+        if (userId > 0) {
+          loadedLawyer = await LawyerService().fetchLawyerById(userId);
+        }
+      } catch (e) {
+        debugPrint("Error loading lawyer: $e");
+      }
+
+      try {
+        loadedSettings = await SettingsService.getSettings();
+      } catch (e) {
+        debugPrint("Error loading settings: $e");
+      }
 
       if (!mounted) return;
       setState(() {
-        cases = results[0] as List<dynamic>;
-        appointments = results[1] as List<dynamic>;
-        lawyerData = results[2] as Map<String, dynamic>?;
-        settingsData = results[3] as Map<String, dynamic>?;
+        cases = loadedCases;
+        appointments = loadedAppointments;
+        lawyerData = loadedLawyer;
+        settingsData = loadedSettings;
         loading = false;
+        errorMsg = null;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        errorMsg = "Failed to load dashboard data";
         loading = false;
       });
     }
@@ -416,39 +453,129 @@ class _HomePageState extends State<_HomePage> {
                       width: 1,
                     ),
                   ),
-                  child: Row(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                        color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
-                        size: 32,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+                            color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                            size: 32,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isExpired ? 'Subscription Expired' : 'Subscription Active',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  isExpired
+                                      ? 'Your subscription has expired. Please pay PKR $fee to the Admin via JazzCash to renew your account.'
+                                      : 'Your subscription is valid until ${subDateStr.toString().split('T')[0]}.',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              isExpired ? 'Subscription Expired' : 'Subscription Active',
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton.icon(
+                            onPressed: () {
+                              Get.to(() => const LawyerSubscriptionScreen())
+                                  ?.then((_) => loadDashboardData());
+                            },
+                            icon: Icon(
+                              Icons.payment,
+                              size: 16,
+                              color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                            ),
+                            label: Text(
+                              "Manage / Pay",
                               style: TextStyle(
+                                fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
                                 color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isExpired
-                                  ? 'Your subscription has expired. Please pay PKR $fee to the Admin via JazzCash to renew your account.'
-                                  : 'Your subscription is valid until ${subDateStr.toString().split('T')[0]}.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 8),
+                          isExpired
+                              ? ElevatedButton.icon(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (ctx) => LawyerSubscriptionModal(
+                                        fee: fee.toString(),
+                                        onSuccess: loadDashboardData,
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.send, size: 16, color: Colors.white),
+                                  label: const Text(
+                                    "Pay via JazzCash",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red.shade700,
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                )
+                              : OutlinedButton.icon(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder: (ctx) => LawyerSubscriptionModal(
+                                        fee: fee.toString(),
+                                        onSuccess: loadDashboardData,
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.refresh, size: 16, color: Colors.green.shade800),
+                                  label: Text(
+                                    "Submit Proof",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green.shade800,
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.green.shade600),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                        ],
                       ),
                     ],
                   ),

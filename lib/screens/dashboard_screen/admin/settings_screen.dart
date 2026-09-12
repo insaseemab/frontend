@@ -96,6 +96,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: () => Get.toNamed('/subscription-records'),
+                      icon: const Icon(Icons.receipt_long, color: AppColors.Brown),
+                      label: const Text(
+                        'View Subscription Records',
+                        style: TextStyle(color: AppColors.Brown, fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.Brown),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

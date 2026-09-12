@@ -36,7 +36,7 @@ class _ManagelawyersState extends State<Managelawyers> {
       _errorMessage = null;
     });
     try {
-      final data = await _lawyerService.fetchLawyers();
+      final data = await _lawyerService.fetchAllLawyers();
       setState(() {
         _lawyers = data;
         _isLoading = false;
@@ -289,6 +289,12 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: Text("List of Lawyers", style: AppTextStyles.heading2),
                   ),
                   IconButton(
+                    tooltip: "Subscription Records",
+                    icon: Icon(Icons.receipt_long, color: AppColors.Brown),
+                    onPressed: () => Get.toNamed(AppRoutes.subscriptionRecords),
+                  ),
+                  IconButton(
+                    tooltip: "Add Lawyer",
                     icon: Icon(Icons.add, color: AppColors.Brown),
                     onPressed: () async {
                       await Get.toNamed(AppRoutes.addLawyer);

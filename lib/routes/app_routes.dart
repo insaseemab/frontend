@@ -21,6 +21,8 @@ import '../screens/appointments/appointments_page.dart';
 import '../screens/notifications.dart';
 import '../screens/dashboard_screen/profile.dart';
 import '../screens/dashboard_screen/admin/settings_screen.dart';
+import '../screens/dashboard_screen/admin/subscription_records_screen.dart';
+import '../screens/dashboard_screen/lawyer/lawyer_subscription_screen.dart';
 
 class AppRoutes {
   static const splash = "/";
@@ -35,6 +37,7 @@ class AppRoutes {
   static const adminProfile = "/admin-profile";
   static const addLawyer = "/add-lawyer";
   static const createCase = "/create-case";
+  static const subscriptionRecords = "/subscription-records";
 
   static const clientDashboard = "/client-dashboard";
   static const lawyerFind = '/lawyer-find';
@@ -52,6 +55,7 @@ class AppRoutes {
    static const notifications = '/notifications';
   static const profile = '/profile';
   static const adminSettings = '/admin-settings';
+  static const lawyerSubscription = '/lawyer-subscription';
 }
 
 
@@ -204,6 +208,22 @@ class AppPages {
       middlewares: [
         AuthMiddleware(),
         RoleMiddleware(allowedRoles: ['admin']),
+      ],
+    ),
+    GetPage(
+      name: AppRoutes.subscriptionRecords,
+      page: () => const SubscriptionRecordsScreen(),
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['admin']),
+      ],
+    ),
+    GetPage(
+      name: AppRoutes.lawyerSubscription,
+      page: () => const LawyerSubscriptionScreen(),
+      middlewares: [
+        AuthMiddleware(),
+        RoleMiddleware(allowedRoles: ['lawyer']),
       ],
     ),
   ];

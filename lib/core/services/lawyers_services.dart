@@ -32,6 +32,27 @@ class LawyerService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchAllLawyers() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/lawyers'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      } else {
+        throw Exception('Failed to load all lawyers: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> fetchLawyerById(int id) async {
     try {
       final response = await http.get(
@@ -271,6 +292,57 @@ class LawyerService {
         throw Exception('Lawyer not found');
       } else {
         throw Exception('Failed to renew lawyer: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSubscriptionRecords() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/lawyers/subscription/records'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      } else {
+        throw Exception('Failed to fetch subscription records: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> submitSubscriptionPayment({
+    String? transactionId,
+    String? paymentReceiptBase64,
+    String paymentMethod = 'JazzCash',
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/lawyers/subscription/submit'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+        body: jsonEncode({
+          'transaction_id': transactionId,
+          'payment_receipt': paymentReceiptBase64,
+          'payment_method': paymentMethod,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Map<String, dynamic>.from(jsonDecode(response.body));
+      } else {
+        final err = jsonDecode(response.body);
+        throw Exception(err['error'] ?? 'Failed to submit payment proof');
       }
     } catch (e) {
       throw Exception('Network error: $e');

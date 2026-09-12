@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
+import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscription_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -501,7 +502,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
+            if (role.toLowerCase() == 'lawyer') ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: cardBorder),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Account Subscription',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Brown,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Check your membership status and submit JazzCash renewal payments.',
+                      style: TextStyle(fontSize: 13, color: muted),
+                    ),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => Get.to(() => const LawyerSubscriptionScreen()),
+                        icon: const Icon(Icons.card_membership, size: 18, color: Colors.white),
+                        label: const Text('Manage & Pay Subscription', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Brown,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // ── Logout ──
             SizedBox(

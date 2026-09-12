@@ -636,6 +636,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                     onClientCancel: () => _clientCancel(apt),
                                     onClientPay: () => _clientShowPayment(apt),
                                     onConvertToCase: () => _showConvertToCase(apt),
+                                    onRefresh: _load,
                                   );
                                 },
                               ),
@@ -692,6 +693,7 @@ class _AppointmentCard extends StatelessWidget {
   final VoidCallback onClientCancel;
   final VoidCallback onClientPay;
   final VoidCallback onConvertToCase;
+  final VoidCallback? onRefresh;
 
   const _AppointmentCard({
     required this.appointment,
@@ -705,6 +707,7 @@ class _AppointmentCard extends StatelessWidget {
     required this.onClientCancel,
     required this.onClientPay,
     required this.onConvertToCase,
+    this.onRefresh,
   });
 
   Color get _statusColor {
@@ -1054,29 +1057,59 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ],
-          if (role == AppointmentRole.client && isAccepted && paymentApproved && (isConverted || appointment['case_status'] == 'closed' || appointment['case_status'] == 'completed')) ...[
+          // ── Client Rating Section ─────────────────────────────
+          if (role == AppointmentRole.client && isAccepted && paymentApproved) ...[
             const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: AppColors.beige,
-                    builder: (_) => RatingBottomSheet(appointment: appointment),
-                  );
-                },
-                icon: const Icon(Icons.star_outline, size: 16),
-                label: const Text('Rate Lawyer'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.warning,
-                  foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 0,
+            if (appointment['client_rating'] != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.earningsOrange.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.earningsOrange.withOpacity(0.4)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.star, size: 18, color: AppColors.earningsOrange),
+                    const SizedBox(width: 8),
+                    Text(
+                      'You rated: ${appointment['client_rating']} / 5 ⭐',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: AppColors.Brown,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: AppColors.beige,
+                      builder: (_) => RatingBottomSheet(
+                        appointment: appointment,
+                        onSuccess: onRefresh,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.star_outline, size: 16),
+                  label: const Text('Rate Lawyer'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.warning,
+                    foregroundColor: AppColors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    elevation: 0,
+                  ),
                 ),
               ),
-            ),
           ],
         ],
       ),
