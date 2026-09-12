@@ -169,7 +169,7 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         "Monthly Fee",
                         style: TextStyle(
                           fontSize: 14,
@@ -213,7 +213,7 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                           ),
                           Text(
                             "Title: $_jazzCashAccountTitle",
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               color: AppColors.labelSecondary,
                             ),
@@ -260,11 +260,11 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.cardBorder),
+                  borderSide: BorderSide(color: AppColors.cardBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.cardBorder),
+                  borderSide: BorderSide(color: AppColors.cardBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

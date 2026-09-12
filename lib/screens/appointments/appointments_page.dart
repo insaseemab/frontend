@@ -636,7 +636,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                     onClientCancel: () => _clientCancel(apt),
                                     onClientPay: () => _clientShowPayment(apt),
                                     onConvertToCase: () => _showConvertToCase(apt),
-                                    onRefresh: _fetchAppointments,
+                                    onRefresh: _load,
                                   );
                                 },
                               ),

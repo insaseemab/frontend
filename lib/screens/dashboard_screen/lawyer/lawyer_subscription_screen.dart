@@ -261,7 +261,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 "Monthly Subscription",
                                 style: TextStyle(
                                   fontSize: 14,
@@ -321,7 +321,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                       ),
                                       Text(
                                         "Account Title: $_jazzCashAccountTitle",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 12,
                                           color: AppColors.labelSecondary,
                                         ),
@@ -398,11 +398,11 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.cardBorder),
+                                borderSide: BorderSide(color: AppColors.cardBorder),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.cardBorder),
+                                borderSide: BorderSide(color: AppColors.cardBorder),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
