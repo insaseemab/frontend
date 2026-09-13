@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({super.key});
@@ -28,10 +29,10 @@ class _MessageScreenState extends State<MessageScreen> {
   Timer? _pollTimer;
 
   int get myUserId {
-  final val = GetStorage().read("userId");
-  if (val == null) return 0;
-  return val is int ? val : int.tryParse(val.toString()) ?? 0;
-}
+    final val = GetStorage().read("userId");
+    if (val == null) return 0;
+    return val is int ? val : int.tryParse(val.toString()) ?? 0;
+  }
 
   @override
   void initState() {
@@ -77,70 +78,70 @@ class _MessageScreenState extends State<MessageScreen> {
     }
   }
 
- Future<void> sendMessage() async {
-  final body = _inputController.text.trim();
-  if (body.isEmpty || isSending) return;
+  Future<void> sendMessage() async {
+    final body = _inputController.text.trim();
+    if (body.isEmpty || isSending) return;
 
-  setState(() => isSending = true);
-  _inputController.clear();
+    setState(() => isSending = true);
+    _inputController.clear();
 
-  final sent = await _messageService.sendMessage(
-    conversationId: conversationId,
-    receiverId: receiverId,
-    body: body,
-  );
+    final sent = await _messageService.sendMessage(
+      conversationId: conversationId,
+      receiverId: receiverId,
+      body: body,
+    );
 
-  if (sent != null && mounted) {
-    setState(() {
-      messages.add({
-        ...sent,
-        "sender_id": myUserId, // ← FORCE your own id here
+    if (sent != null && mounted) {
+      setState(() {
+        messages.add({
+          ...sent,
+          "sender_id": myUserId,
+        });
+        isSending = false;
       });
-      isSending = false;
-    });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  } else {
-    setState(() => isSending = false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    } else {
+      setState(() => isSending = false);
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F0E8),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: Colors.brown,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.Brown,
+        foregroundColor: AppColors.white,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               otherName,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.white),
             ),
             const Text(
               "Online",
-              style: TextStyle(fontSize: 11, color: Color(0xFFB8D4B0)),
+              style: TextStyle(fontSize: 11, color: AppColors.sageGreen),
             ),
           ],
         ),
       ),
       body: Column(
         children: [
-          // ── MESSAGES LIST ──────────────────────────────────────
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
                 : messages.isEmpty
-                    ? const Center(
-                        child: Text("Say hello! Start the conversation."),
+                    ? Center(
+                        child: Text("Say hello! Start the conversation.", style: AppTextStyles.bodyMedium),
                       )
                     : ListView.builder(
                         controller: _scrollController,
@@ -151,7 +152,6 @@ class _MessageScreenState extends State<MessageScreen> {
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
                           final msg = messages[index];
-                          // ← FIXED: use class-level myUserId, compute isMine here
                           final isMine = msg["sender_id"].toString() == myUserId.toString();
 
                           return _MessageBubble(
@@ -164,7 +164,6 @@ class _MessageScreenState extends State<MessageScreen> {
                       ),
           ),
 
-          // ── INPUT BAR ──────────────────────────────────────────
           Container(
             padding: EdgeInsets.only(
               left: 16,
@@ -173,10 +172,10 @@ class _MessageScreenState extends State<MessageScreen> {
               bottom: MediaQuery.of(context).viewInsets.bottom + 12,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
+                  color: AppColors.Brown.withValues(alpha: 0.06),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -187,7 +186,7 @@ class _MessageScreenState extends State<MessageScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5F0E8),
+                      color: AppColors.beige,
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: TextField(
@@ -195,9 +194,10 @@ class _MessageScreenState extends State<MessageScreen> {
                       maxLines: null,
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => sendMessage(),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "Type your message...",
-                        contentPadding: EdgeInsets.symmetric(
+                        hintStyle: AppTextStyles.hint,
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
@@ -215,18 +215,18 @@ class _MessageScreenState extends State<MessageScreen> {
                     width: 46,
                     height: 46,
                     decoration: const BoxDecoration(
-                      color: Colors.brown,
+                      color: AppColors.Brown,
                       shape: BoxShape.circle,
                     ),
                     child: isSending
                         ? const Padding(
                             padding: EdgeInsets.all(12),
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: AppColors.white,
                               strokeWidth: 2,
                             ),
                           )
-                        : const Icon(Icons.send, color: Colors.white, size: 20),
+                        : const Icon(Icons.send, color: AppColors.white, size: 20),
                   ),
                 ),
               ],
@@ -238,7 +238,6 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 }
 
-// ── MESSAGE BUBBLE ─────────────────────────────────────────────
 class _MessageBubble extends StatelessWidget {
   final String body;
   final bool isMine;
@@ -273,7 +272,7 @@ class _MessageBubble extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isMine ? Colors.brown : const Color(0xFFEDE8DF),
+          color: isMine ? AppColors.Brown : AppColors.beige,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(16),
             topRight: const Radius.circular(16),
@@ -290,10 +289,9 @@ class _MessageBubble extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   senderName,
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.brown,
+                    color: AppColors.Brown,
                   ),
                 ),
               ),
@@ -302,7 +300,7 @@ class _MessageBubble extends StatelessWidget {
               body,
               style: TextStyle(
                 fontSize: 14,
-                color: isMine ? Colors.white : Colors.black,
+                color: isMine ? AppColors.white : AppColors.Brown,
               ),
             ),
 
@@ -312,10 +310,9 @@ class _MessageBubble extends StatelessWidget {
               _formatTime(createdAt),
               style: TextStyle(
                 fontSize: 10,
-                // ← FIXED: withValues instead of withOpacity
                 color: isMine
-                    ? Colors.white.withValues(alpha: 0.65)
-                    : Colors.black,
+                    ? AppColors.white.withValues(alpha: 0.65)
+                    : AppColors.Brown.withValues(alpha: 0.65),
               ),
             ),
           ],

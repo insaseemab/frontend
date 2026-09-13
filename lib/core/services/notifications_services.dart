@@ -17,18 +17,17 @@ class NotificationService {
       };
 
   Future<Map<String, dynamic>> getNotifications() async {
-  final box = GetStorage();
-  
-  final res = await http.get(
-    Uri.parse('$baseUrl/notifications/mine'),
-    headers: _headers,
+  final token = GetStorage().read('token');
+  final response = await http.get(
+    Uri.parse('${Environment.apiBaseUrl}/notifications/mine'), // was /notifications
+    headers: {'Authorization': 'Bearer $token'},
   );
 
-
-  if (res.statusCode == 200) {
-    return jsonDecode(res.body);
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to load notifications');
   }
-  throw Exception('Failed to load notifications (${res.statusCode})');
 }
   Future<void> markAsRead(int id) async {
     final res = await http.patch(

@@ -11,12 +11,13 @@ import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
-import 'package:insaafconnect/screens/notifications.dart';
 import 'package:insaafconnect/screens/dashboard_screen/edit_profile.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/core/services/settings_services.dart';
+import 'package:insaafconnect/core/services/notifications_services.dart';
 import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscription_modal.dart';
 import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscription_screen.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
 
 class LawyerDashboard extends StatefulWidget {
   const LawyerDashboard({super.key});
@@ -29,6 +30,10 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   final box = GetStorage();
   int _currentIndex = 0;
 
+  final _notificationService = NotificationService();
+  int _unreadCount = 0;
+  Timer? _unreadPollTimer;
+
   late final String userName;
 
   @override
@@ -36,6 +41,30 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
     super.initState();
     final user = Map<String, dynamic>.from(box.read('user') ?? {});
     userName = (user['name'] ?? "User").toString();
+
+    _loadUnreadCount();
+    _unreadPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _loadUnreadCount();
+    });
+  }
+
+  @override
+  void dispose() {
+    _unreadPollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final data = await _notificationService.getNotifications();
+      final unread = data['unread'];
+      final count = unread is String
+          ? int.tryParse(unread) ?? 0
+          : (unread as int? ?? 0);
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {
+      // Silently ignore - badge just won't update this cycle.
+    }
   }
 
   @override
@@ -87,9 +116,31 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         ),
         actions: [
           // 🔔 Notification bell
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Color(0xFF6B4F3F)),
-            onPressed: () => Get.to(() => const NotificationsScreen()),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: AppColors.Brown),
+                onPressed: () async {
+                  await Get.toNamed(AppRoutes.notifications);
+                  // Refresh right away instead of waiting for the next poll.
+                  if (mounted) _loadUnreadCount();
+                },
+              ),
+              if (_unreadCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    height: 9,
+                    width: 9,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           ),
 
           IconButton(
@@ -162,10 +213,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(
-                Icons.calendar_today,
-                color: AppColors.Brown,
-              ),
+              leading: const Icon(Icons.calendar_today, color: AppColors.Brown),
               title: const Text("Appointments"),
               onTap: () {
                 Get.back();
@@ -182,10 +230,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
             ),
 
             ListTile(
-              leading: const Icon(
-                Icons.calendar_month,
-                color: AppColors.Brown,
-              ),
+              leading: const Icon(Icons.calendar_month, color: AppColors.Brown),
               title: const Text("My Calendar"),
               onTap: () {
                 Get.back();
@@ -201,7 +246,10 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.card_membership, color: AppColors.Brown),
+              leading: const Icon(
+                Icons.card_membership,
+                color: AppColors.Brown,
+              ),
               title: const Text("Subscription & Renewal"),
               onTap: () {
                 Get.back();
@@ -438,7 +486,8 @@ class _HomePageState extends State<_HomePage> {
                 if (subDateStr != null) {
                   subDate = DateTime.tryParse(subDateStr.toString());
                 }
-                final isExpired = subDate == null || subDate.isBefore(DateTime.now());
+                final isExpired =
+                    subDate == null || subDate.isBefore(DateTime.now());
                 final fee = settingsData?['subscription_fee'] ?? '2000';
 
                 return Container(
@@ -446,10 +495,14 @@ class _HomePageState extends State<_HomePage> {
                   margin: const EdgeInsets.only(bottom: 20),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isExpired ? Colors.red.shade100 : Colors.green.shade100,
+                    color: isExpired
+                        ? Colors.red.shade100
+                        : Colors.green.shade100,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isExpired ? Colors.red.shade400 : Colors.green.shade400,
+                      color: isExpired
+                          ? Colors.red.shade400
+                          : Colors.green.shade400,
                       width: 1,
                     ),
                   ),
@@ -460,8 +513,12 @@ class _HomePageState extends State<_HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
-                            isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                            color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                            isExpired
+                                ? Icons.warning_amber_rounded
+                                : Icons.check_circle_outline,
+                            color: isExpired
+                                ? Colors.red.shade700
+                                : Colors.green.shade700,
                             size: 32,
                           ),
                           const SizedBox(width: 12),
@@ -470,11 +527,15 @@ class _HomePageState extends State<_HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isExpired ? 'Subscription Expired' : 'Subscription Active',
+                                  isExpired
+                                      ? 'Subscription Expired'
+                                      : 'Subscription Active',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                    color: isExpired
+                                        ? Colors.red.shade900
+                                        : Colors.green.shade900,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -484,7 +545,9 @@ class _HomePageState extends State<_HomePage> {
                                       : 'Your subscription is valid until ${subDateStr.toString().split('T')[0]}.',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                    color: isExpired
+                                        ? Colors.red.shade900
+                                        : Colors.green.shade900,
                                   ),
                                 ),
                               ],
@@ -498,20 +561,25 @@ class _HomePageState extends State<_HomePage> {
                         children: [
                           TextButton.icon(
                             onPressed: () {
-                              Get.to(() => const LawyerSubscriptionScreen())
-                                  ?.then((_) => loadDashboardData());
+                              Get.to(
+                                () => const LawyerSubscriptionScreen(),
+                              )?.then((_) => loadDashboardData());
                             },
                             icon: Icon(
                               Icons.payment,
                               size: 16,
-                              color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                              color: isExpired
+                                  ? Colors.red.shade900
+                                  : Colors.green.shade900,
                             ),
                             label: Text(
                               "Manage / Pay",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
-                                color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                color: isExpired
+                                    ? Colors.red.shade900
+                                    : Colors.green.shade900,
                               ),
                             ),
                           ),
@@ -529,7 +597,11 @@ class _HomePageState extends State<_HomePage> {
                                       ),
                                     );
                                   },
-                                  icon: const Icon(Icons.send, size: 16, color: Colors.white),
+                                  icon: const Icon(
+                                    Icons.send,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                   label: const Text(
                                     "Pay via JazzCash",
                                     style: TextStyle(
@@ -540,7 +612,10 @@ class _HomePageState extends State<_HomePage> {
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red.shade700,
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -558,7 +633,11 @@ class _HomePageState extends State<_HomePage> {
                                       ),
                                     );
                                   },
-                                  icon: Icon(Icons.refresh, size: 16, color: Colors.green.shade800),
+                                  icon: Icon(
+                                    Icons.refresh,
+                                    size: 16,
+                                    color: Colors.green.shade800,
+                                  ),
                                   label: Text(
                                     "Submit Proof",
                                     style: TextStyle(
@@ -568,8 +647,13 @@ class _HomePageState extends State<_HomePage> {
                                     ),
                                   ),
                                   style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.green.shade600),
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    side: BorderSide(
+                                      color: Colors.green.shade600,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -951,10 +1035,7 @@ class _HomePageState extends State<_HomePage> {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.Brown.withOpacity(0.10),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: AppColors.Brown.withOpacity(0.10), blurRadius: 6),
         ],
       ),
       child: Column(
@@ -1035,9 +1116,6 @@ class _HomePageState extends State<_HomePage> {
       );
 }
 
-// ⚠️ Add this import at the TOP of lawyer_dashboard.dart:
-// import 'dart:async';
-
 class _MessagesPage extends StatefulWidget {
   const _MessagesPage();
 
@@ -1096,7 +1174,8 @@ class _MessagesPageState extends State<_MessagesPage> {
         filteredConversations = _searchController.text.isEmpty
             ? conversations
             : filteredConversations;
-        if (_searchController.text.isEmpty) filteredConversations = conversations;
+        if (_searchController.text.isEmpty)
+          filteredConversations = conversations;
         loading = false;
       });
     }
@@ -1133,7 +1212,9 @@ class _MessagesPageState extends State<_MessagesPage> {
                 "Messages",
                 style: TextStyle(
                   color: Colors.brown,
-                  fontSize: 20, fontWeight: FontWeight.bold),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -1146,7 +1227,9 @@ class _MessagesPageState extends State<_MessagesPage> {
               decoration: InputDecoration(
                 hintText: "Search conversations...",
                 hintStyle: TextStyle(
-                    color: AppColors.Brown.withOpacity(0.6), fontSize: 14),
+                  color: AppColors.Brown.withOpacity(0.6),
+                  fontSize: 14,
+                ),
                 prefixIcon: Icon(Icons.search, color: AppColors.Brown),
                 filled: true,
                 fillColor: Colors.white,
@@ -1167,7 +1250,9 @@ class _MessagesPageState extends State<_MessagesPage> {
               child: Text(
                 "Your client conversations",
                 style: TextStyle(
-                    fontSize: 12, color: AppColors.Brown.withOpacity(0.7)),
+                  fontSize: 12,
+                  color: AppColors.Brown.withOpacity(0.7),
+                ),
               ),
             ),
           ),
@@ -1176,126 +1261,135 @@ class _MessagesPageState extends State<_MessagesPage> {
           Expanded(
             child: loading
                 ? Center(
-                    child: CircularProgressIndicator(color: AppColors.Brown))
+                    child: CircularProgressIndicator(color: AppColors.Brown),
+                  )
                 : filteredConversations.isEmpty
-                    ? const Center(child: Text("No conversations yet"))
-                    : ListView.builder(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        itemCount: filteredConversations.length,
-                        itemBuilder: (context, index) {
-                          final c = filteredConversations[index];
-                          final unread = c["unread_count"] as int? ?? 0;
-                          final name = _clientName(c);
-                          final avatarLetter = name.isNotEmpty
-                              ? name.trim().substring(0, 1).toUpperCase()
-                              : "C";
+                ? const Center(child: Text("No conversations yet"))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    itemCount: filteredConversations.length,
+                    itemBuilder: (context, index) {
+                      final c = filteredConversations[index];
+                      final unread = c["unread_count"] as int? ?? 0;
+                      final name = _clientName(c);
+                      final avatarLetter = name.isNotEmpty
+                          ? name.trim().substring(0, 1).toUpperCase()
+                          : "C";
 
-                          return GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                () => const MessageScreen(),
-                                arguments: {
-                                  "conversation_id": c["id"],
-                                  "receiver_id": c["client_id"],
-                                  "other_name": name,
-                                },
-                              );
+                      return GestureDetector(
+                        onTap: () {
+                          Get.to(
+                            () => const MessageScreen(),
+                            arguments: {
+                              "conversation_id": c["id"],
+                              "receiver_id": c["client_id"],
+                              "other_name": name,
                             },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 14),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 22,
-                                    backgroundColor: Colors.brown,
-                                    child: Text(
-                                      avatarLetter,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          name,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.Brown,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 3),
-                                        Text(
-                                          c["last_message"] ??
-                                              "Conversation ID ${c['id']}",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                              fontSize: 13,
-                                              color: AppColors.Brown
-                                                  .withOpacity(0.75)),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        _formatTime(c["last_at"]),
-                                        style: TextStyle(
-                                            fontSize: 11,
-                                            color: AppColors.Brown
-                                                .withOpacity(0.6)),
-                                      ),
-                                      if (unread > 0) ...[
-                                        const SizedBox(height: 4),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 7, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.Brown,
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Text(
-                                            '$unread',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
                           );
                         },
-                      ),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(14),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 22,
+                                backgroundColor: Colors.brown,
+                                child: Text(
+                                  avatarLetter,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      name,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.Brown,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      c["last_message"] ??
+                                          "Conversation ID ${c['id']}",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.Brown.withOpacity(
+                                          0.75,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    _formatTime(c["last_at"]),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.Brown.withOpacity(0.6),
+                                    ),
+                                  ),
+                                  if (unread > 0) ...[
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 7,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.Brown,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '$unread',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

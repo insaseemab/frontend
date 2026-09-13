@@ -30,7 +30,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
   String? _screenshotName;
 
   final String _jazzCashAccountTitle = "Admin Insaaf";
-  final String _jazzCashAccountNumber = "0300-1234567";
+  final String _jazzCashAccountNumber = "0322 4405251";
 
   @override
   void initState() {
@@ -88,8 +88,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Picker Error",
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     }
   }
@@ -101,8 +101,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Required",
         "Please enter your Transaction ID (TID) or upload a receipt screenshot.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.amber.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.warning,
+        colorText: AppColors.white,
       );
       return;
     }
@@ -131,8 +131,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Proof Submitted",
         "Your payment proof has been submitted to Admin for review. Your subscription will be renewed once verified.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
         duration: const Duration(seconds: 4),
       );
 
@@ -142,8 +142,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Submission Error",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -163,25 +163,15 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
     return Scaffold(
       backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: AppColors.beige,
-        elevation: 0,
+        title: Text("Subscription & Billing", style: AppTextStyles.heading3.copyWith(fontSize: 20)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.Brown),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          "Subscription & Billing",
-          style: TextStyle(
-            color: AppColors.Brown,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
+          ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              color: AppColors.Brown,
               onRefresh: _loadData,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -194,10 +184,14 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: isExpired ? Colors.red.shade50 : Colors.green.shade50,
+                        color: isExpired
+                            ? AppColors.error.withOpacity(0.06)
+                            : AppColors.success.withOpacity(0.06),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isExpired ? Colors.red.shade300 : Colors.green.shade300,
+                          color: isExpired
+                              ? AppColors.error.withOpacity(0.4)
+                              : AppColors.success.withOpacity(0.4),
                           width: 1.5,
                         ),
                       ),
@@ -205,7 +199,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                         children: [
                           Icon(
                             isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                            color: isExpired ? Colors.red.shade700 : Colors.green.shade700,
+                            color: isExpired ? AppColors.error : AppColors.success,
                             size: 36,
                           ),
                           const SizedBox(width: 14),
@@ -215,10 +209,9 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                               children: [
                                 Text(
                                   isExpired ? "Subscription Expired" : "Subscription Active",
-                                  style: TextStyle(
+                                  style: AppTextStyles.heading4.copyWith(
                                     fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: isExpired ? Colors.red.shade900 : Colors.green.shade900,
+                                    color: isExpired ? AppColors.error : AppColors.success,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -226,9 +219,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                   isExpired
                                       ? "Your account is hidden from client search. Renew to start getting appointments."
                                       : "Valid until ${subDateStr.toString().split('T')[0]}. Visible to clients.",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: isExpired ? Colors.red.shade800 : Colors.green.shade800,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: isExpired ? AppColors.error : AppColors.success,
                                   ),
                                 ),
                               ],
@@ -243,58 +235,26 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                     // Admin JazzCash Payment Details
                     Container(
                       padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.cardBorder),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.Brown.withOpacity(0.06),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
+                      decoration: AppDecorations.card,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "Monthly Subscription",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.labelSecondary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              Text("Monthly Subscription", style: AppTextStyles.labelMuted),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.Brown.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                                decoration: AppDecorations.pill,
                                 child: Text(
                                   "PKR $fee / Month",
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.Brown,
-                                  ),
+                                  style: AppTextStyles.label.copyWith(fontSize: 15),
                                 ),
                               ),
                             ],
                           ),
                           const Divider(height: 24),
-                          const Text(
-                            "Step 1: Transfer via JazzCash",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.Brown,
-                            ),
-                          ),
+                          Text("Step 1: Transfer via JazzCash", style: AppTextStyles.label),
                           const SizedBox(height: 8),
                           Container(
                             padding: const EdgeInsets.all(12),
@@ -312,19 +272,11 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                     children: [
                                       Text(
                                         _jazzCashAccountNumber,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 0.5,
-                                          color: AppColors.Brown,
-                                        ),
+                                        style: AppTextStyles.heading3.copyWith(letterSpacing: 0.5),
                                       ),
                                       Text(
                                         "Account Title: $_jazzCashAccountTitle",
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: AppColors.labelSecondary,
-                                        ),
+                                        style: AppTextStyles.bodySmall,
                                       ),
                                     ],
                                   ),
@@ -354,74 +306,27 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                     // Payment Submission Form
                     Container(
                       padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.cardBorder),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.Brown.withOpacity(0.06),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
+                      decoration: AppDecorations.card,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Step 2: Submit Payment Details",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.Brown,
-                            ),
-                          ),
+                          Text("Step 2: Submit Payment Details", style: AppTextStyles.label),
                           const SizedBox(height: 14),
 
                           // TID Field
-                          const Text(
-                            "Transaction ID (TID / Trx ID)",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.Brown,
-                            ),
-                          ),
+                          Text("Transaction ID (TID / Trx ID)", style: AppTextStyles.label),
                           const SizedBox(height: 6),
                           TextField(
                             controller: _tidController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: "e.g. 02847291048",
-                              filled: true,
-                              fillColor: AppColors.beige.withOpacity(0.3),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.cardBorder),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: AppColors.cardBorder),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
-                              ),
                             ),
                           ),
 
                           const SizedBox(height: 16),
 
                           // Screenshot upload
-                          const Text(
-                            "Payment Receipt / Screenshot",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.Brown,
-                            ),
-                          ),
+                          Text("Payment Receipt / Screenshot", style: AppTextStyles.label),
                           const SizedBox(height: 8),
 
                           if (_screenshotBytes != null)
@@ -429,9 +334,9 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                               padding: const EdgeInsets.all(10),
                               margin: const EdgeInsets.only(bottom: 10),
                               decoration: BoxDecoration(
-                                color: Colors.green.shade50,
+                                color: AppColors.success.withOpacity(0.06),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.green.shade300),
+                                border: Border.all(color: AppColors.success.withOpacity(0.4)),
                               ),
                               child: Row(
                                 children: [
@@ -450,15 +355,11 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                       _screenshotName ?? "Receipt Screenshot",
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.Brown,
-                                      ),
+                                      style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                                    icon: Icon(Icons.delete_outline, color: AppColors.error),
                                     onPressed: () => setState(() {
                                       _screenshotBytes = null;
                                       _screenshotName = null;
@@ -477,7 +378,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                 _screenshotBytes == null
                                     ? "Upload Receipt Screenshot"
                                     : "Change Screenshot",
-                                style: const TextStyle(color: AppColors.Brown),
+                                style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w500),
                               ),
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(color: AppColors.Brown),
@@ -492,35 +393,22 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                           const SizedBox(height: 20),
 
                           // Submit Button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _isSubmitting ? null : _submitPayment,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.Brown,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: _isSubmitting
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : const Text(
-                                      "Submit Payment for Review",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
+                          ElevatedButton(
+                            onPressed: _isSubmitting ? null : _submitPayment,
+                            style: AppButtonStyles.primary,
+                            child: _isSubmitting
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.white,
+                                      strokeWidth: 2,
                                     ),
-                            ),
+                                  )
+                                : Text(
+                                    "Submit Payment for Review",
+                                    style: AppTextStyles.button,
+                                  ),
                           ),
                         ],
                       ),

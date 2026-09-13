@@ -23,6 +23,7 @@ import '../screens/dashboard_screen/profile.dart';
 import '../screens/dashboard_screen/admin/settings_screen.dart';
 import '../screens/dashboard_screen/admin/subscription_records_screen.dart';
 import '../screens/dashboard_screen/lawyer/lawyer_subscription_screen.dart';
+import '../screens/dashboard_screen/admin/lawyer_licenses.dart'; // adjust path to wherever you put the file
 
 class AppRoutes {
   static const splash = "/";
@@ -38,6 +39,7 @@ class AppRoutes {
   static const addLawyer = "/add-lawyer";
   static const createCase = "/create-case";
   static const subscriptionRecords = "/subscription-records";
+  static const lawyerLicenses = "/lawyer-licenses";
 
   static const clientDashboard = "/client-dashboard";
   static const lawyerFind = '/lawyer-find';
@@ -226,6 +228,14 @@ class AppPages {
         RoleMiddleware(allowedRoles: ['lawyer']),
       ],
     ),
+    GetPage(
+  name: AppRoutes.lawyerLicenses,
+  page: () => const LawyerLicensesScreen(),
+  middlewares: [
+    AuthMiddleware(),
+    RoleMiddleware(allowedRoles: ['admin']),
+  ],
+),
   ];
 
   static AppointmentRole _appointmentRoleFromString(String role) {

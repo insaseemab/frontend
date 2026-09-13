@@ -5,7 +5,7 @@ import 'package:insaafconnect/config/environment.dart';
 
 class LawyerService {
   static const String _baseUrl = Environment.apiBaseUrl;
-  
+
   String? _getToken() {
     final box = GetStorage();
     return box.read('token');
@@ -312,7 +312,9 @@ class LawyerService {
         final List<dynamic> data = jsonDecode(response.body);
         return data.map((e) => Map<String, dynamic>.from(e)).toList();
       } else {
-        throw Exception('Failed to fetch subscription records: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch subscription records: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Network error: $e');
@@ -347,5 +349,57 @@ class LawyerService {
     } catch (e) {
       throw Exception('Network error: $e');
     }
+  }
+
+  // ── Lawyer licenses (admin) ──────────────────────────────────────────
+
+  // GET /lawyer-licenses — this endpoint is mounted at the root ("/"),
+  // not under "/lawyers", so it does NOT use _baseUrl/lawyers.
+  Future<List<Map<String, dynamic>>> fetchLawyerLicenses() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/lawyer-licenses'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${_getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final List<dynamic> data = decoded['data'] ?? [];
+        return data.map((e) => Map<String, dynamic>.from(e)).toList();
+      } else {
+        throw Exception(
+          'Failed to fetch lawyer licenses: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  // Builds a usable URL from whatever format `license` was stored in.
+  // Handles: "uploads/xyz.pdf", "xyz.pdf", and Windows-style "uploads\xyz.pdf".
+  static String? buildLicenseUrl(dynamic rawLicense) {
+    if (rawLicense == null) return null;
+    var license = rawLicense.toString().trim();
+    if (license.isEmpty) return null;
+
+    license = license.replaceAll('\\', '/');
+    if (license.startsWith('/')) license = license.substring(1);
+    if (!license.startsWith('uploads/')) {
+      license = 'uploads/$license';
+    }
+
+    return '$_baseUrl/$license';
+  }
+
+  static bool isImageLicense(String url) {
+    final lower = url.toLowerCase();
+    return lower.endsWith('.jpg') ||
+        lower.endsWith('.jpeg') ||
+        lower.endsWith('.png') ||
+        lower.endsWith('.webp');
   }
 }

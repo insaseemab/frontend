@@ -24,7 +24,7 @@ class LawyerSubscriptionModal extends StatefulWidget {
 class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
   final _tidController = TextEditingController();
   final LawyerService _lawyerService = LawyerService();
-  
+
   Uint8List? _screenshotBytes;
   String? _screenshotName;
   bool _isSubmitting = false;
@@ -57,8 +57,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Image Picker Error",
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     }
   }
@@ -70,8 +70,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Required",
         "Please enter your JazzCash TID or upload a receipt screenshot.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.amber.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.warning,
+        colorText: AppColors.white,
       );
       return;
     }
@@ -98,8 +98,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Submitted Successfully",
         "Your payment proof has been submitted. Admin will review and activate your subscription.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
         duration: const Duration(seconds: 4),
       );
 
@@ -109,8 +109,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Submission Failed",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -139,13 +139,9 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Renew Subscription",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.Brown,
-                  ),
+                  style: AppTextStyles.heading2.copyWith(fontSize: 20),
                 ),
                 IconButton(
                   icon: const Icon(Icons.close, color: AppColors.Brown),
@@ -158,43 +154,22 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
             // Account details card
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.cardBorder),
-              ),
+              decoration: AppDecorations.card,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "Monthly Fee",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.labelSecondary,
-                        ),
-                      ),
+                      Text("Monthly Fee", style: AppTextStyles.labelMuted),
                       Text(
                         "PKR ${widget.fee}",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.Brown,
-                        ),
+                        style: AppTextStyles.heading3,
                       ),
                     ],
                   ),
                   const Divider(height: 20),
-                  const Text(
-                    "Admin JazzCash Account:",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: AppColors.Brown,
-                    ),
-                  ),
+                  Text("Admin JazzCash Account:", style: AppTextStyles.label),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -204,19 +179,11 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                         children: [
                           Text(
                             _jazzCashAccountNumber,
-                            style: const TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.Brown,
-                              letterSpacing: 0.5,
-                            ),
+                            style: AppTextStyles.heading3.copyWith(letterSpacing: 0.5),
                           ),
                           Text(
                             "Title: $_jazzCashAccountTitle",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.labelSecondary,
-                            ),
+                            style: AppTextStyles.bodySmall,
                           ),
                         ],
                       ),
@@ -242,47 +209,21 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
             const SizedBox(height: 18),
 
             // Transaction ID input
-            const Text(
-              "Transaction ID (TID)",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: AppColors.Brown,
-              ),
-            ),
+            Text("Transaction ID (TID)", style: AppTextStyles.label),
             const SizedBox(height: 6),
             TextField(
               controller: _tidController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "e.g. 02938472918",
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.cardBorder),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.cardBorder),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
-                ),
               ),
             ),
 
             const SizedBox(height: 16),
 
             // Screenshot Upload
-            const Text(
+            Text(
               "Payment Screenshot (Optional if TID provided)",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: AppColors.Brown,
-              ),
+              style: AppTextStyles.label,
             ),
             const SizedBox(height: 8),
 
@@ -291,9 +232,9 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                 padding: const EdgeInsets.all(10),
                 margin: const EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.shade300),
+                  border: Border.all(color: AppColors.success.withOpacity(0.4)),
                 ),
                 child: Row(
                   children: [
@@ -312,15 +253,11 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                         _screenshotName ?? "Receipt Screenshot",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.Brown,
-                        ),
+                        style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      icon: Icon(Icons.delete_outline, color: AppColors.error),
                       onPressed: () => setState(() {
                         _screenshotBytes = null;
                         _screenshotName = null;
@@ -337,10 +274,10 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                 icon: const Icon(Icons.upload_file, color: AppColors.Brown),
                 label: Text(
                   _screenshotBytes == null ? "Upload Payment Screenshot" : "Change Screenshot",
-                  style: const TextStyle(color: AppColors.Brown),
+                  style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w500),
                 ),
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   side: const BorderSide(color: AppColors.Brown),
                   shape: RoundedRectangleBorder(
@@ -353,35 +290,22 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
             const SizedBox(height: 24),
 
             // Submit button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isSubmitting ? null : _submitProof,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.Brown,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: _isSubmitting
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text(
-                        "Submit Proof for Verification",
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+            ElevatedButton(
+              onPressed: _isSubmitting ? null : _submitProof,
+              style: AppButtonStyles.primary,
+              child: _isSubmitting
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: AppColors.white,
+                        strokeWidth: 2,
                       ),
-              ),
+                    )
+                  : Text(
+                      "Submit Proof for Verification",
+                      style: AppTextStyles.button,
+                    ),
             ),
           ],
         ),

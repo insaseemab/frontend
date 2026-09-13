@@ -5,12 +5,6 @@ import 'package:insaafconnect/core/services/api_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
-final Color _primaryColor = AppColors.Brown;
-final Color _bgColor = AppColors.beige;
-final Color _borderColor = AppColors.divider;
-final Color _hintColor = AppColors.hintText;
-final Color _labelColor = AppColors.labelSecondary;
-
 class AdminBookAppointmentScreen extends StatefulWidget {
   final DateTime? initialDate;
   const AdminBookAppointmentScreen({super.key, this.initialDate});
@@ -101,7 +95,7 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to load data: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -120,8 +114,8 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: ColorScheme.light(
-            primary: _primaryColor,
-            onPrimary: Colors.white,
+            primary: AppColors.Brown,
+            onPrimary: AppColors.white,
           ),
         ),
         child: child!,
@@ -135,7 +129,7 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
       initialTime: TimeOfDay.now(),
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: ColorScheme.light(primary: _primaryColor),
+          colorScheme: ColorScheme.light(primary: AppColors.Brown),
         ),
         child: child!,
       ),
@@ -195,9 +189,10 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Appointment booked successfully!'),
-         backgroundColor: Color(0xFF2E7D32),
-         ),
+        const SnackBar(
+          content: Text('Appointment booked successfully!'),
+          backgroundColor: AppColors.success,
+        ),
       );
       Get.back(result: true);
     } on ApiException catch (e) {
@@ -223,29 +218,25 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: _bgColor,
+        backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
-            color: _primaryColor,
+            color: AppColors.Brown,
             size: 20,
           ),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Book Appointment (Admin)',
-          style: TextStyle(
-            color: _primaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: AppTextStyles.heading3,
         ),
       ),
       body: _isFetchingData
-          ? Center(child: CircularProgressIndicator(color: _primaryColor))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
           : Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -340,31 +331,19 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                       height: 52,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _submit,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 0,
-                          disabledBackgroundColor:
-                              _primaryColor.withValues(alpha: 0.5),
-                        ),
+                        style: AppButtonStyles.primary,
                         child: _isLoading
                             ? const SizedBox(
                                 height: 22,
                                 width: 22,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   strokeWidth: 2.5,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Book Appointment',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppTextStyles.button,
                               ),
                       ),
                     ),
@@ -376,49 +355,35 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
     );
   }
 
-  Widget _sectionLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: _primaryColor,
-        ),
-      );
+  Widget _sectionLabel(String text) => Text(text, style: AppTextStyles.heading3);
 
-  Widget _fieldLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: _primaryColor,
-        ),
-      );
+  Widget _fieldLabel(String text) => Text(text, style: AppTextStyles.label);
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: 13, color: _hintColor),
+        hintStyle: AppTextStyles.hint,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.white,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.divider),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.divider),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _primaryColor, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
       );
 }
@@ -445,40 +410,30 @@ class _DropdownField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: _primaryColor,
-          ),
-        ),
+        Text(label, style: AppTextStyles.label),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
-          hint: Text(
-            hint,
-            style: TextStyle(fontSize: 13, color: _hintColor),
-          ),
+          hint: Text(hint, style: AppTextStyles.hint),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _borderColor),
+              borderSide: BorderSide(color: AppColors.divider),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _borderColor),
+              borderSide: BorderSide(color: AppColors.divider),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _primaryColor, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
           ),
           items: items
@@ -514,45 +469,33 @@ class _AppDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: _primaryColor,
-          ),
-        ),
+        Text(label, style: AppTextStyles.label),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
-          hint: Text(
-            hint,
-            style: TextStyle(fontSize: 13, color: _hintColor),
-          ),
+          hint: Text(hint, style: AppTextStyles.hint),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _borderColor),
+              borderSide: BorderSide(color: AppColors.divider),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _borderColor),
+              borderSide: BorderSide(color: AppColors.divider),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _primaryColor, width: 1.5),
+              borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red),
+              borderSide: const BorderSide(color: AppColors.error),
             ),
           ),
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
+          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
           onChanged: onChanged,
           validator: validator,
         ),
@@ -585,38 +528,29 @@ class _SlotPicker extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _borderColor),
+          border: Border.all(color: AppColors.divider),
         ),
         child: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.calendar_today_outlined,
               size: 18,
-              color: _primaryColor,
+              color: AppColors.Brown,
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: _labelColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(label, style: AppTextStyles.labelMuted),
                 const SizedBox(height: 2),
                 Text(
                   display,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: dateTime != null
-                        ? _primaryColor
-                        : _hintColor,
+                    color: dateTime != null ? AppColors.Brown : AppColors.hintText,
                   ),
                 ),
               ],
@@ -653,10 +587,10 @@ class _ModeSelector extends StatelessWidget {
               margin: EdgeInsets.only(right: i < options.length - 1 ? 10 : 0),
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: isActive ? _primaryColor : Colors.white,
+                color: isActive ? AppColors.Brown : AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isActive ? _primaryColor : _borderColor,
+                  color: isActive ? AppColors.Brown : AppColors.divider,
                 ),
               ),
               child: Row(
@@ -665,7 +599,7 @@ class _ModeSelector extends StatelessWidget {
                   Icon(
                     icons[i],
                     size: 16,
-                    color: isActive ? Colors.white : _labelColor,
+                    color: isActive ? AppColors.white : AppColors.labelSecondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -673,7 +607,7 @@ class _ModeSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isActive ? Colors.white : _labelColor,
+                      color: isActive ? AppColors.white : AppColors.labelSecondary,
                     ),
                   ),
                 ],

@@ -3,11 +3,6 @@ import 'package:insaafconnect/core/services/lawyers_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get/get.dart';
 
-final Color _primaryColor = AppColors.Brown;
-final Color _bgColor = AppColors.beige;
-final Color _borderColor = AppColors.divider;
-final Color _hintColor = AppColors.hintText;
-
 class AddLawyerPage extends StatefulWidget {
   const AddLawyerPage({super.key});
 
@@ -28,49 +23,35 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
 
   bool isLoading = false;
 
-  Widget _sectionLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: _primaryColor,
-        ),
-      );
+  Widget _sectionLabel(String text) => Text(text, style: AppTextStyles.heading3);
 
-  Widget _fieldLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: _primaryColor,
-        ),
-      );
+  Widget _fieldLabel(String text) => Text(text, style: AppTextStyles.label);
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: 13, color: _hintColor),
+        hintStyle: AppTextStyles.hint,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.inputFill,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _primaryColor, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: AppColors.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
       );
 
@@ -131,7 +112,7 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Error: $e"),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     } finally {
@@ -142,22 +123,13 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
       appBar: AppBar(
-        backgroundColor: _bgColor,
-        elevation: 0,
+        backgroundColor: AppColors.beige,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: _primaryColor, size: 20),
+          icon: const Icon(Icons.arrow_back, color: AppColors.Brown, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Add Lawyer',
-          style: TextStyle(
-            color: _primaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
+        title: Text('Add Lawyer', style: AppTextStyles.heading3),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -228,31 +200,17 @@ class _AddLawyerPageState extends State<AddLawyerPage> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: isLoading ? null : _save,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _primaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 0,
-                    disabledBackgroundColor: _primaryColor.withOpacity(0.5),
-                  ),
+                  style: AppButtonStyles.primary,
                   child: isLoading
                       ? const SizedBox(
                           height: 22,
                           width: 22,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: AppColors.white,
                             strokeWidth: 2.5,
                           ),
                         )
-                      : const Text(
-                          'Save',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      : Text('Save', style: AppTextStyles.button),
                 ),
               ),
               const SizedBox(height: 24),

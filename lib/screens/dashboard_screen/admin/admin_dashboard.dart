@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
+import 'package:insaafconnect/core/services/notifications_services.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:insaafconnect/screens/appointments/appointments_page.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
@@ -9,6 +11,7 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/managelawyers.dart'
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
+import 'package:insaafconnect/screens/dashboard_screen/admin/lawyer_licenses.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -17,12 +20,11 @@ class AdminDashboardScreen extends StatefulWidget {
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
-
 class _DashboardStats {
   final int casesCount;
   final int lawyersCount;
   final int pendingLawyersCount;
-  final int clientsCount; 
+  final int clientsCount;
   final double totalEarnings;
   final double thisMonthEarnings;
   final int totalPaymentsCount;
@@ -40,8 +42,11 @@ class _DashboardStats {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final box = GetStorage();
+  final _notificationService = NotificationService();
   int currentIndex = 0;
   late Future<_DashboardStats> _statsFuture;
+  int _unreadCount = 0;
+  Timer? _unreadPollTimer;
 
   final List<String> _titles = [
     'Insaaf Connect',
@@ -54,10 +59,32 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     _statsFuture = _loadStats();
+    _loadUnreadCount();
+    _unreadPollTimer = Timer.periodic(const Duration(seconds:5), (_) {
+      _loadUnreadCount();
+    });
+  }
+
+  @override
+  void dispose() {
+    _unreadPollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final data = await _notificationService.getNotifications();
+      final unread = data['unread'];
+      final count = unread is String ? int.tryParse(unread) ?? 0 : (unread as int? ?? 0);
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {
+      
+    }
   }
 
   void _reload() {
     setState(() => _statsFuture = _loadStats());
+    _loadUnreadCount();
   }
 
   Future<_DashboardStats> _loadStats() async {
@@ -71,7 +98,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final lawyers = results[1] as List<Map<String, dynamic>>;
     final appointments = results[2] as List<dynamic>;
 
-  
     int pendingLawyers = 0;
     for (final l in lawyers) {
       final raw = l['status'];
@@ -101,7 +127,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         totalEarnings += amount;
 
         final slotDate = DateTime.tryParse(
-          apt['slot_start_time']?.toString() ?? '',
+          apt['date']?.toString() ?? '',
         );
         if (slotDate != null &&
             slotDate.year == now.year &&
@@ -169,22 +195,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications, color: AppColors.Brown),
-                // avatar/profile icon
-                onPressed: () => Get.toNamed(AppRoutes.notifications),
+                onPressed: () async {
+                  await Get.toNamed(AppRoutes.notifications);
+                  if (mounted) _loadUnreadCount();
+                },
               ),
-
-              Positioned(
-                right: 8,
-                top: 8,
-                child: Container(
-                  height: 9,
-                  width: 9,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
+              if (_unreadCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    height: 9,
+                    width: 9,
+                    decoration: const BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
 
@@ -194,7 +222,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               backgroundColor: AppColors.Brown,
               child: Icon(Icons.person, color: AppColors.white, size: 18),
             ),
-
             onPressed: () => Get.toNamed(AppRoutes.profile),
           ),
           const SizedBox(width: 8),
@@ -228,7 +255,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ── DRAWER ──────────────────────────────────────────────────
   Widget _buildDrawer() {
     return Drawer(
       backgroundColor: AppColors.beige,
@@ -331,6 +357,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Get.toNamed(AppRoutes.subscriptionRecords);
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.badge_outlined, color: AppColors.Brown),
+            title: const Text('Lawyer Licenses'),
+            onTap: () {
+              Get.back();
+              Get.toNamed(AppRoutes.lawyerLicenses);
+            },
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.logout, color: AppColors.Brown),
@@ -345,7 +379,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ── HOME PAGE 
   Widget _homePage() {
     return FutureBuilder<_DashboardStats>(
       future: _statsFuture,
@@ -378,7 +411,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     style: TextStyle(color: AppColors.labelSecondary),
                   ),
                   const SizedBox(height: 12),
-                 
                 ],
               ),
             ),
@@ -396,7 +428,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Welcome banner ────────────────────────────────
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
@@ -425,7 +456,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // ── Platform stat cards ──────────────────────────
                 SizedBox(
                   height: 100,
                   child: Row(
@@ -473,7 +503,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // ── Earnings cards ───────────────────────────────
                 Row(
                   children: [
                     Expanded(
@@ -497,7 +526,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
                 const SizedBox(height: 14),
 
-                // ── Payment count cards ──────────────────────────
                 Row(
                   children: [
                     Expanded(
@@ -536,7 +564,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return names[month - 1];
   }
 
-  // ── Stat card ────────────────────────────────────────────────
   Widget _statCard(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -567,7 +594,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  // ── Earnings card ────────────────────────────────────────────
   Widget _earningsCard(String val, String lbl, IconData ic, Color bg) =>
       Container(
         padding: const EdgeInsets.all(18),
@@ -625,7 +651,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       );
 
-  // ── Payment count card ───────────────────────────────────────
   Widget _countCard(IconData ic, String lbl, int n) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
     decoration: BoxDecoration(

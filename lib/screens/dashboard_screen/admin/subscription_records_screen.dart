@@ -53,7 +53,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
   double get _totalRevenue {
     double total = 0;
     for (final r in _records) {
-      if (r['status'] == 'pending') continue; // only count approved/active
+      if (r['status'] == 'pending') continue;
       final amt = double.tryParse(r['amount']?.toString() ?? '') ?? 0;
       total += amt;
     }
@@ -92,14 +92,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Payment Screenshot",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppColors.Brown,
-                    ),
-                  ),
+                  Text("Payment Screenshot", style: AppTextStyles.heading4),
                   IconButton(
                     icon: const Icon(Icons.close, color: AppColors.Brown),
                     onPressed: () => Navigator.of(ctx).pop(),
@@ -119,9 +112,9 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                           : base64Str,
                     ),
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => const Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Text("Failed to display receipt image"),
+                    errorBuilder: (context, error, stackTrace) => Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Text("Failed to display receipt image", style: AppTextStyles.bodyMedium),
                     ),
                   ),
                 ),
@@ -144,8 +137,8 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
         "Subscription Approved",
         "Lawyer's subscription has been renewed for 30 days.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
       );
       await _loadRecords();
     } catch (e) {
@@ -153,8 +146,8 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
         "Approval Failed",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade700,
-        colorText: Colors.white,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     } finally {
       if (mounted) setState(() => _approvingId = null);
@@ -172,14 +165,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.Brown),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
-          'Subscription Records',
-          style: TextStyle(
-            color: AppColors.Brown,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
+        title: Text('Subscription Records', style: AppTextStyles.heading2),
       ),
       body: _buildBody(),
     );
@@ -199,7 +185,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 12),
               Text(
                 'Failed to load records:\n$_errorMessage',
@@ -209,13 +195,8 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _loadRecords,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.Brown,
-                ),
-                child: const Text(
-                  'Retry',
-                  style: TextStyle(color: AppColors.white),
-                ),
+                style: AppButtonStyles.primary,
+                child: Text('Retry', style: AppTextStyles.button),
               ),
             ],
           ),
@@ -229,23 +210,12 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ── Summary Cards ─────────────────────────────────────────────
           Row(
             children: [
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.Brown.withOpacity(0.08),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                  decoration: AppDecorations.card,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -258,11 +228,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                       const SizedBox(height: 6),
                       Text(
                         'PKR ${_totalRevenue.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.Brown,
-                        ),
+                        style: AppTextStyles.heading4.copyWith(fontSize: 18),
                       ),
                     ],
                   ),
@@ -272,17 +238,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.Brown.withOpacity(0.08),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+                  decoration: AppDecorations.card,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -301,7 +257,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: _pendingCount > 0
-                                  ? Colors.orange.shade800
+                                  ? AppColors.warning
                                   : AppColors.Brown,
                             ),
                           ),
@@ -311,7 +267,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.orange.shade100,
+                                color: AppColors.warning.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -319,7 +275,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.orange.shade900,
+                                  color: AppColors.warning,
                                 ),
                               ),
                             ),
@@ -335,10 +291,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
 
           const SizedBox(height: 20),
 
-          Text(
-            'Payment Submissions',
-            style: AppTextStyles.heading3,
-          ),
+          Text('Payment Submissions', style: AppTextStyles.heading3),
 
           const SizedBox(height: 12),
 
@@ -396,7 +349,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(16),
                   border: isPending
-                      ? Border.all(color: Colors.orange.shade300, width: 1.5)
+                      ? Border.all(color: AppColors.warning, width: 1.5)
                       : null,
                   boxShadow: [
                     BoxShadow(
@@ -409,7 +362,6 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Top: Name + Status Badge + Amount
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -429,9 +381,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             children: [
                               Text(
                                 lawyerName,
-                                style: AppTextStyles.heading4.copyWith(
-                                  fontSize: 15,
-                                ),
+                                style: AppTextStyles.heading4.copyWith(fontSize: 15),
                               ),
                               Text(
                                 lawyerEmail,
@@ -461,7 +411,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                               ),
                               decoration: BoxDecoration(
                                 color: isPending
-                                    ? Colors.orange.shade100
+                                    ? AppColors.warning.withOpacity(0.15)
                                     : AppColors.success.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -469,7 +419,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                                 isPending ? 'Pending Review' : 'Active / Approved',
                                 style: TextStyle(
                                   color: isPending
-                                      ? Colors.orange.shade900
+                                      ? AppColors.warning
                                       : AppColors.success,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
@@ -479,20 +429,15 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'PKR $amount',
-                              style: const TextStyle(
-                                color: AppColors.Brown,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
+                              style: AppTextStyles.heading4.copyWith(fontSize: 16),
                             ),
                           ],
                         ),
                       ],
                     ),
 
-                    const Divider(height: 20),
+                    Divider(height: 20, color: AppColors.divider),
 
-                    // Middle details: Date, Expiry, Method
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -505,7 +450,6 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                       ],
                     ),
 
-                    // TID & Receipt Proof details
                     if (tid != null && tid.toString().isNotEmpty) ...[
                       const SizedBox(height: 10),
                       Container(
@@ -520,14 +464,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             const Icon(Icons.receipt,
                                 size: 16, color: AppColors.Brown),
                             const SizedBox(width: 6),
-                            Text(
-                              "TID: $tid",
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.Brown,
-                              ),
-                            ),
+                            Text("TID: $tid", style: AppTextStyles.label.copyWith(fontSize: 12)),
                             const Spacer(),
                             GestureDetector(
                               onTap: () {
@@ -564,7 +501,6 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                       ),
                     ],
 
-                    // Action Button: Approve & Renew if pending
                     if (isPending) ...[
                       const SizedBox(height: 14),
                       SizedBox(
@@ -578,12 +514,12 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                                   height: 16,
                                   width: 16,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     strokeWidth: 2,
                                   ),
                                 )
                               : const Icon(Icons.check_circle_outline,
-                                  size: 18, color: Colors.white),
+                                  size: 18, color: AppColors.white),
                           label: Text(
                             isThisApproving
                                 ? "Approving & Renewing..."
@@ -591,7 +527,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
-                              color: Colors.white,
+                              color: AppColors.white,
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
@@ -625,14 +561,7 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-            color: AppColors.Brown,
-          ),
-        ),
+        Text(value, style: AppTextStyles.label),
       ],
     );
   }

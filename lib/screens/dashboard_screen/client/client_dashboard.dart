@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/core/utils/theme.dart';
@@ -7,11 +8,13 @@ import 'package:insaafconnect/screens/dashboard_screen/profile.dart';
 import 'package:insaafconnect/screens/login_screen/login.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:insaafconnect/core/services/appointment_services.dart';
-import 'package:insaafconnect/screens/notifications.dart';
+import 'package:insaafconnect/core/services/notifications_services.dart';
 import 'lawyer_find.dart';
 import 'calendar.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/routes/app_routes.dart';
+
 
 class ClientDashboardScreen extends StatefulWidget {
   const ClientDashboardScreen({super.key});
@@ -22,6 +25,10 @@ class ClientDashboardScreen extends StatefulWidget {
 
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   int currentIndex = 0;
+
+  final _notificationService = NotificationService();
+  int _unreadCount = 0;
+  Timer? _unreadPollTimer;
 
   final List<_NavItem> _navItems = const [
     _NavItem(0, Icons.home_outlined, Icons.home, 'Home'),
@@ -38,6 +45,33 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
     const AppointmentsPage(role: AppointmentRole.client),
     const ManageCasesPage(userRole: 'client'),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUnreadCount();
+    _unreadPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      _loadUnreadCount();
+    });
+  }
+
+  @override
+  void dispose() {
+    _unreadPollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final data = await _notificationService.getNotifications();
+      final unread = data['unread'];
+      final count = unread is String
+          ? int.tryParse(unread) ?? 0
+          : (unread as int? ?? 0);
+      if (mounted) setState(() => _unreadCount = count);
+    } catch (_) {
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +101,33 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: AppColors.Brown),
-            onPressed: () => Get.to(() => const NotificationsScreen()),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: AppColors.Brown),
+                onPressed: () async {
+                  await Get.toNamed(AppRoutes.notifications);
+                  // Refresh right away instead of waiting for the next poll.
+                  if (mounted) _loadUnreadCount();
+                },
+              ),
+              if (_unreadCount > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    height: 9,
+                    width: 9,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
           ),
+
           IconButton(
             icon: const CircleAvatar(
               radius: 16,

@@ -43,7 +43,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             final futureEvents = list.where((a) => (a['date'] as DateTime).isAfter(now)).toList();
             final targetEvent = futureEvents.isNotEmpty ? futureEvents.first : list.first;
             final targetDate = targetEvent['date'] as DateTime;
-            
+
             setState(() {
               selectedDate = targetDate;
               focusedMonth = DateTime(targetDate.year, targetDate.month, 1);
@@ -62,7 +62,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return raw.map<Map<String, dynamic>>((a) {
       final apt = a as Map<String, dynamic>;
 
-      // Role-aware name: client sees lawyer's name, lawyer/admin see client's name
       final otherPartyName = role == 'lawyer'
           ? (apt['client_name'] ?? 'Client')
           : role == 'admin'
@@ -74,10 +73,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
       DateTime? start;
       try {
         if (timeRaw != null && timeRaw.contains(RegExp(r'\d{4}-\d{2}-\d{2}'))) {
-          // If slot_start_time is already a full ISO/datetime string, parse it directly
           start = DateTime.parse(timeRaw.replaceAll(' ', 'T'));
         } else if (dateRaw != null) {
-          // Extract date part (e.g. "2026-12-28" from "2026-12-28T00:00:00.000Z")
           final datePart = dateRaw.split(RegExp('[T ]'))[0];
           if (timeRaw != null && timeRaw.trim().isNotEmpty) {
             final timePart = timeRaw.contains(':') ? timeRaw.split(' ').last : timeRaw;
@@ -154,12 +151,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     try {
       final lawyers = await CasesService.fetchLawyers();
       if (!mounted) return;
-      
+
       Map<String, dynamic>? selectedLawyer;
-      
+
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFFF1ECE5),
+        backgroundColor: AppColors.beige,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
@@ -172,25 +169,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Select a Lawyer',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown,
-                      ),
-                    ),
+                    Text('Select a Lawyer', style: AppTextStyles.heading3),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<Map<String, dynamic>>(
                       hint: const Text('Choose a lawyer'),
                       value: selectedLawyer,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: AppColors.inputFill,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Color(0xFFEADDD0)),
+                          borderSide: BorderSide(color: AppColors.inputBorder),
                         ),
                       ),
                       items: lawyers.map((l) {
@@ -223,14 +213,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   }
                                 });
                               },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:  Colors.brown,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          disabledBackgroundColor: Colors.brown.withValues(alpha: 0.5),
-                        ),
+                        style: AppButtonStyles.primary,
                         child: const Text('Proceed to Book'),
                       ),
                     ),
@@ -261,7 +244,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           return const Padding(
             padding: EdgeInsets.symmetric(vertical: 60),
             child: Center(
-              child: CircularProgressIndicator(color: Colors.brown),
+              child: CircularProgressIndicator(color: AppColors.Brown),
             ),
           );
         }
@@ -276,13 +259,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: Color(0xFF8C7B6B), size: 48),
+                  Icon(Icons.error_outline, color: AppColors.labelSecondary, size: 48),
                   const SizedBox(height: 12),
-                  Text(msg, style: const TextStyle(color: Color(0xFF8C7B6B))),
+                  Text(msg, style: AppTextStyles.bodyMedium),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _load,
-                    child: const Text('Retry', style: TextStyle(color: Colors.brown)),
+                    child: Text('Retry', style: AppTextStyles.label),
                   ),
                 ],
               ),
@@ -295,7 +278,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final daysWithEvents = _daysWithEvents(appointments);
 
         return RefreshIndicator(
-          color: const Color(0xFF5C3D2E),
+          color: AppColors.Brown,
           onRefresh: () async => _load(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -308,21 +291,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.chevron_left, color: AppColors.Brown),
+                        icon: const Icon(Icons.chevron_left, color: AppColors.Brown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month - 1);
                         }),
                       ),
                       Text(
                         '${_monthName(focusedMonth.month)} ${focusedMonth.year}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.Brown,
-                        ),
+                        style: AppTextStyles.heading3,
                       ),
                       IconButton(
-                        icon: Icon(Icons.chevron_right, color: AppColors.Brown),
+                        icon: const Icon(Icons.chevron_right, color: AppColors.Brown),
                         onPressed: () => setState(() {
                           focusedMonth = DateTime(focusedMonth.year, focusedMonth.month + 1);
                         }),
@@ -337,14 +316,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     children: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
                         .map((d) => Expanded(
                               child: Center(
-                                child: Text(
-                                  d,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.Brown.withOpacity(0.65),
-                                  ),
-                                ),
+                                child: Text(d, style: AppTextStyles.sectionTitle),
                               ),
                             ))
                         .toList(),
@@ -353,7 +325,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 const SizedBox(height: 8),
                 _buildCalendarGrid(daysWithEvents),
                 const SizedBox(height: 20),
-                const Divider(color: Color(0xFFEADDD0), thickness: 1, height: 1),
+                Divider(color: AppColors.divider, thickness: 1, height: 1),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -364,55 +336,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         selectedAppointments.isEmpty
                             ? 'No appointments on ${selectedDate.day} ${_monthName(selectedDate.month)}'
                             : 'Appointments on ${selectedDate.day} ${_monthName(selectedDate.month)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.brown,
-                        ),
+                        style: AppTextStyles.heading3,
                       ),
                       const SizedBox(height: 12),
                       ...selectedAppointments.map((a) => _AppointmentTile(appointment: a)),
                       if (selectedAppointments.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Center(
-                          child: Text(
-                            'No appointments scheduled for this date.',
-                            style: TextStyle(color: Color(0xFFAA9988), fontSize: 14),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Center(
+                            child: Text(
+                              'No appointments scheduled for this date.',
+                              style: AppTextStyles.bodyMedium,
+                            ),
                           ),
                         ),
-                      ),
-                    const SizedBox(height: 16),
-                    if (role != 'lawyer')
-                      Center(
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            if (role == 'admin') {
-                              final result = await Get.to(() => AdminBookAppointmentScreen(initialDate: selectedDate));
-                              if (result == true) {
-                                _load();
+                      const SizedBox(height: 16),
+                      if (role != 'lawyer')
+                        Center(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              if (role == 'admin') {
+                                final result = await Get.to(() => AdminBookAppointmentScreen(initialDate: selectedDate));
+                                if (result == true) {
+                                  _load();
+                                }
+                              } else {
+                                _showClientBookingDialog(selectedDate);
                               }
-                            } else {
-                              _showClientBookingDialog(selectedDate);
-                            }
-                          },
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(
-                            'Book Appointment for ${_monthName(selectedDate.month)} ${selectedDate.day}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:  Colors.brown,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            },
+                            icon: const Icon(Icons.add, size: 18),
+                            label: Text(
+                              'Book Appointment for ${_monthName(selectedDate.month)} ${selectedDate.day}',
+                              style: AppTextStyles.button,
+                            ),
+                            style: AppButtonStyles.primary,
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -430,17 +393,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.Brown),
+          icon: const Icon(Icons.arrow_back, color: AppColors.Brown),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'My Calendar',
-          style: TextStyle(
-            color: AppColors.Brown,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
+        title: Text('My Calendar', style: AppTextStyles.heading3),
       ),
       body: content,
     );
@@ -481,9 +437,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     margin: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? Colors.brown
+                          ? AppColors.Brown
                           : isToday
-                              ? const Color(0xFFF5EDE4)
+                              ? AppColors.beige
                               : Colors.transparent,
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -495,7 +451,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? Colors.white : const Color(0xFF3E2C23),
+                            color: isSelected ? AppColors.white : AppColors.Brown,
                           ),
                         ),
                         if (hasEvent)
@@ -503,7 +459,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             width: 5,
                             height: 5,
                             decoration: BoxDecoration(
-                              color: isSelected ? Colors.white : Colors.brown,
+                              color: isSelected ? AppColors.white : AppColors.Brown,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -538,9 +494,9 @@ class _AppointmentTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEADDD0)),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Row(
         children: [
@@ -557,33 +513,16 @@ class _AppointmentTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  appointment['title'],
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: Colors.brown,
-                  ),
-                ),
+                Text(appointment['title'], style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 3),
-                Text(
-                  appointment['lawyer'],
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF8C7B6B)),
-                ),
+                Text(appointment['lawyer'], style: AppTextStyles.bodySmall),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                appointment['time'],
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                  color: Colors.brown,
-                ),
-              ),
+              Text(appointment['time'], style: AppTextStyles.label),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

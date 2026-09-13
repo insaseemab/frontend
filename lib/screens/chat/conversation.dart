@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -48,7 +49,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       return (conv["lawyer_name"] ?? conv["other_name"] ?? "Lawyer").toString();
     }
 
-    // Fallback if role is somehow missing
     return (conv["other_name"] ??
             conv["lawyer_name"] ??
             conv["client_name"] ??
@@ -118,29 +118,29 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F0E8),
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
+        
         title: const Text("Messages"),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(2),
-          child: Container(color: Colors.brown, height: 1),
+          child: Container(color: AppColors.beige, height: 1),
         ),
-        backgroundColor: Colors.brown,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.Brown,
+        foregroundColor: AppColors.white,
       ),
       body: Column(
         children: [
-          // ── SEARCH BAR ──
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: "Search conversations...",
-                hintStyle: const TextStyle(color: Colors.black, fontSize: 14),
-                prefixIcon: const Icon(Icons.search, color: Colors.black),
+                hintStyle: AppTextStyles.hint,
+                prefixIcon: Icon(Icons.search, color: AppColors.iconMuted),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppColors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
@@ -150,24 +150,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             ),
           ),
 
-          // ── SUBTITLE ──
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 4, 16, 8),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Chat with lawyers and clients",
-                style: TextStyle(fontSize: 12, color: Colors.black),
+                style: AppTextStyles.bodySmall,
               ),
             ),
           ),
 
-          // ── LIST ──
           Expanded(
             child: isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
                 : filteredConversations.isEmpty
-                ? const Center(child: Text("No conversations yet"))
+                ? Center(child: Text("No conversations yet", style: AppTextStyles.bodyMedium))
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -196,28 +194,18 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                             horizontal: 14,
                             vertical: 14,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
+                          decoration: AppDecorations.card,
                           child: Row(
                             children: [
                               CircleAvatar(
                                 radius: 22,
-                                backgroundColor: Colors.brown,
+                                backgroundColor: AppColors.Brown,
                                 child: Text(
                                   name.isNotEmpty
                                       ? name.substring(0, 1).toUpperCase()
                                       : "U",
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
@@ -230,10 +218,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                   children: [
                                     Text(
                                       name,
-                                      style: const TextStyle(
-                                        fontSize: 15,
+                                      style: AppTextStyles.bodyLarge.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.brown,
                                       ),
                                     ),
                                     const SizedBox(height: 3),
@@ -241,10 +227,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                       conv["last_message"] ?? "",
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.black,
-                                      ),
+                                      style: AppTextStyles.bodyMedium,
                                     ),
                                   ],
                                 ),
@@ -255,10 +238,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                 children: [
                                   Text(
                                     _formatTime(conv["last_at"]),
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.black,
-                                    ),
+                                    style: AppTextStyles.bodySmall,
                                   ),
                                   if (unread > 0) ...[
                                     const SizedBox(height: 4),
@@ -268,13 +248,13 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                                         vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.brown,
+                                        color: AppColors.Brown,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: Text(
                                         '$unread',
                                         style: const TextStyle(
-                                          color: Colors.white,
+                                          color: AppColors.white,
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
                                         ),

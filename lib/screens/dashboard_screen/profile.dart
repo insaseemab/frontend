@@ -18,11 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Map<String, dynamic> user;
   late String role;
 
-  final Color Brown = AppColors.Brown;
-  final Color muted = AppColors.labelSecondary;
-  final Color bg = AppColors.beige;
-  final Color cardBorder = AppColors.divider;
-
   @override
   void initState() {
     super.initState();
@@ -65,7 +60,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       text: (user['location'] ?? '').toString(),
     );
 
-    // Lawyer-only fields
     final specCtrl = TextEditingController(
       text: (user['specialization'] ?? '').toString(),
     );
@@ -78,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -94,8 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Edit Profile',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Brown)),
+                Text('Edit Profile', style: AppTextStyles.heading3),
                 const SizedBox(height: 16),
                 TextField(
                   controller: nameCtrl,
@@ -134,13 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Brown,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppButtonStyles.primary,
                     onPressed: () async {
                       final updatedData = {
                         'name': nameCtrl.text.trim(),
@@ -153,8 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       await _saveProfile(updatedData);
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
-                    child: const Text('Save Changes',
-                        style: TextStyle(color: Colors.white)),
+                    child: Text('Save Changes', style: AppTextStyles.button),
                   ),
                 ),
               ],
@@ -173,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -189,8 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Change Password',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Brown)),
+                Text('Change Password', style: AppTextStyles.heading3),
                 const SizedBox(height: 16),
                 TextField(
                   controller: currentCtrl,
@@ -213,13 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Brown,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    style: AppButtonStyles.primary,
                     onPressed: () async {
                       if (newCtrl.text.trim() != confirmCtrl.text.trim()) {
                         Get.snackbar('Error', 'New passwords do not match');
@@ -236,10 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                       if (ctx.mounted) Navigator.pop(ctx);
                     },
-                    child: const Text(
-                      'Update Password',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text('Update Password', style: AppTextStyles.button),
                   ),
                 ),
               ],
@@ -308,29 +284,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final String phone = (user['phone'] ?? 'Not provided').toString();
     final String location = (user['location'] ?? 'Not provided').toString();
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: AppColors.beige,
       appBar: AppBar(
-        backgroundColor: bg,
+        backgroundColor: AppColors.beige,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Profile',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Brown,
-              ),
-            ),
-            Text(
-              'Manage your account',
-              style: TextStyle(
-                fontSize: 12,
-                color: muted,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
+            Text('Profile', style: AppTextStyles.heading3),
+            Text('Manage your account', style: AppTextStyles.bodySmall),
           ],
         ),
       ),
@@ -339,23 +301,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header card ──
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: cardBorder),
-              ),
+              decoration: AppDecorations.card,
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundColor: Brown,
+                    backgroundColor: AppColors.Brown,
                     child: Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
@@ -368,20 +325,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Text(
                           name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           role.isNotEmpty
                               ? role[0].toUpperCase() + role.substring(1)
                               : '',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
+                          style: AppTextStyles.bodySmall,
                         ),
                       ],
                     ),
@@ -391,14 +342,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     icon: const Icon(
                       Icons.edit_outlined,
                       size: 16,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
-                    label: const Text(
-                      'Edit Profile',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    label: Text('Edit Profile', style: AppTextStyles.button),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Brown,
+                      backgroundColor: AppColors.Brown,
                       side: BorderSide.none,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -415,26 +363,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 16),
 
-            // ── Personal Information ──
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: cardBorder),
-              ),
+              decoration: AppDecorations.card,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Personal Information',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Brown,
-                    ),
-                  ),
+                  Text('Personal Information', style: AppTextStyles.heading4),
                   const SizedBox(height: 14),
                   _infoField(Icons.person_outline, 'Full Name', name),
                   const SizedBox(height: 12),
@@ -444,7 +380,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   _infoField(Icons.location_on_outlined, 'Location', location),
 
-                  // ── Lawyer-only fields ──
                   if (role.toLowerCase() == 'lawyer') ...[
                     const SizedBox(height: 12),
                     _infoField(
@@ -471,31 +406,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 16),
 
-            // ── Change Password ──
             InkWell(
               onTap: _openChangePasswordSheet,
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: cardBorder),
-                ),
+                decoration: AppDecorations.card,
                 child: Center(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.edit_outlined, size: 16, color: Brown),
-                      SizedBox(width: 8),
-                      Text(
-                        'Change Password',
-                        style: TextStyle(
-                          color: Brown,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      const Icon(Icons.edit_outlined, size: 16, color: AppColors.Brown),
+                      const SizedBox(width: 8),
+                      Text('Change Password', style: AppTextStyles.label),
                     ],
                   ),
                 ),
@@ -503,51 +427,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             if (role.toLowerCase() == 'lawyer') ...[
+              const SizedBox(height: 16),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: cardBorder),
-                ),
+                decoration: AppDecorations.card,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Account Subscription',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Brown,
-                      ),
-                    ),
+                    Text('Account Subscription', style: AppTextStyles.heading4),
                     const SizedBox(height: 8),
                     Text(
                       'Check your membership status and submit JazzCash renewal payments.',
-                      style: TextStyle(fontSize: 13, color: muted),
+                      style: AppTextStyles.bodyMedium,
                     ),
                     const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () => Get.to(() => const LawyerSubscriptionScreen()),
-                        icon: const Icon(Icons.card_membership, size: 18, color: Colors.white),
-                        label: const Text('Manage & Pay Subscription', style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Brown,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
+                        icon: const Icon(Icons.card_membership, size: 18, color: AppColors.white),
+                        label: Text('Manage & Pay Subscription', style: AppTextStyles.button),
+                        style: AppButtonStyles.primary,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
             ],
 
-            // ── Logout ──
+            const SizedBox(height: 16),
+
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
@@ -555,14 +465,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   box.erase();
                   Get.offAll(() => LoginScreen());
                 },
-                icon: const Icon(Icons.logout, color: Colors.brown),
-                label: const Text(
-                  'Logout',
-                  style: TextStyle(color: Colors.brown),
-                ),
+                icon: const Icon(Icons.logout, color: AppColors.Brown),
+                label: Text('Logout', style: AppTextStyles.label),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: Colors.brown),
+                  side: const BorderSide(color: AppColors.Brown),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -575,34 +482,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Field rendered as its own light card, like the mockup
   Widget _infoField(IconData icon, String label, String value) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: bg,
+        color: AppColors.beige,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: 18, color: muted),
+          Icon(icon, size: 18, color: AppColors.labelSecondary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 11, color: muted)),
+                Text(label, style: AppTextStyles.bodySmall),
                 const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Brown,
-                  ),
-                ),
+                Text(value, style: AppTextStyles.label),
               ],
             ),
           ),

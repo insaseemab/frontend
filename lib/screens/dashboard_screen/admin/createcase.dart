@@ -5,11 +5,6 @@ import 'package:insaafconnect/core/utils/theme.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 
-final Color _primaryColor = AppColors.Brown;
-final Color _bgColor = AppColors.beige;
-final Color _borderColor = AppColors.divider;
-final Color _hintColor = AppColors.hintText;
-
 class CreateCasePage extends StatefulWidget {
   const CreateCasePage({super.key});
 
@@ -27,7 +22,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
   String? selectedCaseType;
   String selectedStatus = 'pending';
-  int paymentStatus = 0; // 0=unpaid 1=paid
+  int paymentStatus = 0;
   String? selectedClientId;
   String? selectedLawyerId;
   String? selectedDepartment;
@@ -120,7 +115,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to load data: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -137,9 +132,9 @@ class _CreateCasePageState extends State<CreateCasePage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: _primaryColor,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
+              primary: AppColors.Brown,
+              onPrimary: AppColors.white,
+              onSurface: AppColors.black,
             ),
           ),
           child: child!,
@@ -156,14 +151,13 @@ class _CreateCasePageState extends State<CreateCasePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
 
   Future<void> createCase() async {
-    // 1. Client validation
     if (isNewClient) {
       if (nameController.text.trim().isEmpty) {
         _showError('Please enter client name');
@@ -185,7 +179,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
       }
     }
 
-    // 2. Client contact details
     if (phoneController.text.trim().isEmpty) {
       _showError('Please enter client phone number');
       return;
@@ -195,7 +188,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
       return;
     }
 
-    // 3. Lawyer assignment validation
     final box = GetStorage();
     final effectiveLawyerId = selectedLawyerId ??
         (userRole == 'lawyer' ? box.read('userId')?.toString() : null);
@@ -207,7 +199,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
       return;
     }
 
-    // 4. Case details validation
     if (selectedCaseType == null || selectedCaseType!.isEmpty) {
       _showError('Please select a case type');
       return;
@@ -271,7 +262,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Case Created Successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.success,
         ),
       );
 
@@ -296,46 +287,31 @@ class _CreateCasePageState extends State<CreateCasePage> {
     super.dispose();
   }
 
-  Widget _sectionLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: _primaryColor,
-        ),
-      );
+  Widget _sectionLabel(String text) => Text(text, style: AppTextStyles.heading3);
 
-  Widget _fieldLabel(String text) => Text(
-        text,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: _primaryColor,
-        ),
-      );
+  Widget _fieldLabel(String text) => Text(text, style: AppTextStyles.label);
 
   InputDecoration _inputDecor(String hint, {Widget? suffixIcon}) => InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(fontSize: 13, color: _hintColor),
+        hintStyle: AppTextStyles.hint,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.inputFill,
         suffixIcon: suffixIcon,
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _borderColor),
+          borderSide: BorderSide(color: AppColors.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: _primaryColor, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
         ),
       );
 
-  // ── Themed text field: label above + filled box below ──
   Widget _themedField(
     String label,
     TextEditingController controller, {
@@ -367,7 +343,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
     );
   }
 
-  // ── Themed dropdown (string ids with display names) ──
   Widget _themedIdDropdown({
     required String label,
     required String hint,
@@ -386,7 +361,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
           DropdownButtonFormField<String>(
             value: value,
             isExpanded: true,
-            hint: Text(hint, style: TextStyle(fontSize: 13, color: _hintColor)),
+            hint: Text(hint, style: AppTextStyles.hint),
             decoration: _inputDecor(hint),
             items: items
                 .map(
@@ -408,7 +383,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
     );
   }
 
-  // ── Themed dropdown (plain string values) ──
   Widget _themedDropdown({
     required String label,
     required String hint,
@@ -426,7 +400,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
           DropdownButtonFormField<String>(
             value: value,
             isExpanded: true,
-            hint: Text(hint, style: TextStyle(fontSize: 13, color: _hintColor)),
+            hint: Text(hint, style: AppTextStyles.hint),
             decoration: _inputDecor(hint),
             items: items
                 .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -441,25 +415,16 @@ class _CreateCasePageState extends State<CreateCasePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
       appBar: AppBar(
-        backgroundColor: _bgColor,
-        elevation: 0,
+        backgroundColor: AppColors.beige,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: _primaryColor, size: 20),
+          icon: const Icon(Icons.arrow_back, color: AppColors.Brown, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Create Case',
-          style: TextStyle(
-            color: _primaryColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
+        title: Text('Create Case', style: AppTextStyles.heading3),
       ),
       body: isFetchingData
-          ? Center(child: CircularProgressIndicator(color: _primaryColor))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
           : GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
@@ -467,16 +432,15 @@ class _CreateCasePageState extends State<CreateCasePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── 1. Client Information ──
                     _sectionLabel('Client Information'),
                     Row(
                       children: [
                         ChoiceChip(
                           label: const Text('Existing Client'),
                           selected: !isNewClient,
-                          selectedColor: _primaryColor.withOpacity(0.15),
+                          selectedColor: AppColors.Brown.withOpacity(0.15),
                           labelStyle: TextStyle(
-                            color: !isNewClient ? _primaryColor : Colors.black87,
+                            color: !isNewClient ? AppColors.Brown : AppColors.black.withOpacity(0.87),
                             fontWeight: !isNewClient
                                 ? FontWeight.bold
                                 : FontWeight.normal,
@@ -495,11 +459,12 @@ class _CreateCasePageState extends State<CreateCasePage> {
                         ),
                         const SizedBox(width: 12),
                         ChoiceChip(
+                          backgroundColor: AppColors.beige,
                           label: const Text('New Client'),
                           selected: isNewClient,
-                          selectedColor: _primaryColor.withOpacity(0.15),
+                          selectedColor: AppColors.Brown.withOpacity(0.15),
                           labelStyle: TextStyle(
-                            color: isNewClient ? _primaryColor : Colors.black87,
+                            color: isNewClient ? AppColors.Brown : AppColors.black.withOpacity(0.87),
                             fontWeight: isNewClient
                                 ? FontWeight.bold
                                 : FontWeight.normal,
@@ -524,6 +489,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                       _themedIdDropdown(
                         label: 'Select Client *',
                         hint: 'Choose existing client',
+            
                         value: selectedClientId,
                         items: clients,
                         titleBuilder: (c) => c['email'] != null &&
@@ -568,7 +534,7 @@ class _CreateCasePageState extends State<CreateCasePage> {
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
                             size: 20,
-                            color: _hintColor,
+                            color: AppColors.hintText,
                           ),
                           onPressed: () => setState(
                               () => _obscurePassword = !_obscurePassword),
@@ -590,7 +556,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
                     const SizedBox(height: 10),
 
-                    // ── 2. Lawyer Assignment (if Admin) ──
                     if (userRole == 'admin') ...[
                       _sectionLabel('Lawyer Assignment'),
                       _themedIdDropdown(
@@ -605,10 +570,8 @@ class _CreateCasePageState extends State<CreateCasePage> {
                       const SizedBox(height: 10),
                     ],
 
-                    // ── 3. Case Details ──
                     _sectionLabel('Case Details'),
 
-                    // Standardized Case Type Dropdown for both flows
                     _themedDropdown(
                       label: 'Case Type *',
                       hint: 'Select case type',
@@ -625,7 +588,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
                       onChanged: (v) => setState(() => selectedDepartment = v),
                     ),
 
-                    // Hearing Date Picker
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Column(
@@ -639,14 +601,14 @@ class _CreateCasePageState extends State<CreateCasePage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 14, vertical: 14),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.inputFill,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: _borderColor),
+                                border: Border.all(color: AppColors.inputBorder),
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.calendar_today_outlined,
-                                      size: 18, color: _primaryColor),
+                                  const Icon(Icons.calendar_today_outlined,
+                                      size: 18, color: AppColors.Brown),
                                   const SizedBox(width: 10),
                                   Text(
                                     selectedHearingDate == null
@@ -658,8 +620,8 @@ class _CreateCasePageState extends State<CreateCasePage> {
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                       color: selectedHearingDate != null
-                                          ? _primaryColor
-                                          : _hintColor,
+                                          ? AppColors.Brown
+                                          : AppColors.hintText,
                                     ),
                                   ),
                                 ],
@@ -679,7 +641,6 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
                     const SizedBox(height: 10),
 
-                    // ── 4. Status & Payment ──
                     _sectionLabel('Status & Payment'),
 
                     _themedDropdown(
@@ -714,38 +675,22 @@ class _CreateCasePageState extends State<CreateCasePage> {
 
                     const SizedBox(height: 12),
 
-                    // ── Submit Button ──
                     SizedBox(
                       width: double.infinity,
                       height: 52,
                       child: ElevatedButton(
                         onPressed: isLoading ? null : createCase,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 0,
-                          disabledBackgroundColor:
-                              _primaryColor.withOpacity(0.5),
-                        ),
+                        style: AppButtonStyles.primary,
                         child: isLoading
                             ? const SizedBox(
                                 height: 22,
                                 width: 22,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
+                                  color: AppColors.white,
                                   strokeWidth: 2.5,
                                 ),
                               )
-                            : const Text(
-                                'Create Case',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                            : Text('Create Case', style: AppTextStyles.button),
                       ),
                     ),
                     const SizedBox(height: 24),
