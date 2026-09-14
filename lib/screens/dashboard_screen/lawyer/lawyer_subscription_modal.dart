@@ -56,9 +56,9 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
       Get.snackbar(
         "Image Picker Error",
         e.toString(),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
       );
     }
   }
@@ -70,8 +70,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Required",
         "Please enter your JazzCash TID or upload a receipt screenshot.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.warning,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.warning.withOpacity(0.10),
+        colorText: AppColors.warning,
       );
       return;
     }
@@ -98,8 +98,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Submitted Successfully",
         "Your payment proof has been submitted. Admin will review and activate your subscription.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
         duration: const Duration(seconds: 4),
       );
 
@@ -109,8 +109,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
         "Submission Failed",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -195,6 +195,8 @@ class _LawyerSubscriptionModalState extends State<LawyerSubscriptionModal> {
                           Get.snackbar(
                             "Copied",
                             "JazzCash number copied to clipboard",
+                            backgroundColor: AppColors.success.withOpacity(0.10),
+                            colorText: AppColors.success,
                             snackPosition: SnackPosition.BOTTOM,
                             duration: const Duration(seconds: 2),
                           );

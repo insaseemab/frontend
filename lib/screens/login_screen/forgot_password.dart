@@ -20,7 +20,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      Get.snackbar("Error", "Email is required");
+      Get.snackbar(
+        "Error",
+        "Email is required",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -32,6 +38,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       Get.snackbar(
         "Error",
         result['message'] ?? "Failed to send reset link",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -40,6 +48,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     Get.snackbar(
       "Check your email",
       result['message'] ?? "Password reset link sent",
+      backgroundColor: AppColors.success.withOpacity(0.10),
+      colorText: AppColors.success,
       snackPosition: SnackPosition.BOTTOM,
       duration: const Duration(seconds: 4),
     );

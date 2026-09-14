@@ -91,23 +91,43 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         "Reset token is missing. Please paste the token from your email link.",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
     if (password.isEmpty || confirmPassword.isEmpty) {
-      Get.snackbar("Error", "All fields are required");
+      Get.snackbar(
+        "Error",
+        "All fields are required",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     if (password != confirmPassword) {
-      Get.snackbar("Error", "Passwords do not match");
+      Get.snackbar(
+        "Error",
+        "Passwords do not match",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     if (password.length < 6) {
-      Get.snackbar("Error", "Password must be at least 6 characters");
+      Get.snackbar(
+        "Error",
+        "Password must be at least 6 characters",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -119,6 +139,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         result['message'] ?? "Failed to reset password",
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -127,6 +149,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     Get.snackbar(
       "Success",
       result['message'] ?? "Password reset successfully",
+      backgroundColor: AppColors.success.withOpacity(0.10),
+      colorText: AppColors.success,
       snackPosition: SnackPosition.BOTTOM,
     );
 

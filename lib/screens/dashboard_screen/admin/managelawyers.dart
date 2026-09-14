@@ -62,11 +62,17 @@ class _ManagelawyersState extends State<Managelawyers> {
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: Text('Cancel', style: AppTextStyles.label.copyWith(color: AppColors.Brown)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.label.copyWith(color: AppColors.error),
+            ),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: Text('Delete', style: AppTextStyles.label.copyWith(color: AppColors.error)),
+            child: Text(
+              'Delete',
+              style: AppTextStyles.label.copyWith(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -115,6 +121,7 @@ class _ManagelawyersState extends State<Managelawyers> {
 
     await Get.dialog(
       AlertDialog(
+        backgroundColor: AppColors.white,
         title: Text('Edit Lawyer', style: AppTextStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
@@ -123,32 +130,47 @@ class _ManagelawyersState extends State<Managelawyers> {
               TextField(
                 controller: nameController,
                 style: AppTextStyles.bodyLarge,
-                decoration: InputDecoration(labelText: 'Name', labelStyle: AppTextStyles.labelMuted),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  labelStyle: AppTextStyles.labelMuted,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: specController,
                 style: AppTextStyles.bodyLarge,
-                decoration: InputDecoration(labelText: 'Specialization', labelStyle: AppTextStyles.labelMuted),
+                decoration: InputDecoration(
+                  labelText: 'Specialization',
+                  labelStyle: AppTextStyles.labelMuted,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: locationController,
                 style: AppTextStyles.bodyLarge,
-                decoration: InputDecoration(labelText: 'Location', labelStyle: AppTextStyles.labelMuted),
+                decoration: InputDecoration(
+                  labelText: 'Location',
+                  labelStyle: AppTextStyles.labelMuted,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: experienceController,
                 style: AppTextStyles.bodyLarge,
-                decoration: InputDecoration(labelText: 'Experience', labelStyle: AppTextStyles.labelMuted),
+                decoration: InputDecoration(
+                  labelText: 'Experience',
+                  labelStyle: AppTextStyles.labelMuted,
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: casesController,
                 style: AppTextStyles.bodyLarge,
-                decoration: InputDecoration(labelText: 'Cases', labelStyle: AppTextStyles.labelMuted),
+                decoration: InputDecoration(
+                  labelText: 'Cases',
+                  labelStyle: AppTextStyles.labelMuted,
+                ),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -157,7 +179,10 @@ class _ManagelawyersState extends State<Managelawyers> {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: AppTextStyles.label.copyWith(color: AppColors.Brown)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.label.copyWith(color: AppColors.error),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -181,11 +206,12 @@ class _ManagelawyersState extends State<Managelawyers> {
                 );
                 if (!mounted) return;
                 _loadLawyers();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Lawyer updated successfully'),
-                    backgroundColor: AppColors.success,
-                  ),
+                Get.snackbar(
+                  'Edited',
+                  'Lawyer Updated',
+                  backgroundColor: AppColors.error.withOpacity(0.10),
+                  colorText: AppColors.error,
+                  snackPosition: SnackPosition.BOTTOM,
                 );
               } catch (e) {
                 if (!mounted) return;
@@ -204,7 +230,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     );
   }
 
-  // ── APPROVE ───────────────────────────────────────────────────────────────
+  //  APPROVE
   Future<void> _approveLawyer(int index) async {
     final id = _lawyers[index]['id'];
     try {
@@ -213,11 +239,12 @@ class _ManagelawyersState extends State<Managelawyers> {
       setState(() {
         _lawyers[index]['status'] = 1;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Lawyer approved ✅'),
-          backgroundColor: AppColors.success,
-        ),
+      Get.snackbar(
+        'Approved',
+        'Lawyer Approved',
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       if (!mounted) return;
@@ -236,11 +263,12 @@ class _ManagelawyersState extends State<Managelawyers> {
       setState(() {
         _lawyers[index]['status'] = 0;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Lawyer rejected ❌'),
-          backgroundColor: AppColors.error,
-        ),
+      Get.snackbar(
+        'Rejected',
+        'Lawyer rejected',
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       if (!mounted) return;
@@ -257,18 +285,27 @@ class _ManagelawyersState extends State<Managelawyers> {
       await _lawyerService.renewLawyer(id);
       if (!mounted) return;
       _loadLawyers();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Subscription renewed (30 Days) ✅'),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
-      );
-    }
+
+  if (!mounted) return;
+
+  Get.snackbar(
+    'Subscription Renewed',
+    'Subscription renewed (30 Days) ✅',
+    backgroundColor: AppColors.success.withOpacity(0.10),
+    colorText: AppColors.success,
+    snackPosition: SnackPosition.BOTTOM,
+  );
+} catch (e) {
+  if (!mounted) return;
+
+  Get.snackbar(
+    'Error',
+    'Error: $e',
+    backgroundColor: AppColors.error.withOpacity(0.10),
+    colorText: AppColors.error,
+    snackPosition: SnackPosition.BOTTOM,
+  );
+}
   }
 
   @override
@@ -279,14 +316,16 @@ class _ManagelawyersState extends State<Managelawyers> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text("List of Lawyers", style: AppTextStyles.heading2),
+                    child: Text(
+                      "List of Lawyers",
+                      style: AppTextStyles.heading2,
+                    ),
                   ),
                   IconButton(
                     tooltip: "Subscription Records",
@@ -324,7 +363,11 @@ class _ManagelawyersState extends State<Managelawyers> {
           children: [
             Icon(Icons.error_outline, size: 48, color: AppColors.error),
             const SizedBox(height: 12),
-            Text('Error: $_errorMessage', textAlign: TextAlign.center, style: AppTextStyles.bodyLarge),
+            Text(
+              'Error: $_errorMessage',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyLarge,
+            ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: _loadLawyers,
@@ -339,7 +382,9 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
 
     if (_lawyers.isEmpty) {
-      return Center(child: Text('No lawyers found.', style: AppTextStyles.bodyLarge));
+      return Center(
+        child: Text('No lawyers found.', style: AppTextStyles.bodyLarge),
+      );
     }
 
     return ListView.builder(
@@ -404,14 +449,23 @@ class _ManagelawyersState extends State<Managelawyers> {
                 lawyer['name']?.toString() ?? 'Unknown',
                 style: AppTextStyles.heading4.copyWith(fontSize: 16),
               ),
+              Text('ID: ${lawyer["id"]}', style: AppTextStyles.bodySmall),
               Text(
-                'ID: ${lawyer["id"]}',
-                style: AppTextStyles.bodySmall,
+                lawyer['specialization']?.toString() ?? '',
+                style: AppTextStyles.bodyMedium,
               ),
-              Text(lawyer['specialization']?.toString() ?? '', style: AppTextStyles.bodyMedium),
-              Text('📍 ${lawyer["location"] ?? ""}', style: AppTextStyles.bodyMedium),
-              Text('${lawyer["experience"] ?? ""} years experience', style: AppTextStyles.bodyMedium),
-              Text('${lawyer["cases"] ?? ""} cases', style: AppTextStyles.bodyMedium),
+              Text(
+                '📍 ${lawyer["location"] ?? ""}',
+                style: AppTextStyles.bodyMedium,
+              ),
+              Text(
+                '${lawyer["experience"] ?? ""} years experience',
+                style: AppTextStyles.bodyMedium,
+              ),
+              Text(
+                '${lawyer["cases"] ?? ""} cases',
+                style: AppTextStyles.bodyMedium,
+              ),
               if (lawyer["subscription_expiry"] != null)
                 Text(
                   'Expires: ${lawyer["subscription_expiry"].toString().split("T")[0]}',
@@ -453,7 +507,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: ElevatedButton(
                       onPressed: () => _approveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isApproved ? brownColor : AppColors.white,
+                        backgroundColor: isApproved
+                            ? brownColor
+                            : AppColors.white,
                         side: BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -473,7 +529,9 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: ElevatedButton(
                       onPressed: () => _disapproveLawyer(index),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isRejected ? brownColor : AppColors.white,
+                        backgroundColor: isRejected
+                            ? brownColor
+                            : AppColors.white,
                         side: BorderSide(color: brownColor),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -499,7 +557,10 @@ class _ManagelawyersState extends State<Managelawyers> {
                     child: ElevatedButton.icon(
                       onPressed: () => _editLawyer(lawyer),
                       icon: const Icon(Icons.edit, size: 16),
-                      label: Text('Edit', style: AppTextStyles.label.copyWith(color: brownColor)),
+                      label: Text(
+                        'Edit',
+                        style: AppTextStyles.label.copyWith(color: brownColor),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.white,
                         foregroundColor: brownColor,
@@ -515,8 +576,17 @@ class _ManagelawyersState extends State<Managelawyers> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _deleteLawyer(lawyer['id']),
-                      icon: Icon(Icons.delete, size: 16, color: AppColors.error),
-                      label: Text('Delete', style: AppTextStyles.label.copyWith(color: AppColors.error)),
+                      icon: Icon(
+                        Icons.delete,
+                        size: 16,
+                        color: AppColors.error,
+                      ),
+                      label: Text(
+                        'Delete',
+                        style: AppTextStyles.label.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.white,
                         foregroundColor: AppColors.error,
@@ -537,7 +607,10 @@ class _ManagelawyersState extends State<Managelawyers> {
                 child: ElevatedButton.icon(
                   onPressed: () => _renewLawyer(index),
                   icon: Icon(Icons.autorenew, size: 16, color: brownColor),
-                  label: Text('Renew (30 Days)', style: AppTextStyles.label.copyWith(color: brownColor)),
+                  label: Text(
+                    'Renew (30 Days)',
+                    style: AppTextStyles.label.copyWith(color: brownColor),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.white,
                     foregroundColor: brownColor,

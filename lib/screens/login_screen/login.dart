@@ -41,7 +41,13 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!result['success']) {
       final errorMessage =
           result['message'] ?? 'Login failed. Please try again.';
-      Get.snackbar('Error', errorMessage, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        errorMessage,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -49,10 +55,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final role = user['role'].toString().toLowerCase();
 
     if (role != 'admin' && role != 'lawyer' && role != 'client') {
-      Get.snackbar('Access Denied', 'Your role is not recognized.');
+      Get.snackbar(
+        'Access Denied',
+        'Your role is not recognized.',
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
-
     final token = result['token'];
     final userId = user['id'];
     final userName = user['name'];

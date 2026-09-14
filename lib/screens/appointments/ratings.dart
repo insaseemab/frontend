@@ -20,7 +20,13 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
 
   Future<void> _submit() async {
     if (_rating == 0) {
-      Get.snackbar('Error', 'Please select a rating', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Please select a rating',
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -42,10 +48,22 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
 
       if (!mounted) return;
       Get.back(); // close sheet
-      Get.snackbar('Success', 'Rating submitted successfully!', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Success',
+        'Rating submitted successfully!',
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
       widget.onSuccess?.call();
     } catch (e) {
-      Get.snackbar('Error', e.toString().replaceAll("Exception: ", ""), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        e.toString().replaceAll("Exception: ", ""),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

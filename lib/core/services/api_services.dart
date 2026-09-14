@@ -104,6 +104,15 @@ class ApiService {
     checkStatus(res);
   }
 
+  static Future<Map<String, dynamic>> getLawyerStats() async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/cases/lawyer-stats'),
+      headers: ApiService.authHeaders(),
+    );
+    ApiService.checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
+
 }
 
 class ApiException implements Exception {

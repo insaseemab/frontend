@@ -70,6 +70,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           : (unread as int? ?? 0);
       if (mounted) setState(() => _unreadCount = count);
     } catch (_) {
+
     }
   }
 
@@ -413,20 +414,26 @@ class _HomeScreenState extends State<HomeScreen> {
     }).toList();
 
     double totalSpent = 0;
-    double thisMonthSpent = 0;
     for (final a in appointments) {
       if (a['payment_status'] == 1) {
         final double amt = double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
         totalSpent += amt;
-        final startRaw = a['slot_start_time'];
-        if (startRaw != null) {
-          final start = DateTime.tryParse(startRaw.toString());
-          if (start != null && start.year == now.year && start.month == now.month) {
-            thisMonthSpent += amt;
-          }
-        }
       }
     }
+
+    final sortedUpcoming = List<dynamic>.from(upcomingAppointments)
+      ..sort((a, b) {
+        final aStart =
+            DateTime.tryParse(a['slot_start_time']?.toString() ?? '') ??
+                DateTime(9999);
+        final bStart =
+            DateTime.tryParse(b['slot_start_time']?.toString() ?? '') ??
+                DateTime(9999);
+        return aStart.compareTo(bStart);
+      });
+    final nextAppointment = sortedUpcoming.isNotEmpty
+        ? Map<String, dynamic>.from(sortedUpcoming.first)
+        : null;
 
     return RefreshIndicator(
       color: AppColors.Brown,
@@ -509,19 +516,17 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Expanded(
-                  child: _earningsCard(
+                  child: _paymentCard(
                     'PKR ${totalSpent.toStringAsFixed(0)}',
-                    'Total Consultation Fees',
+                    'Total Paid So Far',
                     Icons.payments_outlined,
                     AppColors.earningsOrange,
                   ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
-                  child: _earningsCard(
-                    'PKR ${thisMonthSpent.toStringAsFixed(0)}',
-                    '${_monthName(DateTime.now().month)} ${DateTime.now().year} Fees',
-                    Icons.calendar_today_outlined,
+                  child: _nextAppointmentCard(
+                    nextAppointment,
                     AppColors.earningsGreen,
                   ),
                 ),
@@ -564,24 +569,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String _monthName(int month) {
-    const names = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return names[month - 1];
-  }
-
   Widget _statCard(String title, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -612,7 +599,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _earningsCard(String val, String lbl, IconData ic, Color bg) =>
+  Widget _paymentCard(String val, String lbl, IconData ic, Color bg) =>
       Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
@@ -629,32 +616,22 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(7),
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withOpacity(0.18),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(ic, size: 16, color: AppColors.white),
-                ),
-                Icon(
-                  Icons.north_east,
-                  size: 14,
-                  color: AppColors.white.withOpacity(0.5),
-                ),
-              ],
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: AppColors.white.withOpacity(0.18),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(ic, size: 16, color: AppColors.white),
             ),
             const SizedBox(height: 14),
             Text(
               val,
               style: const TextStyle(
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: AppColors.white,
-                letterSpacing: -0.5,
+                letterSpacing: -0.4,
               ),
             ),
             const SizedBox(height: 3),
@@ -668,6 +645,120 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       );
+
+  
+  Widget _nextAppointmentCard(Map<String, dynamic>? apt, Color bg) {
+    if (apt == null) {
+      return Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withOpacity(0.15),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.event_available,
+              size: 20,
+              color: AppColors.white.withOpacity(0.85),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'No Upcoming',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.white,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Appointments',
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.white.withOpacity(0.75),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final lawyer =
+        (apt['lawyer_name'] ?? apt['lawyer'] ?? 'Lawyer').toString();
+    final when = _formatApptDateTime(apt['slot_start_time']?.toString());
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.event, size: 16, color: AppColors.white),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            when,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: AppColors.white,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            'With $lawyer',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              color: AppColors.white.withOpacity(0.75),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatApptDateTime(String? iso) {
+    if (iso == null) return '—';
+    final dt = DateTime.tryParse(iso);
+    if (dt == null) return '—';
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return '${months[dt.month - 1]} ${dt.day}, $hour:$minute $period';
+  }
 }
 
 class _CaseCard extends StatelessWidget {

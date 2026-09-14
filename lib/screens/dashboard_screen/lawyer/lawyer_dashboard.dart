@@ -63,7 +63,6 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           : (unread as int? ?? 0);
       if (mounted) setState(() => _unreadCount = count);
     } catch (_) {
-      // Silently ignore - badge just won't update this cycle.
     }
   }
 
@@ -123,7 +122,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
                 icon: const Icon(Icons.notifications, color: AppColors.Brown),
                 onPressed: () async {
                   await Get.toNamed(AppRoutes.notifications);
-                  // Refresh right away instead of waiting for the next poll.
+                  
                   if (mounted) _loadUnreadCount();
                 },
               ),
@@ -269,10 +268,10 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         ),
       ),
 
-      // ── PAGE BODY ───────────────────────────────────────
+      
       body: pages[_currentIndex],
 
-      // ── BOTTOM NAVIGATION (matches Figma) ───────────────
+      //  BOTTOM NAVIGATION 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -312,9 +311,9 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// 1. HOME PAGE
-// ══════════════════════════════════════════════════════════
+
+//  HOME PAGE
+
 class _HomePage extends StatefulWidget {
   final String userName;
   const _HomePage({required this.userName});
@@ -330,6 +329,7 @@ class _HomePageState extends State<_HomePage> {
   List<dynamic> appointments = [];
   Map<String, dynamic>? lawyerData;
   Map<String, dynamic>? settingsData;
+  Map<String, dynamic>? lawyerStats;
   bool loading = true;
   String? errorMsg;
 
@@ -350,6 +350,7 @@ class _HomePageState extends State<_HomePage> {
       List<dynamic> loadedAppointments = [];
       Map<String, dynamic>? loadedLawyer;
       Map<String, dynamic>? loadedSettings;
+      Map<String, dynamic>? loadedStats;
 
       try {
         loadedCases = await CasesService.fetchMyCases(token);
@@ -377,12 +378,19 @@ class _HomePageState extends State<_HomePage> {
         debugPrint("Error loading settings: $e");
       }
 
+      try {
+        loadedStats = await AppointmentService.getLawyerStats();
+      } catch (e) {
+        debugPrint("Error loading lawyer stats: $e");
+      }
+
       if (!mounted) return;
       setState(() {
         cases = loadedCases;
         appointments = loadedAppointments;
         lawyerData = loadedLawyer;
         settingsData = loadedSettings;
+        lawyerStats = loadedStats;
         loading = false;
         errorMsg = null;
       });
@@ -394,11 +402,10 @@ class _HomePageState extends State<_HomePage> {
     }
   }
 
-  // Appointments scheduled for today, sorted by start time
   List<dynamic> get _todaysAppointments {
     final today = DateTime.now();
     return appointments.where((a) {
-      final startRaw = a['slot_start_time']; // ⚠️ ADJUST key if different
+      final startRaw = a['slot_start_time']; 
       if (startRaw == null) return false;
       final start = DateTime.tryParse(startRaw.toString());
       if (start == null) return false;
@@ -448,26 +455,14 @@ class _HomePageState extends State<_HomePage> {
         )
         .toList();
 
-    // Calculate Lawyer Earnings
-    double totalEarnings = 0;
-    double thisMonthEarnings = 0;
-    final now = DateTime.now();
-    for (final a in appointments) {
-      if (a['payment_status'] == 1) {
-        final double amt =
-            double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
-        totalEarnings += amt;
-        final startRaw = a['slot_start_time'];
-        if (startRaw != null) {
-          final start = DateTime.tryParse(startRaw.toString());
-          if (start != null &&
-              start.year == now.year &&
-              start.month == now.month) {
-            thisMonthEarnings += amt;
-          }
-        }
-      }
-    }
+    
+    final totalEarnings =
+        double.tryParse(lawyerStats?['total_earnings']?.toString() ?? '') ??
+            0.0;
+    final thisMonthEarnings = double.tryParse(
+          lawyerStats?['monthly_earnings']?.toString() ?? '',
+        ) ??
+        0.0;
 
     return RefreshIndicator(
       color: AppColors.Brown,
@@ -478,7 +473,7 @@ class _HomePageState extends State<_HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Subscription banner ─────────────────────────────
+            // Subscription banner
             Builder(
               builder: (context) {
                 final subDateStr = lawyerData?['subscription_expiry'];
@@ -667,7 +662,7 @@ class _HomePageState extends State<_HomePage> {
               },
             ),
 
-            // ── Welcome banner ────────────────────────────────
+            // Welcome banner 
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -696,7 +691,7 @@ class _HomePageState extends State<_HomePage> {
             ),
             const SizedBox(height: 20),
 
-            // ── Stat cards (Cases & Active Cases) ─────────────
+            // Stat cards Cases & Active Cases
             SizedBox(
               height: 100,
               child: Row(
@@ -721,7 +716,7 @@ class _HomePageState extends State<_HomePage> {
             ),
             const SizedBox(height: 12),
 
-            // ── Stat cards (Appointments) ────────────────────
+            //  Stat cards apointments
             SizedBox(
               height: 100,
               child: Row(
@@ -746,7 +741,7 @@ class _HomePageState extends State<_HomePage> {
             ),
             const SizedBox(height: 20),
 
-            // ── Earnings cards ───────────────────────────────
+            // earning card
             Row(
               children: [
                 Expanded(
@@ -770,7 +765,7 @@ class _HomePageState extends State<_HomePage> {
             ),
             const SizedBox(height: 24),
 
-            // ── Today's Schedule ──────────────────────────────
+            // TodaySchedule 
             const Text(
               "Today's Schedule",
               style: TextStyle(
@@ -810,7 +805,7 @@ class _HomePageState extends State<_HomePage> {
               ),
             const SizedBox(height: 24),
 
-            // ── Active Cases ──────────────────────────────────
+            // Active Cases 
             const Text(
               "Active Cases",
               style: TextStyle(
@@ -1242,7 +1237,7 @@ class _MessagesPageState extends State<_MessagesPage> {
             ),
           ),
 
-          // ── SUBTITLE ──
+          //  SUBTITLE 
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Align(

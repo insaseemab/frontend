@@ -136,18 +136,18 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
       Get.snackbar(
         "Subscription Approved",
         "Lawyer's subscription has been renewed for 30 days.",
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
       );
       await _loadRecords();
     } catch (e) {
       Get.snackbar(
         "Approval Failed",
         e.toString().replaceAll("Exception: ", ""),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
       );
     } finally {
       if (mounted) setState(() => _approvingId = null);
@@ -470,9 +470,14 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                               onTap: () {
                                 Clipboard.setData(
                                     ClipboardData(text: tid.toString()));
-                                Get.snackbar("Copied", "TID copied to clipboard",
+                                 Get.snackbar(
+                                    "Copied",
+                                    "TID copied to clipboard",
+                                    backgroundColor: AppColors.success.withOpacity(0.10),
+                                    colorText: AppColors.success,
                                     snackPosition: SnackPosition.BOTTOM,
-                                    duration: const Duration(seconds: 1));
+                                    duration: const Duration(seconds: 1),
+                                  );
                               },
                               child: const Icon(Icons.copy,
                                   size: 15, color: AppColors.Brown),

@@ -42,8 +42,9 @@ class AppointmentService {
     ApiService.checkStatus(res);
     return jsonDecode(res.body) as List<dynamic>;
   }
-// book appoint (+ button sy)
-// POST /appointments
+
+  // book appoint (+ button sy)
+  // POST /appointments
   static Future<Map<String, dynamic>> createAppointment({
     required int lawyerId,
     required String lawType,
@@ -118,8 +119,9 @@ class AppointmentService {
     );
     ApiService.checkStatus(res);
   }
-// dropdown sy
-// PATCH /appointments/:id/status/:status
+
+  // dropdown sy
+  // PATCH /appointments/:id/status/:status
   static Future<Map<String, dynamic>> updateAppointmentStatus({
     required int id,
     required String status,
@@ -137,7 +139,8 @@ class AppointmentService {
     ApiService.checkStatus(res);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
-// PUT /appointments/:id
+
+  // PUT /appointments/:id
   static Future<void> editAppointment({
     required int id,
     required int lawyerId,
@@ -213,7 +216,8 @@ class AppointmentService {
       throw ApiException(statusCode: res.statusCode, message: message);
     }
   }
-// PATCH /appointments/:id/approve-payment
+
+  // PATCH /appointments/:id/approve-payment
   static Future<void> approvePayment({required int id}) async {
     final res = await http.patch(
       Uri.parse('$baseUrl/appointments/$id/approve-payment'),
@@ -221,7 +225,8 @@ class AppointmentService {
     );
     ApiService.checkStatus(res);
   }
-// POST /appointments/:id/convert-to-case
+
+  // POST /appointments/:id/convert-to-case
   static Future<int> convertToCase({required int id}) async {
     final res = await http.post(
       Uri.parse('$baseUrl/appointments/$id/convert-to-case'),
@@ -230,5 +235,15 @@ class AppointmentService {
     ApiService.checkStatus(res);
     final decoded = jsonDecode(res.body) as Map<String, dynamic>;
     return decoded['caseId'] as int;
+  }
+
+  // GET /cases/lawyer-stats   ..lawyer dashboard monthly stats
+  static Future<Map<String, dynamic>> getLawyerStats() async {
+    final res = await http.get(
+      Uri.parse('$baseUrl/cases/lawyer-stats'),
+      headers: ApiService.authHeaders(),
+    );
+    ApiService.checkStatus(res);
+    return jsonDecode(res.body) as Map<String, dynamic>;
   }
 }

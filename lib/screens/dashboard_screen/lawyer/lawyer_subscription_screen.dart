@@ -88,8 +88,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Picker Error",
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
       );
     }
   }
@@ -101,8 +101,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Required",
         "Please enter your Transaction ID (TID) or upload a receipt screenshot.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.warning,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.warning.withOpacity(0.10),
+        colorText: AppColors.warning,
       );
       return;
     }
@@ -131,8 +131,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Proof Submitted",
         "Your payment proof has been submitted to Admin for review. Your subscription will be renewed once verified.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.success,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
         duration: const Duration(seconds: 4),
       );
 
@@ -142,8 +142,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Submission Error",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error,
-        colorText: AppColors.white,
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -163,6 +163,7 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
     return Scaffold(
       backgroundColor: AppColors.beige,
       appBar: AppBar(
+      backgroundColor: AppColors.beige,
         title: Text("Subscription & Billing", style: AppTextStyles.heading3.copyWith(fontSize: 20)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -289,6 +290,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                     Get.snackbar(
                                       "Copied",
                                       "JazzCash account number copied",
+                                      backgroundColor: AppColors.success.withOpacity(0.10),
+                                      colorText: AppColors.success,
                                       snackPosition: SnackPosition.BOTTOM,
                                       duration: const Duration(seconds: 2),
                                     );

@@ -53,10 +53,18 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       Get.snackbar(
         "Success",
         "Payment submitted successfully",
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      Get.snackbar("Error", e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

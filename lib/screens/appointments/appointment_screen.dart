@@ -401,26 +401,33 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
   void _load() {
     setState(() {
       _future =
-          AppointmentService.getMyAppointments(); // ← uses token automatically
+          AppointmentService.getMyAppointments(); 
     });
   }
 
   Future<void> _delete(int id) async {
-    try {
-      await AppointmentService.deleteAppointment(id);
-      if (!mounted) return;
-      _load();
-      Get.snackbar(
-        'Success',
-        'Appointment cancelled',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    } on ApiException catch (e) {
-      if (!mounted) return;
-      Get.snackbar('Error', e.message, snackPosition: SnackPosition.BOTTOM);
-    }
+  try {
+    await AppointmentService.deleteAppointment(id);
+    if (!mounted) return;
+    _load();
+    Get.snackbar(
+      'Success',
+      'Appointment cancelled',
+      backgroundColor: AppColors.success.withOpacity(0.10),
+      colorText: AppColors.success,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  } on ApiException catch (e) {
+    if (!mounted) return;
+    Get.snackbar(
+      'Error',
+      e.message,
+      backgroundColor: AppColors.error.withOpacity(0.10),
+      colorText: AppColors.error,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
-
+} // <-- this closes _delete
   Widget _buildBody() {
     return FutureBuilder<List<dynamic>>(
       future: _future,

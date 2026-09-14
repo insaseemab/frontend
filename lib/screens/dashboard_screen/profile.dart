@@ -241,12 +241,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         currentPassword: currentPassword,
         newPassword: newPassword,
       );
-      Get.snackbar('Success', 'Password updated successfully');
-    } on ApiException catch (e) {
-      Get.snackbar('Error', e.message);
-    } catch (e) {
-      Get.snackbar('Error', 'Something went wrong: $e');
-    }
+      Get.snackbar(
+  'Success',
+  'Password updated successfully',
+  backgroundColor: AppColors.success.withOpacity(0.10),
+  colorText: AppColors.success,
+  snackPosition: SnackPosition.BOTTOM,
+);
+} on ApiException catch (e) {
+  Get.snackbar(
+    'Error',
+    e.message,
+    backgroundColor: AppColors.error.withOpacity(0.10),
+    colorText: AppColors.error,
+    snackPosition: SnackPosition.BOTTOM,
+  );
+} catch (e) {
+  Get.snackbar(
+    'Error',
+    'Something went wrong: $e',
+    backgroundColor: AppColors.error.withOpacity(0.10),
+    colorText: AppColors.error,
+    snackPosition: SnackPosition.BOTTOM,
+  );
+}
   }
 
   Future<void> _saveProfile(Map<String, dynamic> updatedData) async {

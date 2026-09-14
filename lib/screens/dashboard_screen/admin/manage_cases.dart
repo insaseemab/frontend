@@ -7,7 +7,7 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/edit_case.dart';
 import 'package:insaafconnect/core/services/cases_services.dart';
 import 'package:insaafconnect/config/environment.dart';
-import 'package:insaafconnect/core/utils/theme.dart'; 
+import 'package:insaafconnect/core/utils/theme.dart';
 
 const String baseUrl = Environment.apiBaseUrl;
 
@@ -267,10 +267,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(
-              label,
-              style: AppTextStyles.bodySmall,
-            ),
+            child: Text(label, style: AppTextStyles.bodySmall),
           ),
           Expanded(
             child: Text(
@@ -292,7 +289,10 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Cancel'),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
@@ -343,19 +343,29 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
           );
         }
       });
+
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
+
+      Get.snackbar(
+        'Status Updated',
+        'Status updated to $newStatus',
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+
+      Get.snackbar(
+        'Error',
+        'Error: $e',
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
-  
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
       case 'approved':
@@ -420,8 +430,11 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                     icon: Icon(Icons.refresh, color: AppColors.Brown),
                     onPressed: _loadCases,
                   ),
-                  
-                  if (['admin', 'lawyer'].contains(box.read('role') ?? 'client'))
+
+                  if ([
+                    'admin',
+                    'lawyer',
+                  ].contains(box.read('role') ?? 'client'))
                     IconButton(
                       icon: Icon(Icons.add, color: AppColors.Brown),
                       onPressed: () async {
@@ -440,9 +453,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  Expanded(
-                    child: _statCard('${allCases.length}', 'Total'),
-                  ),
+                  Expanded(child: _statCard('${allCases.length}', 'Total')),
                   const SizedBox(width: 10),
                   Expanded(
                     child: _statCard(
@@ -518,7 +529,9 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
                             selectedColor: AppColors.Brown,
                             backgroundColor: AppColors.white,
                             labelStyle: TextStyle(
-                              color: isSelected ? AppColors.white : Colors.black87,
+                              color: isSelected
+                                  ? AppColors.white
+                                  : Colors.black87,
                               fontWeight: FontWeight.w500,
                             ),
                             shape: RoundedRectangleBorder(
@@ -560,10 +573,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.bodySmall,
-          ),
+          Text(label, style: AppTextStyles.bodySmall),
         ],
       ),
     );
@@ -639,7 +649,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             _updateStatus(c, value);
           }
         },
-        color: AppColors.beige,
+        color: AppColors.white,
         itemBuilder: (_) => [
           const PopupMenuItem(value: 'view', child: Text('View Detail')),
           const PopupMenuDivider(),

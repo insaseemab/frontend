@@ -26,8 +26,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final data = await SettingsService.getSettings();
       _feeController.text = data['subscription_fee']?.toString() ?? '2000';
     } catch (e) {
-      Get.snackbar('Error', e.toString(),
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -37,16 +42,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = true);
     try {
       await SettingsService.updateSetting('subscription_fee', _feeController.text.trim());
-      Get.snackbar('Success', 'Subscription updated successfully',
-          backgroundColor: Colors.green, colorText: Colors.white);
+      Get.snackbar(
+        'Success',
+        'Subscription updated successfully',
+        backgroundColor: AppColors.success.withOpacity(0.10),
+        colorText: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      Get.snackbar('Error', e.toString(),
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       setState(() => _isSaving = false);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

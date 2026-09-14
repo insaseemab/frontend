@@ -45,7 +45,13 @@ class _LawyerLicensesScreenState extends State<LawyerLicensesScreen> {
       mode: LaunchMode.externalApplication,
     );
     if (!launched) {
-      Get.snackbar('Error', 'Could not open license file');
+      Get.snackbar(
+        'Error',
+        'Could not open license file',
+        backgroundColor: AppColors.error.withOpacity(0.10),
+        colorText: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

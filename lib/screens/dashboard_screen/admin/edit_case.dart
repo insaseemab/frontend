@@ -128,6 +128,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
       title: const Text(
         'Edit Case',
         style: TextStyle(fontWeight: FontWeight.bold),
@@ -170,7 +171,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
       actions: [
         TextButton(
           onPressed: loading ? null : () => Get.back(),
-          child: const Text('Cancel'),
+          child: Text('Cancel', style: TextStyle(color: Colors.red)),
         ),
         ElevatedButton(
           onPressed: loading ? null : _updateCase,
