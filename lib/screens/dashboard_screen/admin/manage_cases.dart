@@ -50,7 +50,7 @@ class CaseModel {
       caseType: json['case_type']?.toString() ?? 'Unknown',
       clientName:
           json['client_name']?.toString() ?? json['name']?.toString() ?? '',
-      lawyerId: json['lawyer_id']?.toString() ?? 'N/A', // ← fixed
+      lawyerId: json['lawyer_id']?.toString() ?? 'N/A',
       lawyerName: json['lawyer_name']?.toString() ?? '',
       caseStatus: json['case_status']?.toString() ?? 'Unknown',
       paymentStatus: json['payment_status']?.toString() ?? 'unpaid',
@@ -64,9 +64,7 @@ class CaseModel {
   }
 }
 
-// ─────────────────────────────────────────
-// CASE API SERVICE
-// ─────────────────────────────────────────
+// CASE API SERVIce
 class CaseApiService {
   static Future<List<CaseModel>> fetchAllCases() async {
     final box = GetStorage();
@@ -159,9 +157,7 @@ class CaseApiService {
   }
 }
 
-// ─────────────────────────────────────────
 // MANAGE CASES PAGE
-// ─────────────────────────────────────────
 class ManageCasesPage extends StatefulWidget {
   final String userRole;
   const ManageCasesPage({super.key, this.userRole = 'admin'});
@@ -349,8 +345,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       Get.snackbar(
         'Status Updated',
         'Status updated to $newStatus',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -359,8 +355,8 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       Get.snackbar(
         'Error',
         'Error: $e',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -375,7 +371,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       case 'rejected':
         return AppColors.error;
       case 'hearing':
-        return Colors.purple.shade800; // no theme equivalent
+        return Colors.purple.shade800;
       case 'pending':
       default:
         return AppColors.warning;
@@ -448,7 +444,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
               ),
             ),
 
-            // ── Stat cards row (matches appointments page) ─────────
+            //Stat cards row (matches appointments page)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -483,7 +479,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             const SizedBox(height: 16),
 
-            // ── Search bar ───────────────────────────────────────
+            //Search bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
@@ -502,7 +498,7 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             const SizedBox(height: 12),
 
-            // ── Filter pills ─────────────────────────────────────
+            // Filter
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
@@ -669,7 +665,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
       );
     }
 
-    // Client (or unknown role): view-only.
     return IconButton(
       icon: Icon(Icons.visibility_outlined, color: AppColors.Brown),
       onPressed: () => _viewCaseDetail(c),
@@ -786,7 +781,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             const SizedBox(height: 10),
 
-            // ── client / lawyer info tiles ────────────────────────
             Row(
               children: [
                 _infoTile(Icons.person_outline, 'Client', c.clientName),
@@ -796,7 +790,6 @@ class _ManageCasesPageState extends State<ManageCasesPage> {
             ),
             const SizedBox(height: 10),
 
-            // ── case type / hearing date / payment status ────────
             _detailRow(Icons.folder_outlined, '${c.caseType}'),
             const SizedBox(height: 6),
             _detailRow(Icons.event_outlined, 'Hearing: ${c.hearingDate}'),

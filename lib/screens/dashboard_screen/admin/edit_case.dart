@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class EditCaseDialog extends StatefulWidget {
   final CaseModel caseData;
@@ -82,7 +83,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
         hearingDate: hearingDateController.text.trim(),
         paymentStatus: selectedPaymentStatus == 'paid'
             ? 1
-            : 0, // ← convert string to int
+            : 0, 
         token: token,
       );
 
@@ -93,7 +94,7 @@ class _EditCaseDialogState extends State<EditCaseDialog> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Case updated successfully'),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.success,
         ),
       );
     } catch (e) {

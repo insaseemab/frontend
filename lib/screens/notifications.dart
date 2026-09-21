@@ -71,16 +71,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
-  // Formats a MySQL/ISO timestamp string into a short relative label,
-  // e.g. "just now", "5m ago", "3h ago", "2d ago", or a plain date if older.
+  
   String _formatTimestamp(dynamic rawTimestamp) {
     if (rawTimestamp == null) return '';
 
     final parsed = DateTime.tryParse(rawTimestamp.toString());
     if (parsed == null) return '';
 
-    // Treat stored timestamps as local; adjust here if your backend
-    // stores UTC and you want to convert with `.toLocal()`.
+    
     final now = DateTime.now();
     final diff = now.difference(parsed);
 
@@ -154,7 +152,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
                         final role = GetStorage().read(
                           'role',
-                        ); // 'admin' | 'lawyer' | 'client'
+                        ); 
 
                         if (n['type'] == 'appointment') {
                           Get.toNamed(

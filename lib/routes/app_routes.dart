@@ -180,19 +180,27 @@ class AppPages {
 
 
     GetPage(
-      name: AppRoutes.appointments,
-      page: () {
-        final args = Get.arguments;
-        final roleStr =
-            (args is Map && args['role'] != null) ? args['role'] as String : 'client';
-        final role = _appointmentRoleFromString(roleStr);
-        return AppointmentsPage(role: role);
-      },
-      middlewares: [
-        AuthMiddleware(),
-        RoleMiddleware(allowedRoles: ['admin', 'lawyer', 'client']),
-      ],
-    ),
+  name: AppRoutes.appointments,
+  page: () {
+    final args = Get.arguments;
+    final roleStr =
+        (args is Map && args['role'] != null) ? args['role'] as String : 'client';
+
+    switch (roleStr) {
+      case 'lawyer':
+        return const LawyerDashboard(initialIndex: 2);
+      case 'admin':
+        return const AdminDashboardScreen(initialIndex: 3);
+      case 'client':
+      default:
+        return const ClientDashboardScreen(initialIndex: 4);
+    }
+  },
+  middlewares: [
+    AuthMiddleware(),
+    RoleMiddleware(allowedRoles: ['admin', 'lawyer', 'client']),
+  ],
+),
   
     GetPage(
       name: AppRoutes.notifications,

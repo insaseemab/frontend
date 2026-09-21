@@ -351,10 +351,7 @@ class LawyerService {
     }
   }
 
-  // ── Lawyer licenses (admin) ──────────────────────────────────────────
-
-  // GET /lawyer-licenses — this endpoint is mounted at the root ("/"),
-  // not under "/lawyers", so it does NOT use _baseUrl/lawyers.
+  //  Lawyer licenses (admin) 
   Future<List<Map<String, dynamic>>> fetchLawyerLicenses() async {
     try {
       final response = await http.get(
@@ -379,8 +376,6 @@ class LawyerService {
     }
   }
 
-  // Builds a usable URL from whatever format `license` was stored in.
-  // Handles: "uploads/xyz.pdf", "xyz.pdf", and Windows-style "uploads\xyz.pdf".
   static String? buildLicenseUrl(dynamic rawLicense) {
     if (rawLicense == null) return null;
     var license = rawLicense.toString().trim();

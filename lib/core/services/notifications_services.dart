@@ -19,7 +19,7 @@ class NotificationService {
   Future<Map<String, dynamic>> getNotifications() async {
   final token = GetStorage().read('token');
   final response = await http.get(
-    Uri.parse('${Environment.apiBaseUrl}/notifications/mine'), // was /notifications
+    Uri.parse('${Environment.apiBaseUrl}/notifications/mine'), 
     headers: {'Authorization': 'Bearer $token'},
   );
 

@@ -41,37 +41,37 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   String _extractTokenFromUrl() {
-    // 1. Check GetX route parameters first
-    if (Get.parameters.containsKey('token') && (Get.parameters['token'] ?? '').isNotEmpty) {
+    if (Get.parameters.containsKey('token') &&
+        (Get.parameters['token'] ?? '').isNotEmpty) {
       return Get.parameters['token']!;
     }
 
-    // 2. Check Get.arguments (if passed when navigating)
     if (Get.arguments != null) {
       if (Get.arguments is Map && Get.arguments['token'] != null) {
         return Get.arguments['token'].toString();
-      } else if (Get.arguments is String && (Get.arguments as String).isNotEmpty) {
+      } else if (Get.arguments is String &&
+          (Get.arguments as String).isNotEmpty) {
         return Get.arguments as String;
       }
     }
 
-    // 3. Check Uri.base query parameters
     final uri = Uri.base;
-    if (uri.queryParameters.containsKey('token') && (uri.queryParameters['token'] ?? '').isNotEmpty) {
+    if (uri.queryParameters.containsKey('token') &&
+        (uri.queryParameters['token'] ?? '').isNotEmpty) {
       return uri.queryParameters['token']!;
     }
 
-    // 4. Check uri.fragment (e.g. #/reset-password?token=xxxx)
     final fragment = uri.fragment;
     if (fragment.contains('token=')) {
-      final queryPart = fragment.contains('?') ? fragment.split('?').last : fragment;
+      final queryPart = fragment.contains('?')
+          ? fragment.split('?').last
+          : fragment;
       final params = Uri.splitQueryString(queryPart);
       if (params.containsKey('token') && (params['token'] ?? '').isNotEmpty) {
         return params['token']!;
       }
     }
 
-    // 5. Fallback: regex search on complete URL string
     final fullUrl = uri.toString();
     final regExp = RegExp(r'[?&#]token=([^&#]+)');
     final match = regExp.firstMatch(fullUrl);
@@ -91,8 +91,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         "Reset token is missing. Please paste the token from your email link.",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -102,8 +102,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         "All fields are required",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -113,8 +113,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         "Passwords do not match",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -124,23 +124,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       Get.snackbar(
         "Error",
         "Password must be at least 6 characters",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
     setState(() => _isLoading = true);
-    final result = await AuthService.resetPassword(token, password, confirmPassword);
+    final result = await AuthService.resetPassword(
+      token,
+      password,
+      confirmPassword,
+    );
     setState(() => _isLoading = false);
 
     if (!result['success']) {
       Get.snackbar(
         "Error",
         result['message'] ?? "Failed to reset password",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -149,8 +153,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     Get.snackbar(
       "Success",
       result['message'] ?? "Password reset successfully",
-      backgroundColor: AppColors.success.withOpacity(0.10),
-      colorText: AppColors.success,
+      colorText: AppColors.white,
+      backgroundColor: AppColors.success,
       snackPosition: SnackPosition.BOTTOM,
     );
 
@@ -250,7 +254,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: AppColors.iconMuted,
                       ),
                       onPressed: () {
@@ -281,7 +287,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                        _obscureConfirm
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: AppColors.iconMuted,
                       ),
                       onPressed: () {

@@ -14,7 +14,8 @@ import 'package:insaafconnect/routes/app_routes.dart';
 import 'package:insaafconnect/screens/dashboard_screen/admin/lawyer_licenses.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({super.key});
+   final int initialIndex;
+  const AdminDashboardScreen({super.key, this.initialIndex = 0});
 
   @override
   State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
@@ -43,7 +44,7 @@ class _DashboardStats {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final box = GetStorage();
   final _notificationService = NotificationService();
-  int currentIndex = 0;
+   late int currentIndex;
   late Future<_DashboardStats> _statsFuture;
   int _unreadCount = 0;
   Timer? _unreadPollTimer;
@@ -58,9 +59,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
+    currentIndex = widget.initialIndex;
     _statsFuture = _loadStats();
     _loadUnreadCount();
-    _unreadPollTimer = Timer.periodic(const Duration(seconds:5), (_) {
+    _unreadPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _loadUnreadCount();
     });
   }
@@ -75,11 +77,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     try {
       final data = await _notificationService.getNotifications();
       final unread = data['unread'];
-      final count = unread is String ? int.tryParse(unread) ?? 0 : (unread as int? ?? 0);
+      final count = unread is String
+          ? int.tryParse(unread) ?? 0
+          : (unread as int? ?? 0);
       if (mounted) setState(() => _unreadCount = count);
-    } catch (_) {
-      
-    }
+    } catch (_) {}
   }
 
   void _reload() {
@@ -126,9 +128,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       if (paymentApproved && amount > 0) {
         totalEarnings += amount;
 
-        final slotDate = DateTime.tryParse(
-          apt['date']?.toString() ?? '',
-        );
+        final slotDate = DateTime.tryParse(apt['date']?.toString() ?? '');
         if (slotDate != null &&
             slotDate.year == now.year &&
             slotDate.month == now.month) {
@@ -163,6 +163,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       backgroundColor: AppColors.beige,
       appBar: AppBar(
         backgroundColor: AppColors.beige,
+        titleSpacing: 8,
         elevation: 0,
         title: Row(
           children: [
@@ -179,12 +180,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              _titles[currentIndex],
-              style: const TextStyle(
-                color: AppColors.Brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+            Flexible(
+              child: Text(
+                _titles[currentIndex],
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(
+                  color: AppColors.Brown,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ),
           ],
@@ -235,6 +240,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         unselectedItemColor: AppColors.Brown,
         backgroundColor: AppColors.beige,
         type: BottomNavigationBarType.fixed,
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
         onTap: (index) => setState(() => currentIndex = index),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
@@ -576,8 +583,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 24, color: AppColors.Brown),
+          Icon(icon, size: 22, color: AppColors.Brown),
           const SizedBox(height: 6),
           Text(
             value,
@@ -587,6 +595,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           Text(
             title,
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
           ),
         ],

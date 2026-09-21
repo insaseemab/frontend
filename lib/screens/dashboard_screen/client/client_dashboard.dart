@@ -15,16 +15,16 @@ import 'package:insaafconnect/screens/dashboard_screen/admin/manage_cases.dart';
 import 'package:get/get.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
 
-
 class ClientDashboardScreen extends StatefulWidget {
-  const ClientDashboardScreen({super.key});
+  final int initialIndex;
+  const ClientDashboardScreen({super.key, this.initialIndex = 0});
 
   @override
   State<ClientDashboardScreen> createState() => _ClientDashboardScreenState();
 }
 
 class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
-  int currentIndex = 0;
+   late int currentIndex;
 
   final _notificationService = NotificationService();
   int _unreadCount = 0;
@@ -33,7 +33,12 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   final List<_NavItem> _navItems = const [
     _NavItem(0, Icons.home_outlined, Icons.home, 'Home'),
     _NavItem(1, Icons.search, Icons.search, 'Lawyers'),
-    _NavItem(2, Icons.calendar_month_outlined, Icons.calendar_month, 'Calendar'),
+    _NavItem(
+      2,
+      Icons.calendar_month_outlined,
+      Icons.calendar_month,
+      'Calendar',
+    ),
     _NavItem(3, Icons.message_outlined, Icons.message, 'Chat'),
   ];
 
@@ -49,6 +54,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
   @override
   void initState() {
     super.initState();
+     currentIndex = widget.initialIndex;
     _loadUnreadCount();
     _unreadPollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
       _loadUnreadCount();
@@ -69,9 +75,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
           ? int.tryParse(unread) ?? 0
           : (unread as int? ?? 0);
       if (mounted) setState(() => _unreadCount = count);
-    } catch (_) {
-
-    }
+    } catch (_) {}
   }
 
   @override
@@ -80,6 +84,7 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
       backgroundColor: AppColors.beige,
       appBar: AppBar(
         backgroundColor: AppColors.beige,
+        titleSpacing: 8,
         title: Row(
           children: [
             Container(
@@ -95,9 +100,13 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
-              "Insaaf Connect",
-              style: AppTextStyles.heading3.copyWith(fontSize: 20),
+            Flexible(
+              child: Text(
+                "Insaaf Connect",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: AppTextStyles.heading3.copyWith(fontSize: 20),
+              ),
             ),
           ],
         ),
@@ -109,7 +118,6 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 icon: const Icon(Icons.notifications, color: AppColors.Brown),
                 onPressed: () async {
                   await Get.toNamed(AppRoutes.notifications);
-                  // Refresh right away instead of waiting for the next poll.
                   if (mounted) _loadUnreadCount();
                 },
               ),
@@ -153,11 +161,15 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                 children: [
                   Text(
                     "Insaaf Connect",
-                    style: AppTextStyles.heading2.copyWith(color: AppColors.white),
+                    style: AppTextStyles.heading2.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
                   Text(
                     "Client",
-                    style: AppTextStyles.bodyLarge.copyWith(color: AppColors.white),
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -259,8 +271,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                             item.label,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.Brown,
-                              fontWeight:
-                                  isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -380,7 +393,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.Brown));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.Brown),
+      );
     }
 
     if (errorMessage != null) {
@@ -393,16 +408,19 @@ class _HomeScreenState extends State<HomeScreen> {
               style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _loadData,
-              child: const Text("Retry"),
-            ),
+            ElevatedButton(onPressed: _loadData, child: const Text("Retry")),
           ],
         ),
       );
     }
 
-    final activeCases = cases.where((c) => c['case_status']?.toString().toLowerCase() != 'completed' && c['case_status']?.toString().toLowerCase() != 'closed').toList();
+    final activeCases = cases
+        .where(
+          (c) =>
+              c['case_status']?.toString().toLowerCase() != 'completed' &&
+              c['case_status']?.toString().toLowerCase() != 'closed',
+        )
+        .toList();
 
     final now = DateTime.now();
     final upcomingAppointments = appointments.where((a) {
@@ -416,7 +434,8 @@ class _HomeScreenState extends State<HomeScreen> {
     double totalSpent = 0;
     for (final a in appointments) {
       if (a['payment_status'] == 1) {
-        final double amt = double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
+        final double amt =
+            double.tryParse(a['payment_amount']?.toString() ?? '') ?? 0.0;
         totalSpent += amt;
       }
     }
@@ -425,10 +444,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ..sort((a, b) {
         final aStart =
             DateTime.tryParse(a['slot_start_time']?.toString() ?? '') ??
-                DateTime(9999);
+            DateTime(9999);
         final bStart =
             DateTime.tryParse(b['slot_start_time']?.toString() ?? '') ??
-                DateTime(9999);
+            DateTime(9999);
         return aStart.compareTo(bStart);
       });
     final nextAppointment = sortedUpcoming.isNotEmpty
@@ -456,12 +475,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     "Welcome back, $userName",
-                    style: AppTextStyles.heading3.copyWith(color: AppColors.white),
+                    style: AppTextStyles.heading3.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
                   const SizedBox(height: 5),
                   Text(
                     "Track your active cases and legal appointments",
-                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.white,
+                    ),
                   ),
                 ],
               ),
@@ -542,12 +565,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: AppDecorations.card,
                 child: Text(
                   "You don't have any cases yet.",
-                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.labelSecondary),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.labelSecondary,
+                  ),
                 ),
               )
             else
               Column(
-                children: List.generate(cases.length > 3 ? 3 : cases.length, (index) {
+                children: List.generate(cases.length > 3 ? 3 : cases.length, (
+                  index,
+                ) {
                   final c = Map<String, dynamic>.from(cases[index]);
                   final status = _caseStatus(c);
                   return Padding(
@@ -576,23 +603,25 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppColors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.Brown.withOpacity(0.10),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: AppColors.Brown.withOpacity(0.10), blurRadius: 6),
         ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 24, color: AppColors.Brown),
+          Icon(icon, size: 22, color: AppColors.Brown),
           const SizedBox(height: 6),
           Text(value, style: AppTextStyles.heading4),
           const SizedBox(height: 2),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.labelSecondary),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.labelSecondary,
+            ),
           ),
         ],
       ),
@@ -646,7 +675,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
-  
   Widget _nextAppointmentCard(Map<String, dynamic>? apt, Color bg) {
     if (apt == null) {
       return Container(
@@ -693,8 +721,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final lawyer =
-        (apt['lawyer_name'] ?? apt['lawyer'] ?? 'Lawyer').toString();
+    final lawyer = (apt['lawyer_name'] ?? apt['lawyer'] ?? 'Lawyer').toString();
     final when = _formatApptDateTime(apt['slot_start_time']?.toString());
 
     return Container(
@@ -751,8 +778,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final dt = DateTime.tryParse(iso);
     if (dt == null) return '—';
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
     final minute = dt.minute.toString().padLeft(2, '0');
@@ -810,12 +847,16 @@ class _CaseCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   lawyer,
-                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.labelSecondary),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.labelSecondary,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   date,
-                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.hintText),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.hintText,
+                  ),
                 ),
               ],
             ),
@@ -828,6 +869,8 @@ class _CaseCard extends StatelessWidget {
             ),
             child: Text(
               status,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppTextStyles.bodySmall.copyWith(
                 fontWeight: FontWeight.w600,
                 color: statusColor,
@@ -890,12 +933,16 @@ class _AppointmentCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   lawyer,
-                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.labelSecondary),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.labelSecondary,
+                  ),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   dateTime,
-                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.hintText),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.hintText,
+                  ),
                 ),
               ],
             ),

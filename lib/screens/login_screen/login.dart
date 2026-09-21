@@ -44,8 +44,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Get.snackbar(
         'Error',
         errorMessage,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -58,8 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
       Get.snackbar(
         'Access Denied',
         'Your role is not recognized.',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -114,11 +114,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-                const SizedBox(height:20),
+                const SizedBox(height: 20),
 
-                // Role pill
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.overlayLight,
                     borderRadius: BorderRadius.circular(20),
@@ -207,7 +209,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: AppColors.iconMuted,
                             ),
                             onPressed: () {
-                              setState(() => _obscurePassword = !_obscurePassword);
+                              setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              );
                             },
                           ),
                         ),
@@ -233,7 +237,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text("Remember me", style: AppTextStyles.bodyMedium),
+                              Text(
+                                "Remember me",
+                                style: AppTextStyles.bodyMedium,
+                              ),
                             ],
                           ),
                           GestureDetector(

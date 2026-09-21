@@ -24,6 +24,11 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   late Future<List<dynamic>> _future;
   String _selectedFilter = 'all';
   String _searchQuery = '';
+  String _extractDate(String raw) {
+    if (raw.isEmpty) return raw;
+    final tIndex = raw.indexOf('T');
+    return tIndex != -1 ? raw.substring(0, tIndex) : raw;
+  }
 
   bool get _isAdmin => widget.role == AppointmentRole.admin;
 
@@ -74,6 +79,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     final lawyerIdCtrl = TextEditingController(
       text: apt['lawyer_id']?.toString() ?? '',
     );
+
+    final dateCtrl = TextEditingController(
+      text: _extractDate(apt['date']?.toString() ?? ''),
+    );
     final lawTypeCtrl = TextEditingController(
       text: apt['law_type']?.toString() ?? '',
     );
@@ -112,19 +121,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   lawyerIdCtrl,
                   keyboardType: TextInputType.number,
                 ),
+                _editField('Date', dateCtrl, hint: 'YYYY-MM-DD'),
                 _editField('Law Type', lawTypeCtrl),
                 _editField('Case Type', caseTypeCtrl),
                 _editField('Short Description', descCtrl, maxLines: 3),
-                _editField(
-                  'Slot Start Time',
-                  startCtrl,
-                  hint: 'YYYY-MM-DD HH:MM:SS',
-                ),
-                _editField(
-                  'Slot End Time',
-                  endCtrl,
-                  hint: 'YYYY-MM-DD HH:MM:SS',
-                ),
+                _editField('Slot Start Time', startCtrl, hint: 'HH:MM:SS'),
+                _editField('Slot End Time', endCtrl, hint: 'HH:MM:SS'),
                 const SizedBox(height: 8),
                 Row(
                   children: ['online', 'physical'].map((m) {
@@ -166,7 +168,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.error),),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.error),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -182,6 +187,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   await AppointmentService.editAppointment(
                     id: apt['id'] as int,
                     lawyerId: int.tryParse(lawyerIdCtrl.text.trim()) ?? 0,
+                    date: _extractDate(dateCtrl.text.trim()),
                     lawType: lawTypeCtrl.text.trim(),
                     caseType: caseTypeCtrl.text.trim(),
                     shortDescription: descCtrl.text.trim(),
@@ -194,8 +200,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   Get.snackbar(
                     'Success',
                     'Appointment updated successfully',
-                    backgroundColor: AppColors.success.withOpacity(0.10),
-                    colorText: AppColors.success,
+                    backgroundColor: AppColors.success,
+                    colorText: AppColors.white,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 } on ApiException catch (e) {
@@ -203,8 +209,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   Get.snackbar(
                     'Error',
                     e.message,
-                    backgroundColor: AppColors.error.withOpacity(0.10),
-                    colorText: AppColors.error,
+                    backgroundColor: AppColors.error,
+                    colorText: AppColors.white,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 }
@@ -330,7 +336,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           actions: [
             TextButton(
               onPressed: () => Get.back(),
-              child: const Text('Cancel', style: TextStyle(color: AppColors.error),),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.error),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -350,13 +359,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                         ? null
                         : double.tryParse(paymentCtrl.text.trim()),
                   );
-                 if (!mounted) return;
+                  if (!mounted) return;
                   _load();
                   Get.snackbar(
                     'Success',
                     'Status updated to $selectedStatus',
-                    backgroundColor: AppColors.success.withOpacity(0.10),
-                    colorText: AppColors.success,
+                    backgroundColor: AppColors.success,
+                    colorText: AppColors.white,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 } on ApiException catch (e) {
@@ -364,8 +373,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                   Get.snackbar(
                     'Error',
                     e.message,
-                    backgroundColor: AppColors.error.withOpacity(0.10),
-                    colorText: AppColors.error,
+                    backgroundColor: AppColors.error,
+                    colorText: AppColors.white,
                     snackPosition: SnackPosition.BOTTOM,
                   );
                 }
@@ -404,7 +413,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     );
     if (confirmed != true) return;
 
-   try {
+    try {
       await AppointmentService.updateAppointmentStatus(
         id: apt['id'] as int,
         status: 'rejected',
@@ -414,8 +423,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Success',
         'Appointment rejected',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
     } on ApiException catch (e) {
@@ -423,8 +432,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Error',
         e.message,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -496,7 +505,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.error),),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -522,8 +534,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Success',
         'Payment approved successfully',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
     } on ApiException catch (e) {
@@ -531,8 +543,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Error',
         e.message,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -553,7 +565,10 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         backgroundColor: AppColors.beige,
-        title: const Text('Cancel Appointment', style: TextStyle(color: AppColors.error),),
+        title: const Text(
+          'Cancel Appointment',
+          style: TextStyle(color: AppColors.error),
+        ),
         content: const Text(
           'Are you sure you want to cancel this appointment?',
         ),
@@ -581,8 +596,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Success',
         'Appointment cancelled',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        backgroundColor: AppColors.success,
+        colorText: AppColors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
     } on ApiException catch (e) {
@@ -590,12 +605,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       Get.snackbar(
         'Error',
         e.message,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
   }
+
   void _clientShowPayment(Map<String, dynamic> apt) {
     showModalBottomSheet(
       context: context,
@@ -1016,14 +1032,11 @@ class _AppointmentCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       onSelected: (value) {
-                        
                         if (value == 'detail') onViewDetail();
                         if (value == 'edit') onEdit();
-        
                       },
                       color: AppColors.white,
                       itemBuilder: (_) => [
-                       
                         PopupMenuItem(
                           value: 'detail',
                           child: Row(
@@ -1052,7 +1065,6 @@ class _AppointmentCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                      
                       ],
                     ),
                 ],
@@ -1378,7 +1390,7 @@ class _AppointmentCard extends StatelessWidget {
               ),
             ),
           ],
-          // ── Client Rating Section ─────────────────────────────
+          //  Client Rating Section
           if (role == AppointmentRole.client &&
               isAccepted &&
               paymentApproved) ...[
@@ -1570,6 +1582,10 @@ class _DetailSheetState extends State<_DetailSheet> {
                   title: 'Time Slot',
                   children: [
                     _DetailRow(
+                      label: 'Date',
+                      value: apt['date']?.toString() ?? '-',
+                    ),
+                    _DetailRow(
                       label: 'Start',
                       value: apt['slot_start_time'] ?? '-',
                     ),
@@ -1655,8 +1671,8 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
       Get.snackbar(
         'Success',
         'Appointment accepted! Client has been notified.',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
       widget.onAccepted();
@@ -1665,8 +1681,8 @@ class _PaymentFormSheetState extends State<_PaymentFormSheet> {
       Get.snackbar(
         'Error',
         e.message,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -2094,8 +2110,8 @@ class _ConvertToCaseSheetState extends State<_ConvertToCaseSheet> {
       Get.snackbar(
         'Case Created',
         'Appointment #${widget.appointment['id']} has been converted to a case.',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
       widget.onConverted();
@@ -2104,8 +2120,8 @@ class _ConvertToCaseSheetState extends State<_ConvertToCaseSheet> {
       Get.snackbar(
         'Error',
         e.message,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

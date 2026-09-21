@@ -93,10 +93,7 @@ class _MessageScreenState extends State<MessageScreen> {
 
     if (sent != null && mounted) {
       setState(() {
-        messages.add({
-          ...sent,
-          "sender_id": myUserId,
-        });
+        messages.add({...sent, "sender_id": myUserId});
         isSending = false;
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -113,7 +110,7 @@ class _MessageScreenState extends State<MessageScreen> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.beige,
@@ -164,72 +161,75 @@ class _MessageScreenState extends State<MessageScreen> {
                       ),
           ),
 
-          Container(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 8,
-              top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 12,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.Brown.withValues(alpha: 0.06),
-                  blurRadius: 8,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.beige,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: TextField(
-                      controller: _inputController,
-                      maxLines: null,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => sendMessage(),
-                      decoration: InputDecoration(
-                        hintText: "Type your message...",
-                        hintStyle: AppTextStyles.hint,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
+          SafeArea(
+            top: false,
+            child: Container(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 8,
+                top: 8,
+                bottom: 12,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.Brown.withValues(alpha: 0.06),
+                    blurRadius: 8,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.beige,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: TextField(
+                        controller: _inputController,
+                        maxLines: null,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => sendMessage(),
+                        decoration: InputDecoration(
+                          hintText: "Type your message...",
+                          hintStyle: AppTextStyles.hint,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          border: InputBorder.none,
                         ),
-                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                ),
 
-                const SizedBox(width: 8),
+                  const SizedBox(width: 8),
 
-                GestureDetector(
-                  onTap: sendMessage,
-                  child: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: const BoxDecoration(
-                      color: AppColors.Brown,
-                      shape: BoxShape.circle,
+                  GestureDetector(
+                    onTap: sendMessage,
+                    child: Container(
+                      width: 46,
+                      height: 46,
+                      decoration: const BoxDecoration(
+                        color: AppColors.Brown,
+                        shape: BoxShape.circle,
+                      ),
+                      child: isSending
+                          ? const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: CircularProgressIndicator(
+                                color: AppColors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Icon(Icons.send, color: AppColors.white, size: 20),
                     ),
-                    child: isSending
-                        ? const Padding(
-                            padding: EdgeInsets.all(12),
-                            child: CircularProgressIndicator(
-                              color: AppColors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Icon(Icons.send, color: AppColors.white, size: 20),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -281,8 +281,9 @@ class _MessageBubble extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment:
-              isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isMine
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             if (!isMine && senderName.isNotEmpty)
               Padding(

@@ -141,34 +141,35 @@ class AppointmentService {
   }
 
   // PUT /appointments/:id
-  static Future<void> editAppointment({
-    required int id,
-    required int lawyerId,
-    required String lawType,
-    required String caseType,
-    required String shortDescription,
-    required String slotStartTime,
-    required String slotEndTime,
-    required String appointmentMode,
-  }) async {
-    final date = slotStartTime.split(' ')[0];
-    final body = jsonEncode({
-      'lawyer_id': lawyerId,
-      'date': date,
-      'law_type': lawType,
-      'case_type': caseType,
-      'short_description': shortDescription,
-      'slot_start_time': slotStartTime,
-      'slot_end_time': slotEndTime,
-      'appointment_mode': appointmentMode,
-    });
-    final res = await http.put(
-      Uri.parse('$baseUrl/appointments/$id'),
-      headers: ApiService.authHeaders(),
-      body: body,
-    );
-    ApiService.checkStatus(res);
-  }
+  // PUT /appointments/:id
+static Future<void> editAppointment({
+  required int id,
+  required int lawyerId,
+  required String date,
+  required String lawType,
+  required String caseType,
+  required String shortDescription,
+  required String slotStartTime,
+  required String slotEndTime,
+  required String appointmentMode,
+}) async {
+  final body = jsonEncode({
+    'lawyer_id': lawyerId,
+    'date': date,
+    'law_type': lawType,
+    'case_type': caseType,
+    'short_description': shortDescription,
+    'slot_start_time': slotStartTime,
+    'slot_end_time': slotEndTime,
+    'appointment_mode': appointmentMode,
+  });
+  final res = await http.put(
+    Uri.parse('$baseUrl/appointments/$id'),
+    headers: ApiService.authHeaders(),
+    body: body,
+  );
+  ApiService.checkStatus(res);
+}
 
   static Future<List<dynamic>> getMyAppointments() async {
     final res = await http.get(
@@ -237,7 +238,7 @@ class AppointmentService {
     return decoded['caseId'] as int;
   }
 
-  // GET /cases/lawyer-stats   ..lawyer dashboard monthly stats
+  // GET /cases/lawyer-stats   lawyer dashboard monthly stats
   static Future<Map<String, dynamic>> getLawyerStats() async {
     final res = await http.get(
       Uri.parse('$baseUrl/cases/lawyer-stats'),

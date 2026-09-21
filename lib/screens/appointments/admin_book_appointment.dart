@@ -10,10 +10,12 @@ class AdminBookAppointmentScreen extends StatefulWidget {
   const AdminBookAppointmentScreen({super.key, this.initialDate});
 
   @override
-  State<AdminBookAppointmentScreen> createState() => _AdminBookAppointmentScreenState();
+  State<AdminBookAppointmentScreen> createState() =>
+      _AdminBookAppointmentScreenState();
 }
 
-class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen> {
+class _AdminBookAppointmentScreenState
+    extends State<AdminBookAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionCtrl = TextEditingController();
 
@@ -128,9 +130,9 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
       context: context,
       initialTime: TimeOfDay.now(),
       builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: ColorScheme.light(primary: AppColors.Brown),
-        ),
+        data: Theme.of(
+          ctx,
+        ).copyWith(colorScheme: ColorScheme.light(primary: AppColors.Brown)),
         child: child!,
       ),
     );
@@ -223,20 +225,15 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
         backgroundColor: AppColors.beige,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColors.Brown,
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back, color: AppColors.Brown, size: 20),
           onPressed: () => Get.back(),
         ),
-        title: Text(
-          'Book Appointment (Admin)',
-          style: AppTextStyles.heading3,
-        ),
+        title: Text('Book Appointment (Admin)', style: AppTextStyles.heading3),
       ),
       body: _isFetchingData
-          ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.Brown),
+            )
           : Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -253,7 +250,8 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                       value: _selectedClientId,
                       items: _clients,
                       onChanged: (v) => setState(() => _selectedClientId = v),
-                      validator: (v) => v == null ? 'Please select a client' : null,
+                      validator: (v) =>
+                          v == null ? 'Please select a client' : null,
                     ),
                     const SizedBox(height: 12),
 
@@ -263,7 +261,8 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                       value: _selectedLawyerId,
                       items: _lawyers,
                       onChanged: (v) => setState(() => _selectedLawyerId = v),
-                      validator: (v) => v == null ? 'Please select a lawyer' : null,
+                      validator: (v) =>
+                          v == null ? 'Please select a lawyer' : null,
                     ),
                     const SizedBox(height: 20),
 
@@ -276,7 +275,8 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                       value: _selectedLawType,
                       items: _lawTypes,
                       onChanged: (v) => setState(() => _selectedLawType = v),
-                      validator: (v) => v == null ? 'Please select a law type' : null,
+                      validator: (v) =>
+                          v == null ? 'Please select a law type' : null,
                     ),
                     const SizedBox(height: 12),
 
@@ -286,7 +286,8 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                       value: _selectedCaseType,
                       items: _caseTypes,
                       onChanged: (v) => setState(() => _selectedCaseType = v),
-                      validator: (v) => v == null ? 'Please select a case type' : null,
+                      validator: (v) =>
+                          v == null ? 'Please select a case type' : null,
                     ),
                     const SizedBox(height: 12),
 
@@ -295,9 +296,12 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                     TextFormField(
                       controller: _descriptionCtrl,
                       maxLines: 3,
-                      decoration: _inputDecor('Briefly describe the legal matter...'),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty) ? 'Description is required' : null,
+                      decoration: _inputDecor(
+                        'Briefly describe the legal matter...',
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Description is required'
+                          : null,
                     ),
                     const SizedBox(height: 20),
 
@@ -321,7 +325,10 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
                     _ModeSelector(
                       options: const ['online', 'physical'],
                       selected: _appointmentMode,
-                      icons: const [Icons.videocam_outlined, Icons.person_outline],
+                      icons: const [
+                        Icons.videocam_outlined,
+                        Icons.person_outline,
+                      ],
                       onSelected: (v) => setState(() => _appointmentMode = v),
                     ),
                     const SizedBox(height: 32),
@@ -355,37 +362,38 @@ class _AdminBookAppointmentScreenState extends State<AdminBookAppointmentScreen>
     );
   }
 
-  Widget _sectionLabel(String text) => Text(text, style: AppTextStyles.heading3);
+  Widget _sectionLabel(String text) =>
+      Text(text, style: AppTextStyles.heading3);
 
   Widget _fieldLabel(String text) => Text(text, style: AppTextStyles.label);
 
   InputDecoration _inputDecor(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: AppTextStyles.hint,
-        filled: true,
-        fillColor: AppColors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.divider),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.divider),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
-        ),
-      );
+    hintText: hint,
+    hintStyle: AppTextStyles.hint,
+    filled: true,
+    fillColor: AppColors.white,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: AppColors.divider),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: AppColors.divider),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.Brown, width: 1.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.error),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+    ),
+  );
 }
 
 class _DropdownField extends StatelessWidget {
@@ -418,7 +426,10 @@ class _DropdownField extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.divider),
@@ -437,7 +448,12 @@ class _DropdownField extends StatelessWidget {
             ),
           ),
           items: items
-              .map((e) => DropdownMenuItem(value: e['id'], child: Text(e['name'] ?? '')))
+              .map(
+                (e) => DropdownMenuItem(
+                  value: e['id'],
+                  child: Text(e['name'] ?? ''),
+                ),
+              )
               .toList(),
           onChanged: onChanged,
           validator: validator,
@@ -477,7 +493,10 @@ class _AppDropdown extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: AppColors.divider),
@@ -495,7 +514,9 @@ class _AppDropdown extends StatelessWidget {
               borderSide: const BorderSide(color: AppColors.error),
             ),
           ),
-          items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+          items: items
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
           onChanged: onChanged,
           validator: validator,
         ),
@@ -550,7 +571,9 @@ class _SlotPicker extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: dateTime != null ? AppColors.Brown : AppColors.hintText,
+                    color: dateTime != null
+                        ? AppColors.Brown
+                        : AppColors.hintText,
                   ),
                 ),
               ],
@@ -599,7 +622,9 @@ class _ModeSelector extends StatelessWidget {
                   Icon(
                     icons[i],
                     size: 16,
-                    color: isActive ? AppColors.white : AppColors.labelSecondary,
+                    color: isActive
+                        ? AppColors.white
+                        : AppColors.labelSecondary,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -607,7 +632,9 @@ class _ModeSelector extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: isActive ? AppColors.white : AppColors.labelSecondary,
+                      color: isActive
+                          ? AppColors.white
+                          : AppColors.labelSecondary,
                     ),
                   ),
                 ],

@@ -48,8 +48,8 @@ class _LawyerLicensesScreenState extends State<LawyerLicensesScreen> {
       Get.snackbar(
         'Error',
         'Could not open license file',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+                    colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }

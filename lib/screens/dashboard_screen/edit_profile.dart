@@ -75,17 +75,19 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
 
       final rawId =
           box.read('userId') ?? box.read('id') ?? box.read('user')?['id'];
-      final id = rawId is int ? rawId : int.tryParse(rawId?.toString() ?? '') ?? 0;
+      final id = rawId is int
+          ? rawId
+          : int.tryParse(rawId?.toString() ?? '') ?? 0;
 
       await ApiService.updateProfile(id: id, data: data);
 
-      // Password change goes through a separate, verified endpoint —
-      // only fires if the user actually filled in a new password.
       if (passwordCtrl.text.isNotEmpty) {
         if (currentPasswordCtrl.text.isEmpty) {
           Get.snackbar(
             'Error',
             'Enter your current password to set a new one',
+            colorText: AppColors.white,
+            backgroundColor: AppColors.error,
             snackPosition: SnackPosition.BOTTOM,
           );
           setState(() => _isLoading = false);
@@ -98,7 +100,6 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
         );
       }
 
-      // Update local storage
       final user = Map<String, dynamic>.from(box.read('user') ?? {});
       user['name'] = data['name'];
       user['email'] = data['email'];
@@ -111,6 +112,8 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
       Get.snackbar(
         'Success',
         'Profile updated successfully',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -130,14 +133,16 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-              // ── Header (matches the Profile screen's header style) ──
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 8, 20, 20),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Get.back(),
-                      icon: const Icon(Icons.arrow_back, color: AppColors.Brown),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: AppColors.Brown,
+                      ),
                     ),
                     const SizedBox(width: 4),
                     Column(
@@ -159,7 +164,7 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Personal Information card ──
+                    // Personal Information card
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -216,7 +221,7 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
 
                     const SizedBox(height: 16),
 
-                    // ── Security card ──
+                    //Security card
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -271,8 +276,6 @@ class _EditLawyerProfileState extends State<EditLawyerProfile> {
     );
   }
 
-  // Matches the Profile screen's row style — icon, label above, value below —
-  // but with the value swapped for an editable TextFormField.
   Widget _buildField({
     required IconData icon,
     required String label,

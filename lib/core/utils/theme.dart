@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class AppColors {
   AppColors._();
 
-  static const Color Brown = Color(0xFF795548); // matches Colors.brown
+  static const Color Brown = Color(0xFF795548); 
   static const Color sageGreen = Color(0xFFB0BA99);
   static const Color mediumBrown = Color(0xFF9D6638);
   static const Color beige = Color(0xFFF5EFE6);
@@ -197,8 +197,6 @@ class AppDecorations {
 
 class AppButtonStyles {
   AppButtonStyles._();
-
-  /// Primary elevated button used across all auth screens.
   static ButtonStyle primary = ElevatedButton.styleFrom(
     backgroundColor: AppColors.Brown,
     foregroundColor: AppColors.white,
@@ -326,14 +324,8 @@ ThemeData get appTheme {
       space: 1,
     ),
 
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.beige.withOpacity(0.97),
-      contentTextStyle: AppTextStyles.bodyLarge.copyWith(
-        color: AppColors.Brown,
-      ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      behavior: SnackBarBehavior.floating,
-    ),
+    
+    
 
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.Brown,

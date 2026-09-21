@@ -49,9 +49,8 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── DELETE ────────────────────────────────────────────────────────────────
+  // delete
   Future<void> _deleteLawyer(int id) async {
-    // Show confirmation dialog first
     final confirmed = await Get.dialog(
       AlertDialog(
         title: Text('Delete Lawyer', style: AppTextStyles.heading3),
@@ -101,7 +100,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── EDIT ──────────────────────────────────────────────────────────────────
+  // edit
   Future<void> _editLawyer(Map<String, dynamic> lawyer) async {
     final nameController = TextEditingController(
       text: lawyer['name']?.toString() ?? '',
@@ -210,7 +209,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                   'Edited',
                   'Lawyer Updated',
                   backgroundColor: AppColors.error.withOpacity(0.10),
-                  colorText: AppColors.error,
+                  colorText: AppColors.white,
                   snackPosition: SnackPosition.BOTTOM,
                 );
               } catch (e) {
@@ -242,8 +241,8 @@ class _ManagelawyersState extends State<Managelawyers> {
       Get.snackbar(
         'Approved',
         'Lawyer Approved',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -254,7 +253,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── DISAPPROVE ────────────────────────────────────────────────────────────
+  // disapprove
   Future<void> _disapproveLawyer(int index) async {
     final id = _lawyers[index]['id'];
     try {
@@ -266,8 +265,8 @@ class _ManagelawyersState extends State<Managelawyers> {
       Get.snackbar(
         'Rejected',
         'Lawyer rejected',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
@@ -278,7 +277,7 @@ class _ManagelawyersState extends State<Managelawyers> {
     }
   }
 
-  // ── RENEW ─────────────────────────────────────────────────────────────────
+  // Renew
   Future<void> _renewLawyer(int index) async {
     final id = _lawyers[index]['id'];
     try {
@@ -286,26 +285,26 @@ class _ManagelawyersState extends State<Managelawyers> {
       if (!mounted) return;
       _loadLawyers();
 
-  if (!mounted) return;
+      if (!mounted) return;
 
-  Get.snackbar(
-    'Subscription Renewed',
-    'Subscription renewed (30 Days) ✅',
-    backgroundColor: AppColors.success.withOpacity(0.10),
-    colorText: AppColors.success,
-    snackPosition: SnackPosition.BOTTOM,
-  );
-} catch (e) {
-  if (!mounted) return;
+      Get.snackbar(
+        'Subscription Renewed',
+        'Subscription renewed (30 Days)',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      if (!mounted) return;
 
-  Get.snackbar(
-    'Error',
-    'Error: $e',
-    backgroundColor: AppColors.error.withOpacity(0.10),
-    colorText: AppColors.error,
-    snackPosition: SnackPosition.BOTTOM,
-  );
-}
+      Get.snackbar(
+        'Error',
+        'Error: $e',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   @override
@@ -343,7 +342,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                 ],
               ),
             ),
-            // The rest of your page content
+
             Expanded(child: _buildBody()),
           ],
         ),
@@ -413,7 +412,6 @@ class _ManagelawyersState extends State<Managelawyers> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Header ──────────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -444,7 +442,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               ),
               const SizedBox(height: 10),
 
-              // ── Details ──────────────────────────────────────────────────
+              //Details
               Text(
                 lawyer['name']?.toString() ?? 'Unknown',
                 style: AppTextStyles.heading4.copyWith(fontSize: 16),
@@ -473,7 +471,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                 ),
               const SizedBox(height: 10),
 
-              // ── Status Badge ─────────────────────────────────────────────
+              // Status Badge
               if (status != -1)
                 Container(
                   margin: const EdgeInsets.only(bottom: 8),
@@ -500,7 +498,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                   ),
                 ),
 
-              // ── Approve / Reject Row ─────────────────────────────────────
+              // Approve Reject
               Row(
                 children: [
                   Expanded(
@@ -550,7 +548,7 @@ class _ManagelawyersState extends State<Managelawyers> {
               ),
               const SizedBox(height: 10),
 
-              // ── Edit / Delete Row ────────────────────────────────────────
+              // Edit Delete Row
               Row(
                 children: [
                   Expanded(
@@ -601,7 +599,7 @@ class _ManagelawyersState extends State<Managelawyers> {
                 ],
               ),
               const SizedBox(height: 10),
-              // ── Renew Button ──────────────────────────────────────────────
+              // Renew Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(

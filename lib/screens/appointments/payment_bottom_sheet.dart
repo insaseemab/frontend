@@ -44,7 +44,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     try {
       await AppointmentService.payAppointment(
         widget.appointment['id'],
-       _selectedMethod == _PaymentMethod.cash ? "Pay in Cash" : "Pay Online",
+        _selectedMethod == _PaymentMethod.cash ? "Pay in Cash" : "Pay Online",
         _selectedMethod == _PaymentMethod.cash ? null : screenshotBytes,
       );
 
@@ -53,16 +53,16 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       Get.snackbar(
         "Success",
         "Payment submitted successfully",
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       Get.snackbar(
         "Error",
         e.toString(),
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -82,7 +82,9 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.Brown.withOpacity(0.1) : AppColors.white,
+            color: isSelected
+                ? AppColors.Brown.withOpacity(0.1)
+                : AppColors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? AppColors.Brown : AppColors.cardBorder,
@@ -100,7 +102,9 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
                 label,
                 style: TextStyle(
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  color: isSelected ? AppColors.Brown : AppColors.labelSecondary,
+                  color: isSelected
+                      ? AppColors.Brown
+                      : AppColors.labelSecondary,
                   fontSize: 13,
                 ),
               ),
@@ -122,10 +126,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            "Payment Method",
-            style: AppTextStyles.heading3,
-          ),
+          Text("Payment Method", style: AppTextStyles.heading3),
 
           const SizedBox(height: 20),
 
@@ -153,7 +154,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
 
           const SizedBox(height: 20),
 
-          // ── Payment method selector ──
+          //  Payment method selector
           Row(
             children: [
               _methodOption(
@@ -205,12 +206,19 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.labelSecondary, size: 18),
+                  Icon(
+                    Icons.info_outline,
+                    color: AppColors.labelSecondary,
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       "You'll pay the lawyer directly in cash. Tap submit to confirm.",
-                      style: TextStyle(color: AppColors.labelSecondary, fontSize: 13),
+                      style: TextStyle(
+                        color: AppColors.labelSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
@@ -223,9 +231,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _isSubmitting ? null : submitPayment,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.Brown,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.Brown),
               child: _isSubmitting
                   ? SizedBox(
                       height: 20,

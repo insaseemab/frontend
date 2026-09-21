@@ -20,7 +20,8 @@ import 'package:insaafconnect/screens/dashboard_screen/lawyer/lawyer_subscriptio
 import 'package:insaafconnect/routes/app_routes.dart';
 
 class LawyerDashboard extends StatefulWidget {
-  const LawyerDashboard({super.key});
+  final int initialIndex;
+  const LawyerDashboard({super.key, this.initialIndex = 0});
 
   @override
   State<LawyerDashboard> createState() => _LawyerDashboardState();
@@ -28,7 +29,7 @@ class LawyerDashboard extends StatefulWidget {
 
 class _LawyerDashboardState extends State<LawyerDashboard> {
   final box = GetStorage();
-  int _currentIndex = 0;
+    late int _currentIndex;
 
   final _notificationService = NotificationService();
   int _unreadCount = 0;
@@ -39,6 +40,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
     final user = Map<String, dynamic>.from(box.read('user') ?? {});
     userName = (user['name'] ?? "User").toString();
 
@@ -62,8 +64,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
           ? int.tryParse(unread) ?? 0
           : (unread as int? ?? 0);
       if (mounted) setState(() => _unreadCount = count);
-    } catch (_) {
-    }
+    } catch (_) {}
   }
 
   @override
@@ -77,8 +78,8 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
 
     return Scaffold(
       backgroundColor: AppColors.beige,
-      // ───────── APP BAR ─────────
       appBar: AppBar(
+        titleSpacing: 8,
         backgroundColor: AppColors.beige,
         elevation: 0,
         title: Row(
@@ -103,18 +104,21 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
-              "Insaaf Connect",
-              style: TextStyle(
-                color: AppColors.Brown,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+            Flexible(
+              child: Text(
+                "Insaaf Connect",
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(
+                  color: AppColors.Brown,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          // 🔔 Notification bell
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -122,7 +126,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
                 icon: const Icon(Icons.notifications, color: AppColors.Brown),
                 onPressed: () async {
                   await Get.toNamed(AppRoutes.notifications);
-                  
+
                   if (mounted) _loadUnreadCount();
                 },
               ),
@@ -268,10 +272,7 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
         ),
       ),
 
-      
       body: pages[_currentIndex],
-
-      //  BOTTOM NAVIGATION 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -311,8 +312,6 @@ class _LawyerDashboardState extends State<LawyerDashboard> {
   }
 }
 
-
-//  HOME PAGE
 
 class _HomePage extends StatefulWidget {
   final String userName;
@@ -405,7 +404,7 @@ class _HomePageState extends State<_HomePage> {
   List<dynamic> get _todaysAppointments {
     final today = DateTime.now();
     return appointments.where((a) {
-      final startRaw = a['slot_start_time']; 
+      final startRaw = a['slot_start_time'];
       if (startRaw == null) return false;
       final start = DateTime.tryParse(startRaw.toString());
       if (start == null) return false;
@@ -455,13 +454,11 @@ class _HomePageState extends State<_HomePage> {
         )
         .toList();
 
-    
     final totalEarnings =
         double.tryParse(lawyerStats?['total_earnings']?.toString() ?? '') ??
-            0.0;
-    final thisMonthEarnings = double.tryParse(
-          lawyerStats?['monthly_earnings']?.toString() ?? '',
-        ) ??
+        0.0;
+    final thisMonthEarnings =
+        double.tryParse(lawyerStats?['monthly_earnings']?.toString() ?? '') ??
         0.0;
 
     return RefreshIndicator(
@@ -662,7 +659,7 @@ class _HomePageState extends State<_HomePage> {
               },
             ),
 
-            // Welcome banner 
+            // Welcome banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -693,7 +690,7 @@ class _HomePageState extends State<_HomePage> {
 
             // Stat cards Cases & Active Cases
             SizedBox(
-              height: 100,
+              height: 110,
               child: Row(
                 children: [
                   Expanded(
@@ -765,7 +762,7 @@ class _HomePageState extends State<_HomePage> {
             ),
             const SizedBox(height: 24),
 
-            // TodaySchedule 
+            // TodaySchedule
             const Text(
               "Today's Schedule",
               style: TextStyle(
@@ -805,7 +802,7 @@ class _HomePageState extends State<_HomePage> {
               ),
             const SizedBox(height: 24),
 
-            // Active Cases 
+            // Active Cases
             const Text(
               "Active Cases",
               style: TextStyle(
@@ -1035,8 +1032,9 @@ class _HomePageState extends State<_HomePage> {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 24, color: AppColors.Brown),
+          Icon(icon, size: 22, color: AppColors.Brown),
           const SizedBox(height: 6),
           Text(
             value,
@@ -1046,7 +1044,9 @@ class _HomePageState extends State<_HomePage> {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.labelSecondary, fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: AppColors.labelSecondary, fontSize: 11),
           ),
         ],
       ),
@@ -1198,7 +1198,7 @@ class _MessagesPageState extends State<_MessagesPage> {
       color: AppColors.beige,
       child: Column(
         children: [
-          // ── HEADER ──
+          // HEADER
           const Padding(
             padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
             child: Align(
@@ -1214,7 +1214,7 @@ class _MessagesPageState extends State<_MessagesPage> {
             ),
           ),
 
-          // ── SEARCH BAR ──
+          // search bar
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 6),
             child: TextField(
@@ -1237,7 +1237,6 @@ class _MessagesPageState extends State<_MessagesPage> {
             ),
           ),
 
-          //  SUBTITLE 
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Align(
@@ -1252,7 +1251,6 @@ class _MessagesPageState extends State<_MessagesPage> {
             ),
           ),
 
-          // ── LIST ──
           Expanded(
             child: loading
                 ? Center(

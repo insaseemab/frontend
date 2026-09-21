@@ -114,7 +114,10 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) => Padding(
                       padding: const EdgeInsets.all(24.0),
-                      child: Text("Failed to display receipt image", style: AppTextStyles.bodyMedium),
+                      child: Text(
+                        "Failed to display receipt image",
+                        style: AppTextStyles.bodyMedium,
+                      ),
                     ),
                   ),
                 ),
@@ -136,8 +139,8 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
       Get.snackbar(
         "Subscription Approved",
         "Lawyer's subscription has been renewed for 30 days.",
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
       await _loadRecords();
@@ -145,8 +148,8 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
       Get.snackbar(
         "Approval Failed",
         e.toString().replaceAll("Exception: ", ""),
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -265,7 +268,9 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.warning.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(8),
@@ -381,7 +386,9 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             children: [
                               Text(
                                 lawyerName,
-                                style: AppTextStyles.heading4.copyWith(fontSize: 15),
+                                style: AppTextStyles.heading4.copyWith(
+                                  fontSize: 15,
+                                ),
                               ),
                               Text(
                                 lawyerEmail,
@@ -416,7 +423,9 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                isPending ? 'Pending Review' : 'Active / Approved',
+                                isPending
+                                    ? 'Pending Review'
+                                    : 'Active / Approved',
                                 style: TextStyle(
                                   color: isPending
                                       ? AppColors.warning
@@ -429,7 +438,9 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'PKR $amount',
-                              style: AppTextStyles.heading4.copyWith(fontSize: 16),
+                              style: AppTextStyles.heading4.copyWith(
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -454,33 +465,45 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.beige.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.receipt,
-                                size: 16, color: AppColors.Brown),
+                            const Icon(
+                              Icons.receipt,
+                              size: 16,
+                              color: AppColors.Brown,
+                            ),
                             const SizedBox(width: 6),
-                            Text("TID: $tid", style: AppTextStyles.label.copyWith(fontSize: 12)),
+                            Text(
+                              "TID: $tid",
+                              style: AppTextStyles.label.copyWith(fontSize: 12),
+                            ),
                             const Spacer(),
                             GestureDetector(
                               onTap: () {
                                 Clipboard.setData(
-                                    ClipboardData(text: tid.toString()));
-                                 Get.snackbar(
-                                    "Copied",
-                                    "TID copied to clipboard",
-                                    backgroundColor: AppColors.success.withOpacity(0.10),
-                                    colorText: AppColors.success,
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    duration: const Duration(seconds: 1),
-                                  );
+                                  ClipboardData(text: tid.toString()),
+                                );
+                                Get.snackbar(
+                                  "Copied",
+                                  "TID copied to clipboard",
+                                  colorText: AppColors.white,
+                                  backgroundColor: AppColors.success,
+                                  snackPosition: SnackPosition.BOTTOM,
+                                  duration: const Duration(seconds: 1),
+                                );
                               },
-                              child: const Icon(Icons.copy,
-                                  size: 15, color: AppColors.Brown),
+                              child: const Icon(
+                                Icons.copy,
+                                size: 15,
+                                color: AppColors.Brown,
+                              ),
                             ),
                           ],
                         ),
@@ -490,15 +513,16 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                     if (receipt != null && receipt.toString().isNotEmpty) ...[
                       const SizedBox(height: 8),
                       OutlinedButton.icon(
-                        onPressed: () =>
-                            _showReceiptDialog(receipt.toString()),
+                        onPressed: () => _showReceiptDialog(receipt.toString()),
                         icon: const Icon(Icons.image_outlined, size: 16),
                         label: const Text("View Receipt Screenshot"),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.Brown,
                           side: const BorderSide(color: AppColors.Brown),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -523,8 +547,11 @@ class _SubscriptionRecordsScreenState extends State<SubscriptionRecordsScreen> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Icon(Icons.check_circle_outline,
-                                  size: 18, color: AppColors.white),
+                              : const Icon(
+                                  Icons.check_circle_outline,
+                                  size: 18,
+                                  color: AppColors.white,
+                                ),
                           label: Text(
                             isThisApproving
                                 ? "Approving & Renewing..."

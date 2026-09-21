@@ -59,8 +59,6 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
   List<Map<String, dynamic>> get filtered {
     return _lawyers.where((lawyer) {
       final spec = (lawyer['specialization'] ?? '').toString().toLowerCase();
-
-      // "Criminal Law" -> "criminal", "Civil Law" -> "civil", etc.
       final filterKeyword = selectedFilter
           .toLowerCase()
           .replaceAll(' law', '')
@@ -231,11 +229,11 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                         padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 220, // max width per card
+                              maxCrossAxisExtent: 220, 
                               crossAxisSpacing: 12,
                               mainAxisSpacing: 12,
                               mainAxisExtent:
-                                  340, // fixed card height that fits content comfortably
+                                  340, 
                             ),
                         itemCount: filtered.length,
                         itemBuilder: (context, i) =>
@@ -250,13 +248,11 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
   }
 }
 
-// ════════════════════════════════════════════════
 //  LAWYER CARD
-// ════════════════════════════════════════════════
 
 bool _isApproved(Map<String, dynamic> lawyer) {
   final status = lawyer['status'];
-  if (status == null) return true; // endpoint already filters approved-only
+  if (status == null) return true; 
   if (status is bool) return status;
   if (status is int) return status == 1;
   return status.toString() == '1' ||
@@ -471,9 +467,8 @@ class _LawyerCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════
-//  LAWYER PROFILE SCREEN
-// ════════════════════════════════════════════════
+//  Lawyer profile
+
 
 class LawyerProfileScreen extends StatelessWidget {
   final Map<String, dynamic> lawyer;
@@ -664,7 +659,6 @@ class LawyerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // ── Row 1: Book Appointment + Send Message ──
             Row(
               children: [
                 Expanded(
@@ -728,10 +722,6 @@ class LawyerProfileScreen extends StatelessWidget {
   Widget _divider() =>
       Container(width: 1, height: 36, color: AppColors.divider);
 }
-
-// ════════════════════════════════════════════════
-//  REUSABLE WIDGETS
-// ════════════════════════════════════════════════
 
 class _StatBox extends StatelessWidget {
   final IconData icon;

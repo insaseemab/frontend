@@ -7,7 +7,11 @@ class RatingBottomSheet extends StatefulWidget {
   final Map<String, dynamic> appointment;
   final VoidCallback? onSuccess;
 
-  const RatingBottomSheet({super.key, required this.appointment, this.onSuccess});
+  const RatingBottomSheet({
+    super.key,
+    required this.appointment,
+    this.onSuccess,
+  });
 
   @override
   State<RatingBottomSheet> createState() => _RatingBottomSheetState();
@@ -23,8 +27,8 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       Get.snackbar(
         'Error',
         'Please select a rating',
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -32,8 +36,10 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
 
     setState(() => _isLoading = true);
     try {
-      final appointmentId = int.tryParse(widget.appointment['id']?.toString() ?? '') ?? 0;
-      final lawyerId = int.tryParse(widget.appointment['lawyer_id']?.toString() ?? '') ?? 0;
+      final appointmentId =
+          int.tryParse(widget.appointment['id']?.toString() ?? '') ?? 0;
+      final lawyerId =
+          int.tryParse(widget.appointment['lawyer_id']?.toString() ?? '') ?? 0;
 
       if (appointmentId == 0 || lawyerId == 0) {
         throw Exception("Invalid appointment or lawyer ID");
@@ -51,8 +57,8 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       Get.snackbar(
         'Success',
         'Rating submitted successfully!',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
       widget.onSuccess?.call();
@@ -60,8 +66,8 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
       Get.snackbar(
         'Error',
         e.toString().replaceAll("Exception: ", ""),
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -72,7 +78,9 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -87,14 +95,14 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(color: AppColors.cardBorder, borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBorder,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            Text(
-              'Rate Lawyer',
-              style: AppTextStyles.heading3,
-            ),
+            Text('Rate Lawyer', style: AppTextStyles.heading3),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -118,7 +126,10 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
                 hintStyle: AppTextStyles.hint,
                 filled: true,
                 fillColor: AppColors.beige,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.Brown, width: 1.5),
@@ -134,16 +145,27 @@ class _RatingBottomSheetState extends State<RatingBottomSheet> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.Brown,
                   foregroundColor: AppColors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   elevation: 0,
                 ),
                 child: _isLoading
                     ? SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
-                    : const Text('Submit Rating', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    : const Text(
+                        'Submit Rating',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 8),

@@ -206,7 +206,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   @override
   void dispose() {
     _descriptionCtrl.dispose();
-     _caseTypeCtrl.dispose();
+    _caseTypeCtrl.dispose();
     super.dispose();
   }
 
@@ -249,9 +249,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               _fieldLabel('Case Type'),
               TextFormField(
                 controller: _descriptionCtrl,
-                decoration: _inputDecor(
-                  'Enter your case type',
-                ),
+                decoration: _inputDecor('Enter your case type'),
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Case Type is required'
                     : null,
@@ -400,34 +398,34 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   void _load() {
     setState(() {
-      _future =
-          AppointmentService.getMyAppointments(); 
+      _future = AppointmentService.getMyAppointments();
     });
   }
 
   Future<void> _delete(int id) async {
-  try {
-    await AppointmentService.deleteAppointment(id);
-    if (!mounted) return;
-    _load();
-    Get.snackbar(
-      'Success',
-      'Appointment cancelled',
-      backgroundColor: AppColors.success.withOpacity(0.10),
-      colorText: AppColors.success,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  } on ApiException catch (e) {
-    if (!mounted) return;
-    Get.snackbar(
-      'Error',
-      e.message,
-      backgroundColor: AppColors.error.withOpacity(0.10),
-      colorText: AppColors.error,
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-} // <-- this closes _delete
+    try {
+      await AppointmentService.deleteAppointment(id);
+      if (!mounted) return;
+      _load();
+      Get.snackbar(
+        'Success',
+        'Appointment cancelled',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      Get.snackbar(
+        'Error',
+        e.message,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  } // <-- this closes _delete
+
   Widget _buildBody() {
     return FutureBuilder<List<dynamic>>(
       future: _future,
@@ -858,7 +856,6 @@ class _AppDropdown extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
-          // initialValue replaces deprecated value property
           value: value,
           hint: Text(hint, style: AppTextStyles.hint),
           decoration: InputDecoration(

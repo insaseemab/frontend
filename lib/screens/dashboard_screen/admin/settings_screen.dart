@@ -29,8 +29,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       Get.snackbar(
         'Error',
         e.toString(),
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -41,36 +41,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveSettings() async {
     setState(() => _isSaving = true);
     try {
-      await SettingsService.updateSetting('subscription_fee', _feeController.text.trim());
+      await SettingsService.updateSetting(
+        'subscription_fee',
+        _feeController.text.trim(),
+      );
       Get.snackbar(
         'Success',
         'Subscription updated successfully',
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
         e.toString(),
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
       setState(() => _isSaving = false);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscription', style: TextStyle(color: AppColors.Brown)),
+        title: const Text(
+          'Subscription',
+          style: TextStyle(color: AppColors.Brown),
+        ),
         backgroundColor: AppColors.beige,
         iconTheme: const IconThemeData(color: AppColors.Brown),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.Brown))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.Brown),
+            )
           : Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -106,8 +115,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       child: _isSaving
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Save',
-                              style: TextStyle(color: Colors.white, fontSize: 16)),
+                          : const Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -116,10 +130,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     height: 50,
                     child: OutlinedButton.icon(
                       onPressed: () => Get.toNamed('/subscription-records'),
-                      icon: const Icon(Icons.receipt_long, color: AppColors.Brown),
+                      icon: const Icon(
+                        Icons.receipt_long,
+                        color: AppColors.Brown,
+                      ),
                       label: const Text(
                         'View Subscription Records',
-                        style: TextStyle(color: AppColors.Brown, fontSize: 15, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: AppColors.Brown,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.Brown),

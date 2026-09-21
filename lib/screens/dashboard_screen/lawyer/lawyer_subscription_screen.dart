@@ -13,7 +13,8 @@ class LawyerSubscriptionScreen extends StatefulWidget {
   const LawyerSubscriptionScreen({super.key});
 
   @override
-  State<LawyerSubscriptionScreen> createState() => _LawyerSubscriptionScreenState();
+  State<LawyerSubscriptionScreen> createState() =>
+      _LawyerSubscriptionScreenState();
 }
 
 class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
@@ -88,8 +89,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Picker Error",
         e.toString(),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
       );
     }
   }
@@ -101,8 +102,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Required",
         "Please enter your Transaction ID (TID) or upload a receipt screenshot.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.warning.withOpacity(0.10),
-        colorText: AppColors.warning,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.warning,
       );
       return;
     }
@@ -131,8 +132,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Proof Submitted",
         "Your payment proof has been submitted to Admin for review. Your subscription will be renewed once verified.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         duration: const Duration(seconds: 4),
       );
 
@@ -142,8 +143,8 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
         "Submission Error",
         e.toString().replaceAll("Exception: ", ""),
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -163,8 +164,11 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
     return Scaffold(
       backgroundColor: AppColors.beige,
       appBar: AppBar(
-      backgroundColor: AppColors.beige,
-        title: Text("Subscription & Billing", style: AppTextStyles.heading3.copyWith(fontSize: 20)),
+        backgroundColor: AppColors.beige,
+        title: Text(
+          "Subscription & Billing",
+          style: AppTextStyles.heading3.copyWith(fontSize: 20),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
@@ -199,8 +203,12 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                       child: Row(
                         children: [
                           Icon(
-                            isExpired ? Icons.warning_amber_rounded : Icons.check_circle_outline,
-                            color: isExpired ? AppColors.error : AppColors.success,
+                            isExpired
+                                ? Icons.warning_amber_rounded
+                                : Icons.check_circle_outline,
+                            color: isExpired
+                                ? AppColors.error
+                                : AppColors.success,
                             size: 36,
                           ),
                           const SizedBox(width: 14),
@@ -209,10 +217,14 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isExpired ? "Subscription Expired" : "Subscription Active",
+                                  isExpired
+                                      ? "Subscription Expired"
+                                      : "Subscription Active",
                                   style: AppTextStyles.heading4.copyWith(
                                     fontSize: 17,
-                                    color: isExpired ? AppColors.error : AppColors.success,
+                                    color: isExpired
+                                        ? AppColors.error
+                                        : AppColors.success,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -221,7 +233,9 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                       ? "Your account is hidden from client search. Renew to start getting appointments."
                                       : "Valid until ${subDateStr.toString().split('T')[0]}. Visible to clients.",
                                   style: AppTextStyles.bodyMedium.copyWith(
-                                    color: isExpired ? AppColors.error : AppColors.success,
+                                    color: isExpired
+                                        ? AppColors.error
+                                        : AppColors.success,
                                   ),
                                 ),
                               ],
@@ -243,19 +257,30 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Monthly Subscription", style: AppTextStyles.labelMuted),
+                              Text(
+                                "Monthly Subscription",
+                                style: AppTextStyles.labelMuted,
+                              ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: AppDecorations.pill,
                                 child: Text(
                                   "PKR $fee / Month",
-                                  style: AppTextStyles.label.copyWith(fontSize: 15),
+                                  style: AppTextStyles.label.copyWith(
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                           const Divider(height: 24),
-                          Text("Step 1: Transfer via JazzCash", style: AppTextStyles.label),
+                          Text(
+                            "Step 1: Transfer via JazzCash",
+                            style: AppTextStyles.label,
+                          ),
                           const SizedBox(height: 8),
                           Container(
                             padding: const EdgeInsets.all(12),
@@ -265,15 +290,21 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.phone_android, color: AppColors.Brown),
+                                const Icon(
+                                  Icons.phone_android,
+                                  color: AppColors.Brown,
+                                ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _jazzCashAccountNumber,
-                                        style: AppTextStyles.heading3.copyWith(letterSpacing: 0.5),
+                                        style: AppTextStyles.heading3.copyWith(
+                                          letterSpacing: 0.5,
+                                        ),
                                       ),
                                       Text(
                                         "Account Title: $_jazzCashAccountTitle",
@@ -283,15 +314,22 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.copy, color: AppColors.Brown),
+                                  icon: const Icon(
+                                    Icons.copy,
+                                    color: AppColors.Brown,
+                                  ),
                                   tooltip: "Copy Number",
                                   onPressed: () {
-                                    Clipboard.setData(ClipboardData(text: _jazzCashAccountNumber));
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                        text: _jazzCashAccountNumber,
+                                      ),
+                                    );
                                     Get.snackbar(
                                       "Copied",
                                       "JazzCash account number copied",
-                                      backgroundColor: AppColors.success.withOpacity(0.10),
-                                      colorText: AppColors.success,
+                                      colorText: AppColors.white,
+                                      backgroundColor: AppColors.success,
                                       snackPosition: SnackPosition.BOTTOM,
                                       duration: const Duration(seconds: 2),
                                     );
@@ -313,11 +351,17 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("Step 2: Submit Payment Details", style: AppTextStyles.label),
+                          Text(
+                            "Step 2: Submit Payment Details",
+                            style: AppTextStyles.label,
+                          ),
                           const SizedBox(height: 14),
 
                           // TID Field
-                          Text("Transaction ID (TID / Trx ID)", style: AppTextStyles.label),
+                          Text(
+                            "Transaction ID (TID / Trx ID)",
+                            style: AppTextStyles.label,
+                          ),
                           const SizedBox(height: 6),
                           TextField(
                             controller: _tidController,
@@ -329,7 +373,10 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                           const SizedBox(height: 16),
 
                           // Screenshot upload
-                          Text("Payment Receipt / Screenshot", style: AppTextStyles.label),
+                          Text(
+                            "Payment Receipt / Screenshot",
+                            style: AppTextStyles.label,
+                          ),
                           const SizedBox(height: 8),
 
                           if (_screenshotBytes != null)
@@ -339,7 +386,9 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                               decoration: BoxDecoration(
                                 color: AppColors.success.withOpacity(0.06),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: AppColors.success.withOpacity(0.4)),
+                                border: Border.all(
+                                  color: AppColors.success.withOpacity(0.4),
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -358,11 +407,16 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                                       _screenshotName ?? "Receipt Screenshot",
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ),
                                   IconButton(
-                                    icon: Icon(Icons.delete_outline, color: AppColors.error),
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: AppColors.error,
+                                    ),
                                     onPressed: () => setState(() {
                                       _screenshotBytes = null;
                                       _screenshotName = null;
@@ -376,16 +430,23 @@ class _LawyerSubscriptionScreenState extends State<LawyerSubscriptionScreen> {
                             width: double.infinity,
                             child: OutlinedButton.icon(
                               onPressed: _pickImage,
-                              icon: const Icon(Icons.upload_file, color: AppColors.Brown),
+                              icon: const Icon(
+                                Icons.upload_file,
+                                color: AppColors.Brown,
+                              ),
                               label: Text(
                                 _screenshotBytes == null
                                     ? "Upload Receipt Screenshot"
                                     : "Change Screenshot",
-                                style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w500),
+                                style: AppTextStyles.label.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(color: AppColors.Brown),
-                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

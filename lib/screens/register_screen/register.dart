@@ -55,14 +55,14 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
- String? _validateFullName(String? value) {
-  if (value == null || value.trim().isEmpty) return "Full name is required";
-  if (value.trim().length < 3) return "Name must be at least 3 characters";
-  if (!RegExp(r'^[A-Z]').hasMatch(value.trim())) {
-    return "Name must start with a capital letter";
+  String? _validateFullName(String? value) {
+    if (value == null || value.trim().isEmpty) return "Full name is required";
+    if (value.trim().length < 3) return "Name must be at least 3 characters";
+    if (!RegExp(r'^[A-Z]').hasMatch(value.trim())) {
+      return "Name must start with a capital letter";
+    }
+    return null;
   }
-  return null;
-}
 
   String? _validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) return "Email is required";
@@ -132,8 +132,8 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar(
         "Validation Error",
         "Please select a specialization",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -144,8 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar(
         "Validation Error",
         licenseError,
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
@@ -181,8 +181,8 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar(
         "Success",
         "Account created!",
-        backgroundColor: AppColors.success.withOpacity(0.10),
-        colorText: AppColors.success,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
         snackPosition: SnackPosition.BOTTOM,
       );
 
@@ -195,8 +195,8 @@ class _RegisterPageState extends State<RegisterPage> {
       Get.snackbar(
         "Error",
         result['message'] ?? "Registration failed. Please try again.",
-        backgroundColor: AppColors.error.withOpacity(0.10),
-        colorText: AppColors.error,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -243,7 +243,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // ── Logo ─────────────────────────────────
+                  // Logo
                   Container(
                     height: 90,
                     width: 90,
@@ -262,7 +262,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Text("Create Account", style: AppTextStyles.heading1),
                   const SizedBox(height: 20),
 
-                  // ── Client / Lawyer Toggle ────────────────
+                  // client / Lawyer Toggle
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -321,7 +321,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── Common Fields ─────────────────────────
+                  //  Common Fields
                   buildTextField(
                     "Full Name",
                     fullNameController,
@@ -343,7 +343,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 12),
 
-                  // ── Lawyer-only Fields ────────────────────
+                  // Lawyer-only Fields
                   if (!isClient) ...[
                     buildTextField(
                       "Bar Council ID",
@@ -389,7 +389,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 12),
 
-                    // ── License Upload ────────────────────
+                    // License Upload
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -444,7 +444,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 12),
                   ],
 
-                  // ── Password Fields ───────────────────────
+                  // Password Fields
                   buildTextField(
                     "Password",
                     passwordController,
@@ -485,7 +485,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // ── Submit Button ─────────────────────────
+                  // Submit Button
                   createAccountButton(),
                   const SizedBox(height: 12),
                   loginText(),

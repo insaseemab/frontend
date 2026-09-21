@@ -115,7 +115,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   TextField(
                     controller: specCtrl,
-                    decoration: const InputDecoration(labelText: 'Specialization'),
+                    decoration: const InputDecoration(
+                      labelText: 'Specialization',
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -156,6 +158,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final newCtrl = TextEditingController();
     final confirmCtrl = TextEditingController();
 
+    bool _obscureCurrent = true;
+    bool _obscureNew = true;
+    bool _obscureConfirm = true;
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -164,63 +170,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Change Password', style: AppTextStyles.heading3),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: currentCtrl,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Current Password'),
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 20,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Change Password', style: AppTextStyles.heading3),
+                    const SizedBox(height: 16),
+
+                    TextField(
+                      controller: currentCtrl,
+                      obscureText: _obscureCurrent,
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureCurrent
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppColors.iconMuted,
+                          ),
+                          onPressed: () {
+                            setSheetState(
+                              () => _obscureCurrent = !_obscureCurrent,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: newCtrl,
+                      obscureText: _obscureNew,
+                      decoration: InputDecoration(
+                        labelText: 'New Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureNew
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppColors.iconMuted,
+                          ),
+                          onPressed: () {
+                            setSheetState(() => _obscureNew = !_obscureNew);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    TextField(
+                      controller: confirmCtrl,
+                      obscureText: _obscureConfirm,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirm
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppColors.iconMuted,
+                          ),
+                          onPressed: () {
+                            setSheetState(
+                              () => _obscureConfirm = !_obscureConfirm,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: AppButtonStyles.primary,
+                        onPressed: () async {
+                          if (newCtrl.text.trim() != confirmCtrl.text.trim()) {
+                            Get.snackbar('Error', 'New passwords do not match');
+                            return;
+                          }
+                          if (newCtrl.text.trim().isEmpty ||
+                              currentCtrl.text.trim().isEmpty) {
+                            Get.snackbar('Error', 'Please fill in all fields');
+                            return;
+                          }
+                          await _changePassword(
+                            currentCtrl.text.trim(),
+                            newCtrl.text.trim(),
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                        },
+                        child: Text(
+                          'Update Password',
+                          style: AppTextStyles.button,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: newCtrl,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'New Password'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: confirmCtrl,
-                  obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Confirm New Password'),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: AppButtonStyles.primary,
-                    onPressed: () async {
-                      if (newCtrl.text.trim() != confirmCtrl.text.trim()) {
-                        Get.snackbar('Error', 'New passwords do not match');
-                        return;
-                      }
-                      if (newCtrl.text.trim().isEmpty ||
-                          currentCtrl.text.trim().isEmpty) {
-                        Get.snackbar('Error', 'Please fill in all fields');
-                        return;
-                      }
-                      await _changePassword(
-                        currentCtrl.text.trim(),
-                        newCtrl.text.trim(),
-                      );
-                      if (ctx.mounted) Navigator.pop(ctx);
-                    },
-                    child: Text('Update Password', style: AppTextStyles.button),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -242,29 +302,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         newPassword: newPassword,
       );
       Get.snackbar(
-  'Success',
-  'Password updated successfully',
-  backgroundColor: AppColors.success.withOpacity(0.10),
-  colorText: AppColors.success,
-  snackPosition: SnackPosition.BOTTOM,
-);
-} on ApiException catch (e) {
-  Get.snackbar(
-    'Error',
-    e.message,
-    backgroundColor: AppColors.error.withOpacity(0.10),
-    colorText: AppColors.error,
-    snackPosition: SnackPosition.BOTTOM,
-  );
-} catch (e) {
-  Get.snackbar(
-    'Error',
-    'Something went wrong: $e',
-    backgroundColor: AppColors.error.withOpacity(0.10),
-    colorText: AppColors.error,
-    snackPosition: SnackPosition.BOTTOM,
-  );
-}
+        'Success',
+        'Password updated successfully',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.success,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } on ApiException catch (e) {
+      Get.snackbar(
+        'Error',
+        e.message,
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Something went wrong: $e',
+        colorText: AppColors.white,
+        backgroundColor: AppColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
   }
 
   Future<void> _saveProfile(Map<String, dynamic> updatedData) async {
@@ -343,7 +403,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Text(
                           name,
-                          style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -435,7 +498,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.edit_outlined, size: 16, color: AppColors.Brown),
+                      const Icon(
+                        Icons.edit_outlined,
+                        size: 16,
+                        color: AppColors.Brown,
+                      ),
                       const SizedBox(width: 8),
                       Text('Change Password', style: AppTextStyles.label),
                     ],
@@ -463,9 +530,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () => Get.to(() => const LawyerSubscriptionScreen()),
-                        icon: const Icon(Icons.card_membership, size: 18, color: AppColors.white),
-                        label: Text('Manage & Pay Subscription', style: AppTextStyles.button),
+                        onPressed: () =>
+                            Get.to(() => const LawyerSubscriptionScreen()),
+                        icon: const Icon(
+                          Icons.card_membership,
+                          size: 18,
+                          color: AppColors.white,
+                        ),
+                        label: Text(
+                          'Manage & Pay Subscription',
+                          style: AppTextStyles.button,
+                        ),
                         style: AppButtonStyles.primary,
                       ),
                     ),
