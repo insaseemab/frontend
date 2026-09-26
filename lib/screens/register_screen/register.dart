@@ -270,7 +270,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: GestureDetector(
                           onTap: () => setState(() => isClient = true),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: isClient
                                   ? AppColors.Brown
@@ -279,12 +282,17 @@ class _RegisterPageState extends State<RegisterPage> {
                               border: Border.all(color: AppColors.Brown),
                             ),
                             child: Center(
-                              child: Text(
-                                "Register as Client",
-                                style: AppTextStyles.label.copyWith(
-                                  color: isClient
-                                      ? AppColors.white
-                                      : AppColors.Brown,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "Register as Client",
+                                  maxLines: 1,
+                                  style: AppTextStyles.label.copyWith(
+                                    fontSize: 13,
+                                    color: isClient
+                                        ? AppColors.white
+                                        : AppColors.Brown,
+                                  ),
                                 ),
                               ),
                             ),

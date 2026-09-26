@@ -4,7 +4,7 @@ import 'package:insaafconnect/core/services/message_services.dart';
 import 'package:insaafconnect/core/services/lawyers_services.dart';
 import '../../appointments/appointment_screen.dart';
 import 'package:insaafconnect/routes/app_routes.dart';
-import 'package:insaafconnect/core/utils/theme.dart'; 
+import 'package:insaafconnect/core/utils/theme.dart';
 
 class LawyerFindScreen extends StatefulWidget {
   const LawyerFindScreen({super.key});
@@ -192,28 +192,34 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                   )
                 : _error != null
                 ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          color: AppColors.error,
-                          size: 48,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _error!,
-                          style: AppTextStyles.bodyMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: _loadLawyers,
-                          child: Text(
-                            'Retry',
-                            style: TextStyle(color: AppColors.Brown),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: AppColors.error,
+                            size: 48,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 12),
+                          Text(
+                            _error!,
+                            style: AppTextStyles.bodyMedium,
+                            textAlign: TextAlign.center,
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+                          TextButton(
+                            onPressed: _loadLawyers,
+                            child: Text(
+                              'Retry',
+                              style: TextStyle(color: AppColors.Brown),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : filtered.isEmpty
@@ -223,23 +229,18 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
                       style: AppTextStyles.bodyMedium,
                     ),
                   )
-                : LayoutBuilder(
-                    builder: (context, constraints) {
-                      return GridView.builder(
-                        padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 220, 
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              mainAxisExtent:
-                                  340, 
-                            ),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, i) =>
-                            _LawyerCard(lawyer: filtered[i]),
-                      );
-                    },
+                : GridView.builder(
+                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 220,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: 360,
+                        ),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, i) =>
+                        _LawyerCard(lawyer: filtered[i]),
                   ),
           ),
         ],
@@ -248,36 +249,48 @@ class _LawyerFindScreenState extends State<LawyerFindScreen> {
   }
 }
 
-//  LAWYER CARD
+
+
+
 
 bool _isApproved(Map<String, dynamic> lawyer) {
   final status = lawyer['status'];
-  if (status == null) return true; 
+  if (status == null) return true;
   if (status is bool) return status;
   if (status is int) return status == 1;
   return status.toString() == '1' ||
       status.toString().toLowerCase() == 'approved';
 }
 
+
+String _initial(dynamic name, {String fallback = 'L'}) {
+  final s = (name ?? '').toString().trim();
+  return s.isEmpty ? fallback : s.substring(0, 1).toUpperCase();
+}
+
+
+// LAWYER CARD
+
 class _LawyerCard extends StatelessWidget {
   final Map<String, dynamic> lawyer;
   const _LawyerCard({required this.lawyer});
 
   Future<void> _openChat() async {
-  final result = await MessageService().startConversation(
-    lawyerId: lawyer['id'],
-  );
-  if (result != null) {
-    Get.toNamed(
-      AppRoutes.message,
-      arguments: {
-        "conversation_id": result["id"],
-        "other_name": lawyer["name"],
-        "receiver_id": lawyer["user_id"] ?? lawyer["id"],
-      },
+    final result = await MessageService().startConversation(
+      lawyerId: lawyer['id'],
     );
+    if (result != null) {
+      Get.toNamed(
+        AppRoutes.message,
+        arguments: {
+          "conversation_id": result["id"],
+          "other_name": lawyer["name"],
+          "receiver_id": lawyer["user_id"] ?? lawyer["id"],
+        },
+      );
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -294,7 +307,7 @@ class _LawyerCard extends StatelessWidget {
                   radius: 20,
                   backgroundColor: AppColors.Brown,
                   child: Text(
-                    (lawyer['name'] ?? 'L').toString()[0].toUpperCase(),
+                    _initial(lawyer['name']),
                     style: const TextStyle(
                       color: AppColors.white,
                       fontWeight: FontWeight.bold,
@@ -312,6 +325,7 @@ class _LawyerCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.star,
@@ -379,38 +393,60 @@ class _LawyerCard extends StatelessWidget {
             Text(
               (lawyer['specialization'] ?? '').toString(),
               style: AppTextStyles.bodySmall,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
+            
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 13,
-                  color: AppColors.iconMuted,
+                Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Icon(
+                    Icons.location_on_outlined,
+                    size: 13,
+                    color: AppColors.iconMuted,
+                  ),
                 ),
                 const SizedBox(width: 3),
-                Text(
-                  (lawyer['location'] ?? '-').toString(),
-                  style: AppTextStyles.bodySmall,
+                Expanded(
+                  child: Text(
+                    (lawyer['location'] ?? '-').toString(),
+                    style: AppTextStyles.bodySmall,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 6),
+          
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  (lawyer['experience'] ?? '-').toString(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.hintText,
+                Flexible(
+                  child: Text(
+                    (lawyer['experience'] ?? '-').toString(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.hintText,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(
-                  (lawyer['cases'] ?? '-').toString(),
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.hintText,
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    (lawyer['cases'] ?? '-').toString(),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.hintText,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                   ),
                 ),
               ],
@@ -467,7 +503,8 @@ class _LawyerCard extends StatelessWidget {
   }
 }
 
-//  Lawyer profile
+
+// LAWYER PROFILE
 
 
 class LawyerProfileScreen extends StatelessWidget {
@@ -525,10 +562,7 @@ class LawyerProfileScreen extends StatelessWidget {
                     radius: 38,
                     backgroundColor: AppColors.Brown,
                     child: Text(
-                      (lawyer['name'] ?? 'L')
-                          .toString()
-                          .substring(0, 1)
-                          .toUpperCase(),
+                      _initial(lawyer['name']),
                       style: const TextStyle(
                         color: AppColors.white,
                         fontWeight: FontWeight.bold,
@@ -539,12 +573,18 @@ class LawyerProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        (lawyer['name'] ?? 'Unknown Lawyer').toString(),
-                        style: AppTextStyles.heading2,
+                      Flexible(
+                        child: Text(
+                          (lawyer['name'] ?? 'Unknown Lawyer').toString(),
+                          style: AppTextStyles.heading2,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (_isApproved(lawyer)) ...[
                         const SizedBox(width: 6),
@@ -562,10 +602,12 @@ class LawyerProfileScreen extends StatelessWidget {
                   Text(
                     (lawyer['specialization'] ?? 'Not Available').toString(),
                     style: AppTextStyles.bodyMedium,
+                    textAlign: TextAlign.center,
                   ),
 
                   const SizedBox(height: 6),
 
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -575,41 +617,53 @@ class LawyerProfileScreen extends StatelessWidget {
                         color: AppColors.iconMuted,
                       ),
                       const SizedBox(width: 3),
-                      Text(
-                        (lawyer['location'] ?? 'Not Available').toString(),
-                        style: AppTextStyles.bodyMedium,
+                      Flexible(
+                        child: Text(
+                          (lawyer['location'] ?? 'Not Available').toString(),
+                          style: AppTextStyles.bodyMedium,
+                          textAlign: TextAlign.center,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 16),
 
+                  
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _StatBox(
-                        icon: Icons.star,
-                        iconColor: AppColors.earningsOrange,
-                        value: (lawyer['rating'] ?? '0.0').toString(),
-                        label: 'Rating',
+                      Expanded(
+                        child: _StatBox(
+                          icon: Icons.star,
+                          iconColor: AppColors.earningsOrange,
+                          value: (lawyer['rating'] ?? '0.0').toString(),
+                          label: 'Rating',
+                        ),
                       ),
 
                       _divider(),
 
-                      _StatBox(
-                        icon: Icons.work_outline,
-                        iconColor: AppColors.Brown,
-                        value: (lawyer['experience'] ?? '0').toString(),
-                        label: 'Experience',
+                      Expanded(
+                        child: _StatBox(
+                          icon: Icons.work_outline,
+                          iconColor: AppColors.Brown,
+                          value: (lawyer['experience'] ?? '0').toString(),
+                          label: 'Experience',
+                        ),
                       ),
 
                       _divider(),
 
-                      _StatBox(
-                        icon: Icons.gavel,
-                        iconColor: AppColors.Brown,
-                        value: (lawyer['cases'] ?? '0').toString(),
-                        label: 'Cases',
+                      Expanded(
+                        child: _StatBox(
+                          icon: Icons.gavel,
+                          iconColor: AppColors.Brown,
+                          value: (lawyer['cases'] ?? '0').toString(),
+                          label: 'Cases',
+                        ),
                       ),
                     ],
                   ),
@@ -659,6 +713,7 @@ class LawyerProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
+            
             Row(
               children: [
                 Expanded(
@@ -669,15 +724,20 @@ class LawyerProfileScreen extends StatelessWidget {
                     icon: const Icon(Icons.calendar_month, size: 18),
                     label: const Text(
                       'Book Appointment',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.Brown,
                       foregroundColor: AppColors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 8,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -692,14 +752,19 @@ class LawyerProfileScreen extends StatelessWidget {
                     icon: const Icon(Icons.message_outlined, size: 18),
                     label: const Text(
                       'Send Message',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.Brown,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 8,
+                      ),
                       side: BorderSide(
                         color: AppColors.Brown,
                         width: 1.5,
@@ -744,10 +809,16 @@ class _StatBox extends StatelessWidget {
         Text(
           value.toString(),
           style: AppTextStyles.heading4,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         Text(
           label,
           style: AppTextStyles.bodySmall,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -798,9 +869,14 @@ class _ContactRow extends StatelessWidget {
           child: Icon(icon, color: AppColors.Brown, size: 18),
         ),
         const SizedBox(width: 12),
-        Text(
-          label,
-          style: AppTextStyles.bodyLarge,
+        
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.bodyLarge,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );

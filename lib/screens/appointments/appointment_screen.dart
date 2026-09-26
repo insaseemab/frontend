@@ -823,7 +823,6 @@ class _LawyerSummaryCard extends StatelessWidget {
     );
   }
 }
-
 class _AppDropdown extends StatelessWidget {
   final String label;
   final String hint;
